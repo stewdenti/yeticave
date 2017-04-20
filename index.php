@@ -13,6 +13,10 @@ $now = time();
 
 // далее нужно вычислить оставшееся время до начала следующих суток и записать его в переменную $lot_time_remaining
 // ...
+
+
+$lot_time_remaining = date("H:i", mktime(0, 0, $tomorrow - $now));
+
 ?>
 <!DOCTYPE html>
 <html lang="ru">
