@@ -28,13 +28,12 @@ $user_avatar = 'img/user.jpg';
 
         <nav class="user-menu">
 
-          <?php  $is_auth; ?>
-          <?php if ($is_auth == true): ?>
+          <?php if ($is_auth): ?>
             <div class="user-menu__image">
-              <img src="<?php $is_auth = $user_avatar ?>" width="40" height="40" alt="Пользователь">
+              <img src="<?php print ($user_avatar) ?>" width="40" height="40" alt="Пользователь">
             </div>
             <div class="user-menu__logged">
-              <p><?php $is_auth = $user_name ?></p>
+              <p><?php print ($user_name) ?></p>
             </div>
           <?php else: ?>
             <ul class="user-menu__list">
