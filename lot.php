@@ -2,30 +2,23 @@
 
 
 // ставки пользователей, которыми надо заполнить таблицу
-/*$bets = [
+$bets = [
     ['name' => 'Иван', 'price' => 11500, 'ts' => strtotime('-' . rand(1, 50) .' minute')],
     ['name' => 'Константин', 'price' => 11000, 'ts' => strtotime('-' . rand(1, 18) .' hour')],
     ['name' => 'Евгений', 'price' => 10500, 'ts' => strtotime('-' . rand(25, 50) .' hour')],
     ['name' => 'Семён', 'price' => 10000, 'ts' => strtotime('last week')]
-];*/
-
-
-$bets = array(
-    array('name' => 'Иван', 'price' => 11500, 'ts' => strtotime('-' . rand(1, 50) .' minute')),
-    array('name' => 'Константин', 'price' => 11000, 'ts' => strtotime('-' . rand(1, 18) .' hour')),
-    array('name' => 'Евгений', 'price' => 10500, 'ts' => strtotime('-' . rand(25, 50) .' hour')),
-    array('name' => 'Семён', 'price' => 10000, 'ts' => strtotime('last week'))
-);
+];
 
 /**
  * @param $time
  */
-function formattingTime ($time) {
-    $td = time()-$time;
+function formatTime ($time)
+{
+    $td = time()- $time;
 
-    if ($td>86400){
-        return date("d.m.y H:i", $time);
-    } elseif ($td<86400 && $td>=3600){
+    if ($td > 86400){
+        return date("d.m.y"." в "."H:i", $time);
+    } elseif ($td < 86400 && $td >= 3600){
         $th = date("G", mktime(0, 0, $td));
         if ($th == 1 || $th == 21){
             return $th." час назад";
@@ -146,7 +139,7 @@ function formattingTime ($time) {
                         <tr class="history__item">
                             <td class="history__name"><?=$value['name']?></td>
                             <td class="history__price"><?=$value['price']?> р</td>
-                            <td class="history__time"><?=formattingTime($value['ts']);?></td>
+                            <td class="history__time"><?=formatTime($value['ts']);?></td>
                         </tr>
                         <?php endforeach; ?>
                     </table>
