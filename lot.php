@@ -17,7 +17,7 @@ function formatTime ($time)
     $td = time()- $time;
 
     if ($td > 86400){
-        return date("d.m.y"." в "."H:i", $time);
+        return date("d.m.y в H:i", $time);
     } elseif ($td < 86400 && $td >= 3600){
         $th = date("G", mktime(0, 0, $td));
         if ($th == 1 || $th == 21){
