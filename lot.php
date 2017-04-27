@@ -33,15 +33,19 @@ function formatTime ($time)
 $lot_item = "";
 
 //цикл поиск запрошенного лота
+
 foreach ($announcement_list as $key => $value) {
     if ($value["id"] == $_GET["id"]) {
         $lot_item = $value;
         break;
-    } else {
-        header("HTTP/1.1 404 Not Found");
     }
 }
 
+if ($lot_item == "") {
+    header("HTTP/1.1 404 Not Found");
+    echo "<h1>404 Страница не найдена</h1>";
+    exit ();
+}
 
 $data = array (
     "bets" => $bets,
