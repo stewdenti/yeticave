@@ -1,14 +1,13 @@
 <?php
 include ('functions.php');
-
-// ставки пользователей, которыми надо заполнить таблицу
+include ('arrayLot.php');
+// ставки пользователей, которыми заполняется  таблица
 $bets = [
-    ['name' => 'Иван', 'price' => 11500, 'ts' => strtotime('-' . rand(1, 50) .' minute')],
-    ['name' => 'Константин', 'price' => 11000, 'ts' => strtotime('-' . rand(1, 18) .' hour')],
-    ['name' => 'Евгений', 'price' => 10500, 'ts' => strtotime('-' . rand(25, 50) .' hour')],
-    ['name' => 'Семён', 'price' => 10000, 'ts' => strtotime('last week')]
-];
-
+         ['name' => 'Иван', 'price' => 11500, 'ts' => strtotime('-' . rand(1, 50) .' minute')],
+         ['name' => 'Константин', 'price' => 11000, 'ts' => strtotime('-' . rand(1, 18) .' hour')],
+         ['name' => 'Семён', 'price' => 10000, 'ts' => strtotime('last week')],
+         ['name' => 'Евгений', 'price' => 10500, 'ts' => strtotime( '-' . rand(25, 50) .' hour')]
+         ];
 /**
  * @param $time
  */
@@ -31,9 +30,28 @@ function formatTime ($time)
         return date("i", mktime(0, 0, $td))." минут назад";
     }
 }
+$lot_item = "";
+
+//цикл поиск запрошенного лота
+
+foreach ($announcement_list as $key => $value) {
+    if ($value["id"] == $_GET["id"]) {
+        $lot_item = $value;
+        break;
+    }
+}
+
+if ($lot_item == "") {
+    header("HTTP/1.1 404 Not Found");
+    echo "<h1>404 Страница не найдена</h1>";
+    exit ();
+}
+
 $data = array (
     "bets" => $bets,
+    "lot_item" => $lot_item,
 );
+
 
 echo connectTemplates("templates/header-lot.php", array());
 echo connectTemplates("templates/main-lot.php", $data);
