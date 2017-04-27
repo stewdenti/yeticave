@@ -12,30 +12,30 @@ $now = time();
 // ...
 $lot_time_remaining = date("H:i", mktime(0, 0, $tomorrow - $now));
 $categories_equipment = array("Доски и лыжи", "Крепления", "Ботинки", "Одежда", "Инструменты", "Разное");
-$announcement_list = array("announcement-1" => array('title'=>"2014 Rossignol District Snowboard",
-    'category'=>"Доски и лыжи",
-    'price'=>"10999",
-    'URL-img'=>"/img/lot-1.jpg"),
+$announcement_list = array("announcement-1" => array('title' => "2014 Rossignol District Snowboard",
+    'category' => "Доски и лыжи",
+    'price' => "10999",
+    'URL-img' => "/img/lot-1.jpg"),
     "announcement_2" => array('title'=>"DC Ply Mens 2016/2017 Snowboard",
-        'category'=>"Доски и лыжи",
-        'price'=>"159999",
-        'URL-img'=>"/img/lot-2.jpg"),
+        'category' => "Доски и лыжи",
+        'price' => "159999",
+        'URL-img' => "/img/lot-2.jpg"),
     "announcement_3" => array('title'=>"Крепления Union Contact Pro 2015 года размер L/XL",
-        'category'=>"Крепления",
-        'price'=>"8000",
-        'URL-img'=>"/img/lot-3.jpg"),
+        'category' => "Крепления",
+        'price' => "8000",
+        'URL-img' => "/img/lot-3.jpg"),
     "announcement_4" => array('title'=>"Ботинки для сноуборда DC Mutiny Charocal",
-        'category'=>"Ботинки",
-        'price'=>"10999",
-        'URL-img'=>"/img/lot-4.jpg"),
+        'category' => "Ботинки",
+        'price' => "10999",
+        'URL-img' => "/img/lot-4.jpg"),
     "announcement_5" => array('title'=>"Куртка для сноуборда DC Mutiny Charocal",
-        'category'=>"Одежда",
-        'price'=>"7500",
-        'URL-img'=>"/img/lot-5.jpg"),
+        'category' => "Одежда",
+        'price' => "7500",
+        'URL-img' => "/img/lot-5.jpg"),
     "announcement_6" => array('title'=>"Маска Oakley Canopy",
-        'category'=>"Разное",
-        'price'=>"5400",
-        'URL-img'=>"/img/lot-6.jpg"),
+        'category' => "Разное",
+        'price' => "5400",
+        'URL-img' => "/img/lot-6.jpg"),
 );
 $data = array (
     "categories_equipment" => $categories_equipment,
@@ -43,7 +43,7 @@ $data = array (
 
 );
 
-echo connectTemplates("templates/header.php",array());
-echo connectTemplates("templates/main.php",$data);
-echo connectTemplates("templates/footer.php",array());
+echo connectTemplates("templates/header.php", array());
+echo connectTemplates("templates/main.php", $data);
+echo connectTemplates("templates/footer.php", array());
 ?>

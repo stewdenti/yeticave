@@ -35,9 +35,9 @@ $data = array (
     "bets" => $bets,
 );
 
-echo connectTemplates("templates/header-lot.php",array());
-echo connectTemplates("templates/main-lot.php",$data);
-echo connectTemplates("templates/footer-lot.php",array());
+echo connectTemplates("templates/header-lot.php", array());
+echo connectTemplates("templates/main-lot.php", $data);
+echo connectTemplates("templates/footer.php", array());
 
 ?>
 
