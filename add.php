@@ -5,42 +5,25 @@ if (isset($_POST["send"])) {
     $lot_item = array();
     $error = array();
     //проверяем значения глобального массива, куда ушли данные формы после отправки
-    if (isset($_POST["lot-name"]) && !empty($_POST["lot-name"])) {
-        $lot_item["title"] = htmlspecialchars($_POST["lot-name"]);
-    } else {
-        $error["lot-name"] = "Заполните это поле";
-    }
-    if (isset($_POST["message"]) && !empty($_POST["message"])) {
-        $lot_item["message"] = htmlspecialchars($_POST["message"]);
-    } else {
-        $error["message"] = "Заполните это поле";
-    }
-    if (isset($_POST["category"]) && !empty($_POST["category"])) {
-            $lot_item["category"] = htmlspecialchars($_POST["category"]);
-    } else {
-            $error["category"] = "Выбирите категорию";
-    }
-    if (isset($_POST["lot-rate"]) && !empty($_POST["lot-rate"]) && is_int((int)$_POST["lot-rate"])) {
-        $lot_item["price"] = $_POST["lot-rate"];
-    }  else {
-        $error["lot-rate"] = "Заполните пожалуйста поле";
-    }
-    if (isset($_POST["lot-step"]) && !empty($_POST["lot-step"]) && is_int((int)$_POST["lot-step"])) {
-        $lot_item["lot-step"] = $_POST["lot-step"];
-    }  else {
-        $error["lot-step"] = "Заполните пожалуйста поле";
-    }
-    if (isset($_POST["lot-date"]) && !empty($_POST["lot-date"])) {
-        $lot_item["lot-date"] = htmlspecialchars($_POST["lot-date"]);
-    }  else {
-        $error["lot-date"] = "Заполните пожалуйста поле";
-    }
 
+    $expectedPostData = ['lot-name', 'message', 'category', 'lot-date'];
+    $expectedNumericFields = ['lot-rate', 'lot-step'];
 
-
+    foreach ($expectedPostData as $key) {
+        if (isset($_POST[$key]) && !empty($_POST[$key])) {
+            $lot_item[$key] = htmlspecialchars($_POST[$key]);
+        } else {
+            $error[$key] = "Заполните это поле";
+        }
+    }
+    foreach ($expectedNumericFields as $key) {
+        if (!empty($_POST[$key]) && isset($_POST[$key]) && is_numeric($_POST[$key])) {
+            $lot_item[$key] = $_POST[$key];
+        } else {
+            $error[$key] = "Заполните это поле";
+        }
+    }
     $imgDir = "img"; //каталог для хранения
-
-
     $file = $_FILES["lot-img"];
     //Проверяем принят ли файл
     if (file_exists($file['tmp_name'])) {
@@ -57,22 +40,22 @@ if (isset($_POST["send"])) {
     }
 
     $categories_equipment = array("Доски и лыжи", "Крепления", "Ботинки", "Одежда", "Инструменты", "Разное");
-    $announcement_list = array ( $lot_item);
+
+   //в зависимости от выполнения условий в if, подключаем разные шаблоны
     $data = array (
         "categories_equipment" => $categories_equipment,
-        "announcement_list"    => $announcement_list,
-
-    );//в зависимости от выполнения условий в if, подключаем разные шаблоны
+    );
+    echo connectTemplates("templates/header.php", array());
     if ($error) {
         $data["error"] = $error;
-        echo connectTemplates("templates/header.php", array());
         echo connectTemplates("templates/form.php", $data);
-        echo connectTemplates("templates/footer.php", array());
-    } else {
-        echo connectTemplates("templates/header.php", array());
-        echo connectTemplates("templates/main.php", $data);
-        echo connectTemplates("templates/footer.php", array());
     }
+    else {
+        $data["announcement_list"] = array ( $lot_item);
+        echo connectTemplates("templates/main.php", $data);
+    }
+    echo connectTemplates("templates/footer.php", array());
+
 } else {
     echo connectTemplates("templates/header.php", array());
     echo connectTemplates("templates/form.php", array());
@@ -81,7 +64,4 @@ if (isset($_POST["send"])) {
     
 }
 
-
-
-
-?>
+    ?>
