@@ -10,17 +10,17 @@ if (isset($_POST["send"])) {
     $expectedNumericFields = ['lot-rate', 'lot-step'];
 
     foreach ($expectedPostData as $key) {
-        if (isset($_POST[$key]) && !empty($_POST[$key])) {
+        if (!empty($_POST[$key])) {
             $lot_item[$key] = htmlspecialchars($_POST[$key]);
         } else {
             $error[$key] = "Заполните это поле";
         }
     }
     foreach ($expectedNumericFields as $key) {
-        if (!empty($_POST[$key]) && isset($_POST[$key]) && is_numeric($_POST[$key])) {
+        if (!empty($_POST[$key]) && is_numeric($_POST[$key])) {
             $lot_item[$key] = $_POST[$key];
         } else {
-            $error[$key] = "Заполните это поле";
+            $error[$key] = "Здесь может быть только число";
         }
     }
     $imgDir = "img"; //каталог для хранения

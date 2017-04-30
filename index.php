@@ -17,8 +17,9 @@ $categories_equipment = array("Доски и лыжи", "Крепления", "�
 $data = array (
     "categories_equipment" => $categories_equipment,
     "announcement_list"    => $announcement_list,
-
+    "lot_time_remaining" => $lot_time_remaining,
 );
+
 
 echo connectTemplates("templates/header.php", array());
 echo connectTemplates("templates/main.php", $data);

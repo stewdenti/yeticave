@@ -1,13 +1,20 @@
-
-<form class="form form--add-lot container<?php if ($error):?>form--invalid<?php endif; ?>" action="/add.php" method="post" enctype="multipart/form-data"> <!-- form--invalid -->
+<?php
+    function printInvalidItemClass($errors, $name)
+    {
+        if (isset($errors[$name])) {
+            echo "form__item--invalid";
+        }
+    }
+?>
+<form class="form form--add-lot container <?php if ($error):?>form--invalid<?php endif; ?>" action="/add.php" method="post" enctype="multipart/form-data"> <!-- form--invalid -->
     <h2>Добавление лота</h2>
     <div class="form__container-two">
-        <div class="form__item <?php if (isset($error["lot-name"])):?>form__item--invalid<?php endif; ?>">
+        <div class="form__item <?php printInvalidItemClass($error, 'lot-name'); ?>">
             <label for="lot-name">Наименование</label>
             <input id="lot-name" type="text" name="lot-name" placeholder="Введите наименование лота">
             <span class="form__error"><?php if (isset($error["lot-name"])) {print($error["lot-name"]); } ?></span>
         </div>
-        <div class="form__item <?php if (isset($error["category"])):?>form__item--invalid<?php endif; ?>">
+        <div class="form__item <?php printInvalidItemClass($error, 'category'); ?>">
             <label for="category">Категория</label>
             <select id="category" name="category" required>
                 <option>Выберите категорию</option>
@@ -21,7 +28,7 @@
             <span class="form__error"><?php if (isset($error["category"])) {print($error["category"]); } ?></span>
         </div>
     </div>
-    <div class="form__item form__item--wide <?php if (isset($error["message"])):?>form__item--invalid<?php endif; ?>">
+    <div class="form__item form__item--wide <?php printInvalidItemClass($error, 'message'); ?>">
         <label for="message">Описание</label>
         <textarea id="message" name="message" placeholder="Напишите описание лота" ></textarea>
         <span class="form__error"><?php if (isset($error["message"])) {print($error["message"]); } ?></span>
@@ -42,17 +49,17 @@
         </div>
     </div>
     <div class="form__container-three">
-        <div class="form__item form__item--small <?php if (isset($error["lot-rate"])):?>form__item--invalid<?php endif; ?>">
+        <div class="form__item form__item--small <?php printInvalidItemClass($error, 'lot-rate'); ?>">
             <label for="lot-rate">Начальная цена</label>
             <input id="lot-rate" type="number" name="lot-rate" placeholder="0" >
             <span class="form__error"><?php if (isset($error["lot-rate"])) {print($error["lot-rate"]); } ?></span>
         </div>
-        <div class="form__item form__item--small <?php if (isset($error["lot-step"])):?>form__item--invalid<?php endif; ?>">
+        <div class="form__item form__item--small <?php printInvalidItemClass($error, 'lot-step'); ?>">
             <label for="lot-step">Шаг ставки</label>
             <input id="lot-step" type="number" name="lot-step" placeholder="0" >
             <span class="form__error"><?php if (isset($error["lot-step"])) {print($error["lot-step"]); } ?></span>
         </div>
-        <div class="form__item <?php if (isset($error["lot-date"])):?>form__item6--invalid<?php endif; ?>">
+        <div class="form__item <?php printInvalidItemClass($error, 'lot-date'); ?>">
             <label for="lot-date">Дата заверщения</label>
             <input class="form__input-date" id="lot-date" type="text" name="lot-date" placeholder="20.05.2017" >
             <span class="form__error"><?php if (isset($error["lot-date"])) {print($error["lot-date"]); } ?></span>
