@@ -34,3 +34,18 @@ function protectXSS($data)
     }
 
 }
+
+// возвращает оставшееся время до начала следующих суток
+function getLotTimeRemaining()
+{
+    // временная метка для полночи следующего дня
+    $tomorrow = strtotime('tomorrow midnight');
+    // временная метка для настоящего времени
+    $now = time();
+    return date("H:i", mktime(0, 0, $tomorrow - $now));
+}
+
+function getCategories()
+{
+    return ["Доски и лыжи", "Крепления", "Ботинки", "Одежда", "Инструменты", "Разное"];
+}

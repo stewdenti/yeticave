@@ -6,8 +6,8 @@ if (isset($_POST["send"])) {
     $error = array();
     //проверяем значения глобального массива, куда ушли данные формы после отправки
 
-    $expectedPostData = ['lot-name', 'message', 'category', 'lot-date'];
-    $expectedNumericFields = ['lot-rate', 'lot-step'];
+    $expectedPostData = ['lot-name', 'message', 'category', 'lot-date', 'price', 'lot-step'];
+    $expectedNumericFields = ['price', 'lot-step'];
 
     foreach ($expectedPostData as $key) {
         if (!empty($_POST[$key])) {
@@ -19,7 +19,7 @@ if (isset($_POST["send"])) {
     foreach ($expectedNumericFields as $key) {
         if (!empty($_POST[$key]) && is_numeric($_POST[$key])) {
             $lot_item[$key] = $_POST[$key];
-        } else {
+        } else if (empty($error[$key])) {
             $error[$key] = "Здесь может быть только число";
         }
     }
@@ -39,11 +39,10 @@ if (isset($_POST["send"])) {
         $error["lot-img"] = "файл не выбран";
     }
 
-    $categories_equipment = array("Доски и лыжи", "Крепления", "Ботинки", "Одежда", "Инструменты", "Разное");
-
-   //в зависимости от выполнения условий в if, подключаем разные шаблоны
+    //в зависимости от выполнения условий в if, подключаем разные шаблоны
     $data = array (
-        "categories_equipment" => $categories_equipment,
+        "categories_equipment" => getCategories(),
+        "lot_time_remaining" => getLotTimeRemaining(),
     );
     echo connectTemplates("templates/header.php", array());
     if ($error) {
@@ -60,8 +59,5 @@ if (isset($_POST["send"])) {
     echo connectTemplates("templates/header.php", array());
     echo connectTemplates("templates/form.php", array());
     echo connectTemplates("templates/footer.php", array());
-    
-    
 }
-
-    ?>
+?>

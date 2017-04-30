@@ -49,10 +49,10 @@
         </div>
     </div>
     <div class="form__container-three">
-        <div class="form__item form__item--small <?php printInvalidItemClass($error, 'lot-rate'); ?>">
-            <label for="lot-rate">Начальная цена</label>
-            <input id="lot-rate" type="number" name="lot-rate" placeholder="0" >
-            <span class="form__error"><?php if (isset($error["lot-rate"])) {print($error["lot-rate"]); } ?></span>
+        <div class="form__item form__item--small <?php printInvalidItemClass($error, 'price'); ?>">
+            <label for="price">Начальная цена</label>
+            <input id="price" type="number" name="price" placeholder="0" >
+            <span class="form__error"><?php if (isset($error["price"])) {print($error["price"]); } ?></span>
         </div>
         <div class="form__item form__item--small <?php printInvalidItemClass($error, 'lot-step'); ?>">
             <label for="lot-step">Шаг ставки</label>
