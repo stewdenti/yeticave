@@ -23,7 +23,7 @@ if (isset($_POST["send"])) {
             $error[$key] = "Здесь может быть только число";
         }
     }
-    $imgDir = "img"; //каталог для хранения
+    
     $file = $_FILES["lot-img"];
     //Проверяем принят ли файл
     if (file_exists($file['tmp_name'])) {
