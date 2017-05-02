@@ -49,3 +49,16 @@ function getCategories()
 {
     return ["Доски и лыжи", "Крепления", "Ботинки", "Одежда", "Инструменты", "Разное"];
 }
+
+//поиск пользователя по email
+function searchUserByKey($find_value,$search_in_key, $array)
+{
+    $result = null;
+    foreach ($array as $user) {
+        if ($user[$search_in_key] == $find_value) {
+            $result = $user;
+            break;
+        }
+    }
+    return $result;
+}

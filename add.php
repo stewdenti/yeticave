@@ -1,5 +1,15 @@
 <?php
 include ('functions.php');
+session_start();
+
+if (isset($_SESSION["user"])) {
+    $header_data = array ("username"=>$_SESSION["user"]);
+
+} else {
+    header("HTTP/1.1 403 Forbidden");
+    echo "Доступ закрыт для анонимных пользователей";
+    exit();
+}
 
 if (isset($_POST["send"])) {
     $lot_item = array();
@@ -44,7 +54,8 @@ if (isset($_POST["send"])) {
         "categories_equipment" => getCategories(),
         "lot_time_remaining" => getLotTimeRemaining(),
     );
-    echo connectTemplates("templates/header.php", array());
+
+    echo connectTemplates("templates/header.php", $header_data);
     if ($error) {
         $data["error"] = $error;
         echo connectTemplates("templates/form.php", $data);
@@ -56,7 +67,7 @@ if (isset($_POST["send"])) {
     echo connectTemplates("templates/footer.php", array());
 
 } else {
-    echo connectTemplates("templates/header.php", array());
+    echo connectTemplates("templates/header.php", $header_data);
     echo connectTemplates("templates/form.php", array());
     echo connectTemplates("templates/footer.php", array());
 }
