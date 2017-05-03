@@ -19,8 +19,9 @@
             <input class="main-header__search-btn" type="submit" name="find" value="Найти">
         </form>
         <a class="main-header__add-lot button" href="/add.php">Добавить лот</a>
-        <?php if (isset ($username)): ?>
+
         <nav class="user-menu">
+            <?php if (isset ($username)): ?>
             <div class="user-menu__image">
                 <img src="img/user.jpg" width="40" height="40" alt="Пользователь">
             </div>
@@ -28,15 +29,13 @@
                 <p><?=$username;?></p>
                 <a href="/logout.php">Выйти</a>
             </div>
-        </nav>
         <?php else: ?>
-        <nav class="user-menu">
             <ul class="user-menu__list">
                 <li class="user-menu__item">
                     <a href="#">Регистрация</a>
                 </li>
                 <li class="user-menu__item">
-                    <a href="/userdata.php">Вход</a>
+                    <a href="/login.php">Вход</a>
                 </li>
             </ul>
         </nav>

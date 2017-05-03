@@ -7,6 +7,7 @@ $data = array(
     "categories_equipment" => getCategories(),
     "announcement_list" => $announcement_list,
     "lot_time_remaining" => getLotTimeRemaining(),
+    
 );
 
 if (isset($_SESSION["user"])) {

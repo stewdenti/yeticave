@@ -1,8 +1,11 @@
 <?php
+//инициализируем сессию
 session_start();
-//разлогинить пользователя
-unset($_SESSION['user']);
-
+//сбрасываем все переменные
+session_unset();
+//разрушаем сессию
+session_destroy();
+//перенапровляем на главную страницу
 header("Location: /index.php");
 
 

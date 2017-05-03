@@ -51,10 +51,13 @@ function getCategories()
 }
 
 //поиск пользователя по email
-function searchUserByKey($find_value,$search_in_key, $array)
+//$find_value искомое значение
+//$search_in_key переменная, указывающая в каком ключе массива искать значение
+//$massif переменная, укзывающая в каком массиве происходит поиск
+function searchUserByKey($find_value, $search_in_key, $massif)
 {
     $result = null;
-    foreach ($array as $user) {
+    foreach ($massif as $user) {
         if ($user[$search_in_key] == $find_value) {
             $result = $user;
             break;
