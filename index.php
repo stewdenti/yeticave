@@ -2,13 +2,25 @@
 include ('functions.php');
 include ('arrayLot.php');
 
-$data = array (
+session_start();
+$data = array(
     "categories_equipment" => getCategories(),
-    "announcement_list"    => $announcement_list,
+    "announcement_list" => $announcement_list,
     "lot_time_remaining" => getLotTimeRemaining(),
+    
 );
 
-echo connectTemplates("templates/header.php", array());
+if (isset($_SESSION["user"])) {
+   $header_data = array ("username"=>$_SESSION["user"]);
+
+} else {
+   $header_data = array();
+}
+
+
+echo connectTemplates("templates/header.php", $header_data);
 echo connectTemplates("templates/main.php", $data);
 echo connectTemplates("templates/footer.php", array());
+
+
 ?>

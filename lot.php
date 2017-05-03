@@ -8,6 +8,23 @@ $bets = [
          ['name' => 'Семён', 'price' => 10000, 'ts' => strtotime('last week')],
          ['name' => 'Евгений', 'price' => 10500, 'ts' => strtotime( '-' . rand(25, 50) .' hour')]
          ];
+
+session_start();
+$data = array (
+    "bets" => $bets,
+//    "lot_item" => $lot_item,
+);
+
+
+if (isset($_SESSION["user"])) {
+    $header_data = array ("username"=>$_SESSION["user"]);
+    $data["username"] = $_SESSION["user"];
+} else {
+    $header_data = array();
+}
+
+
+
 /**
  * @param $time
  */
@@ -32,6 +49,7 @@ function formatTime ($time)
 }
 $lot_item = "";
 
+
 //цикл поиск запрошенного лота
 
 foreach ($announcement_list as $key => $value) {
@@ -41,19 +59,19 @@ foreach ($announcement_list as $key => $value) {
     }
 }
 
+
+
 if ($lot_item == "") {
     header("HTTP/1.1 404 Not Found");
     echo "<h1>404 Страница не найдена</h1>";
     exit ();
+} else {
+    $data["lot_item"] = $lot_item;
 }
 
-$data = array (
-    "bets" => $bets,
-    "lot_item" => $lot_item,
-);
 
 
-echo connectTemplates("templates/header-lot.php", array());
+echo connectTemplates("templates/header.php", $header_data);
 echo connectTemplates("templates/main-lot.php", $data);
 echo connectTemplates("templates/footer.php", array());
 
