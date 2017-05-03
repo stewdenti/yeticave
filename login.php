@@ -24,6 +24,7 @@ if (isset($_POST["send"])) {
                 session_start();
                 $_SESSION['user'] = $user["name"];
                 header("Location: /index.php");//если пароль верен, отправляем пользователя на главную стр
+                exit();
             } else {
                 $error["wrong_password"] = "Вы ввели не верный пароль";
                 $error["password"] = True;
