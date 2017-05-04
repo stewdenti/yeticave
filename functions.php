@@ -65,3 +65,23 @@ function searchUserByKey($find_value, $search_in_key, $allUsers)
     }
     return $result;
 }
+
+function formatTime ($time)
+{
+    $td = time()- $time;
+
+    if ($td > 86400){
+        return date("d.m.y в H:i", $time);
+    } elseif ($td < 86400 && $td >= 3600){
+        $th = date("G", mktime(0, 0, $td));
+        if ($th == 1 || $th == 21){
+            return $th." час назад";
+        } elseif ($th == 2 || $th == 3 || $th == 4 ) {
+            return $th." часа назад";
+        }else {
+            return $th . " часов назад";
+        }
+    } else {
+        return date("i", mktime(0, 0, $td))." минут назад";
+    }
+}

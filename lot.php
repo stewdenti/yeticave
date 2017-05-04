@@ -10,6 +10,7 @@ $bets = [
          ];
 
 session_start();
+
 $data = array (
     "bets" => $bets,
 //    "lot_item" => $lot_item,
@@ -23,43 +24,14 @@ if (isset($_SESSION["user"])) {
     $header_data = array();
 }
 
-
-
-/**
- * @param $time
- */
-function formatTime ($time)
-{
-    $td = time()- $time;
-
-    if ($td > 86400){
-        return date("d.m.y в H:i", $time);
-    } elseif ($td < 86400 && $td >= 3600){
-        $th = date("G", mktime(0, 0, $td));
-        if ($th == 1 || $th == 21){
-            return $th." час назад";
-        } elseif ($th == 2 || $th == 3 || $th == 4 ) {
-            return $th." часа назад";
-        }else {
-            return $th . " часов назад";
-        }
-    } else {
-        return date("i", mktime(0, 0, $td))." минут назад";
-    }
-}
 $lot_item = "";
-
-
 //цикл поиск запрошенного лота
-
 foreach ($announcement_list as $key => $value) {
-    if ($value["id"] == $_GET["id"]) {
+    if ($value["id"] == $_REQUEST["id"]) {
         $lot_item = $value;
         break;
     }
 }
-
-
 
 if ($lot_item == "") {
     header("HTTP/1.1 404 Not Found");
@@ -70,11 +42,71 @@ if ($lot_item == "") {
 }
 
 
+/**
+ * @param $time
+ */
 
-echo connectTemplates("templates/header.php", $header_data);
-echo connectTemplates("templates/main-lot.php", $data);
-echo connectTemplates("templates/footer.php", array());
+if (isset($_POST["send"])) {
+    $time  = time();
+    $costs = ['cost', 'id'];
+    $error = [];
+    $form_item = [];
+    foreach ($costs as $key) {
+        if (!empty($_POST[$key]) || $_POST[$key] === "0") {
+            $form_item[$key] = htmlspecialchars($_POST[$key]);
+        } else {
+            $error[$key] = "Не заполнено";
+        }
+    }
+    if (!$error) {
+        if (!is_numeric($form_item['cost'])) {
+                $error['cost'] = "Запоните ставку в виде числа";
+        } else {
+            $form_item['time'] = $time;
 
+            if (isset($_COOKIE["lot_bind"])){
+                $serel_lot_item = $_COOKIE["lot_bind"];
+                $lot_bind = json_decode($serel_lot_item, true);
+                $lot_bind[$form_item["id"]] = array("cost"=>$form_item["cost"],"time"=>$form_item["time"]);
+                $serel_form_item = json_encode( $lot_bind);
+                setcookie('lot_bind', $serel_form_item, strtotime("+30 days"));
+            } else {
+                $lot_bind[$form_item["id"]] = array("cost"=>$form_item["cost"],"time"=>$form_item["time"]);
+                $serel_form_item = json_encode($lot_bind);
+                setcookie('lot_bind', $serel_form_item, strtotime("+30 days"));
+            }
+
+
+
+            header("Location: /mylots.php");
+            exit();
+        }
+
+
+    }
+    if ($error){
+        $data['error'] = $error;
+        echo connectTemplates("templates/header.php", $header_data);
+        echo connectTemplates("templates/main-lot.php", $data);
+        echo connectTemplates("templates/footer.php", array());
+    }
+
+} else {
+    if (isset($_COOKIE["lot_bind"])) {
+        $serel_lot_item = $_COOKIE["lot_bind"];
+        $lot_bind = json_decode($serel_lot_item, true);
+        foreach ($lot_bind as $key=>$value) {
+            if ($key == $_REQUEST["id"] ) {
+                $data["bind_done"] = true;
+                break;
+            }
+        }
+    }
+
+    echo connectTemplates("templates/header.php", $header_data);
+    echo connectTemplates("templates/main-lot.php", $data);
+    echo connectTemplates("templates/footer.php", array());
+}
 ?>
 
 
