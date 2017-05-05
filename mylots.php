@@ -8,7 +8,9 @@ if (isset($_SESSION["user"])) {
     $header_data = array ("username"=>$_SESSION["user"]);
     $data["username"] = $_SESSION["user"];
 } else {
-    $header_data = array();
+    header("HTTP/1.1 403 Forbidden");
+    echo "Доступ закрыт для анонимных пользователей";
+    exit();
 }
 
 $serelized_lot_item = $_COOKIE["lot_bind"];
