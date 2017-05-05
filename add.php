@@ -70,8 +70,12 @@ if (isset($_POST["send"])) {
     echo connectTemplates("templates/footer.php", array());
 
 } else {
+    $data = array (
+        "error"=>array(),
+        "lot_item" => array()
+    );
     echo connectTemplates("templates/header.php", $header_data);
-    echo connectTemplates("templates/form.php", array());
+    echo connectTemplates("templates/form.php", $data);
     echo connectTemplates("templates/footer.php", array());
 }
 ?>

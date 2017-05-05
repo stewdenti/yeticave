@@ -105,6 +105,7 @@ if (isset($_POST["send"])) {
             }
         }
     }
+    $data ["error"] = array();
 
     echo connectTemplates("templates/header.php", $header_data);
     echo connectTemplates("templates/main-lot.php", $data);

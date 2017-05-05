@@ -1,5 +1,4 @@
-
-<form class="form container <?php if ($error):?>form--invalid<?php endif; ?>" action="/login.php" method="post"> <!-- form--invalid -->
+<form class="form container <?php if (!empty($error)):?>form--invalid<?php endif; ?>" action="/login.php" method="post"> <!-- form--invalid -->
     <h2>Вход</h2>
     <div class="form__item <?php printInvalidItemClass($error, 'email'); ?>"> <!-- form__item--invalid -->
         <label for="email">E-mail*</label>

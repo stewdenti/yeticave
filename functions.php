@@ -1,5 +1,5 @@
 <?php
-
+$data = array();
 //Функция подключения шаблонов через буферизацию
 function connectTemplates ($filename, $data)
 {
@@ -96,7 +96,7 @@ function getMaxBet($search_in)
         }
     }
     return $result;
-    
+
 }
 
 //функция выводит класс при наличии ошибки
