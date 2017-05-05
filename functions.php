@@ -87,24 +87,29 @@ function formatTime ($time)
 }
 
 // Возвращает максимальную ставку по лоту в виде числа
-function getMaxBet(array $bets)
+function getMaxBet($search_in)
 {
-    $res =0;
-    $intermediate_array = [];
-    foreach ($bets as $key) {
-      foreach ($key as  $ikey => $value){
-          if ($ikey == "price") {
-              $intermediate_array[] = $key[$ikey];
-          }
-      }
+    $result = 0;
+    foreach ($search_in as $bet){
+        if ($bet['price'] > $result) {
+            $result = $bet['price'];
+        }
     }
-    $res =(int)max($intermediate_array);
-    return $res;
+    return $result;
+    
 }
 
-//функция возвращающая время в настоящем
-function Today()
+//функция выводит класс при наличии ошибки
+function printInvalidItemClass($errors, $name)
 {
-    $res = date("H:i:s");
-    return $res;
+    if (isset($errors[$name])) {
+        echo "form__item--invalid";
+    }
+}
+//
+function printInputItemValue($item, $name)
+{
+    if (!empty($item[$name])) {
+        echo $item[$name];
+    }
 }

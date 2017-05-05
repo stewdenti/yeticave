@@ -1,18 +1,4 @@
-<?php
 
-    function printInvalidItemClass($errors, $name)
-    {
-        if (isset($errors[$name])) {
-            echo "form__item--invalid";
-        }
-    }
-function printInputItemValue($item, $name)
-{
-    if (!empty($item[$name])) {
-        echo $item[$name];
-    }
-}
-?>
 <form class="form form--add-lot container <?php if ($error):?>form--invalid<?php endif; ?>" action="/add.php" method="post" enctype="multipart/form-data"> <!-- form--invalid -->
     <h2>Добавление лота</h2>
     <div class="form__container-two">

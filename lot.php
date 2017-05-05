@@ -52,7 +52,7 @@ if (isset($_POST["send"])) {
     $error = [];
     $form_item = [];
     foreach ($lotFields as $key) {
-        if (!empty($_POST[$key])) {
+        if (!empty($_POST[$key]) || $_POST[$key]=== "0") {
             $form_item[$key] = htmlspecialchars($_POST[$key]);
         } else {
             $error[$key] = "Заполните ставку";
