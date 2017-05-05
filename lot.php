@@ -48,32 +48,35 @@ if ($lot_item == "") {
 
 if (isset($_POST["send"])) {
     $time  = time();
-    $costs = ['cost', 'id'];
+    $lotFields = ['cost', 'id'];
     $error = [];
     $form_item = [];
-    foreach ($costs as $key) {
-        if (!empty($_POST[$key]) || $_POST[$key] === "0") {
+    foreach ($lotFields as $key) {
+        if (!empty($_POST[$key])) {
             $form_item[$key] = htmlspecialchars($_POST[$key]);
         } else {
-            $error[$key] = "Не заполнено";
+            $error[$key] = "Заполните ставку";
         }
     }
     if (!$error) {
+        $maxBet = getMaxBet($bets);
         if (!is_numeric($form_item['cost'])) {
-                $error['cost'] = "Запоните ставку в виде числа";
+            $error['cost'] = "Заполните ставку в виде числа";
+        } else if ((int)$form_item['cost'] < $maxBet) {
+            $error['cost'] = "Ставка должна быть больше ".$maxBet;
         } else {
             $form_item['time'] = $time;
 
-            if (isset($_COOKIE["lot_bind"])){
-                $serel_lot_item = $_COOKIE["lot_bind"];
-                $lot_bind = json_decode($serel_lot_item, true);
-                $lot_bind[$form_item["id"]] = array("cost"=>$form_item["cost"],"time"=>$form_item["time"]);
-                $serel_form_item = json_encode( $lot_bind);
-                setcookie('lot_bind', $serel_form_item, strtotime("+30 days"));
+            if (isset($_COOKIE["lot_bind"])) {
+                $serelized_lot_item = $_COOKIE["lot_bind"];
+                $lot_bind = json_decode($serelized_lot_item, true);
+                $lot_bind[$form_item["id"]] = array("cost" => $form_item["cost"],"time" => $form_item["time"]);
+                $serelized_form_item = json_encode( $lot_bind);
+                setcookie('lot_bind', $serelized_form_item, strtotime("+30 days"));
             } else {
-                $lot_bind[$form_item["id"]] = array("cost"=>$form_item["cost"],"time"=>$form_item["time"]);
-                $serel_form_item = json_encode($lot_bind);
-                setcookie('lot_bind', $serel_form_item, strtotime("+30 days"));
+                $lot_bind[$form_item["id"]] = array("cost" => $form_item["cost"],"time" => $form_item["time"]);
+                $serelized_form_item = json_encode($lot_bind);
+                setcookie('lot_bind', $serelized_form_item, strtotime("+30 days"));
             }
 
 
@@ -84,7 +87,7 @@ if (isset($_POST["send"])) {
 
 
     }
-    if ($error){
+    if ($error) {
         $data['error'] = $error;
         echo connectTemplates("templates/header.php", $header_data);
         echo connectTemplates("templates/main-lot.php", $data);
@@ -95,7 +98,7 @@ if (isset($_POST["send"])) {
     if (isset($_COOKIE["lot_bind"])) {
         $serel_lot_item = $_COOKIE["lot_bind"];
         $lot_bind = json_decode($serel_lot_item, true);
-        foreach ($lot_bind as $key=>$value) {
+        foreach ($lot_bind as $key => $value) {
             if ($key == $_REQUEST["id"] ) {
                 $data["bind_done"] = true;
                 break;

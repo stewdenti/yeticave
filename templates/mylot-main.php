@@ -25,4 +25,3 @@
         <?php endforeach;?>
         </table>
 </section>
-</main>

@@ -11,14 +11,14 @@ if (isset($_SESSION["user"])) {
     $header_data = array();
 }
 
-$serel_lot_item = $_COOKIE["lot_bind"];
+$serelized_lot_item = $_COOKIE["lot_bind"];
 
-$lot_bind = json_decode($serel_lot_item, true);
+$lot_bind = json_decode($serelized_lot_item, true);
 
 
 $lot_bind_data = array();
 
-foreach ($lot_bind as $bind_key=>$bind_value) {
+foreach ($lot_bind as $bind_key => $bind_value) {
     foreach ($announcement_list as $key => $value) {
         if ($value["id"] == $bind_key) {
             $lot_item = $value;

@@ -1,3 +1,18 @@
+<?php
+function printInvalidItemClass($errors, $name)
+{
+    if (isset($errors[$name])) {
+        echo "form__item--invalid";
+    }
+}
+function printInputItemValue($item, $name)
+{
+    if (!empty($item[$name])) {
+        echo $item[$name];
+    }
+}
+?>
+
 <main>
     <nav class="nav">
         <ul class="nav__list container">
@@ -41,11 +56,11 @@
                     равнодушным.</p>
             </div>
             <div class="lot-item__right">
-                <?php if (isset($username)&&(!isset($bind_done))): ?>
+                <?php if (isset($username) && (!isset($bind_done))): ?>
 
                 <div class="lot-item__state">
                     <div class="lot-item__timer timer">
-                        10:54:12
+                        <?=Today() ?>
                     </div>
                     <div class="lot-item__cost-state">
                         <div class="lot-item__rate">
@@ -56,11 +71,12 @@
                             Мин. ставка <span>12 000 р</span>
                         </div>
                     </div>
-                    <form class="lot-item__form" action="/lot.php" method="post">
-                        <p class="lot-item__form-item">
+                    <form class="lot-item__form <?php if ($error):?>form--invalid<?php endif; ?>" action="/lot.php" method="post">
+                        <p class="lot-item__form-item  <?php printInvalidItemClass($error, 'cost'); ?>">
                             <label for="cost">Ваша ставка</label>
                             <input id="cost" type="number" name="cost" placeholder="12 000">
                             <input type="hidden" name="id" value="<?=$lot_item['id'] ?>">
+                            <span class="form__error"><?php if (isset($error["cost"])) {print($error["cost"]); } ?></span>
                         </p>
                         <button type="submit" class="button"  name="send">Сделать ставку</button>
                     </form>
