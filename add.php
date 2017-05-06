@@ -2,14 +2,7 @@
 include ('functions.php');
 session_start();
 
-if (isset($_SESSION["user"])) {
-    $header_data = array ("username"=>$_SESSION["user"]);
-
-} else {
-    header("HTTP/1.1 403 Forbidden");
-    echo "Доступ закрыт для анонимных пользователей";
-    exit();
-}
+$header_data['username'] = requireAuthentication();
 
 if (isset($_POST["send"])) {
     $lot_item = array();
@@ -54,6 +47,7 @@ if (isset($_POST["send"])) {
     $data = array (
         "categories_equipment" => getCategories(),
         "lot_time_remaining" => getLotTimeRemaining(),
+        "announcement_list" => getLots(),
     );
 
     echo connectTemplates("templates/header.php", $header_data);
@@ -64,14 +58,25 @@ if (isset($_POST["send"])) {
     }
     else {
         $lot_item["category"] = getCategories()[$lot_item["category"]-1] ;
-        $data["announcement_list"] = array ( $lot_item);
+        //использвуется шаблон  main.php для которого нужны переменные
+        // $data["announcement_list"] чтобы отобразить в цикле и поля как в изнаально заданном
+        // $announcement_list, возвращаемого теперь функцией getLots()
+        $lot_item["title"] = $lot_item["lot-name"];
+        $lot_item["id"] = count(getLots());
+
+        array_unshift($data["announcement_list"],$lot_item);
+
         echo connectTemplates("templates/main.php", $data);
     }
     echo connectTemplates("templates/footer.php", array());
 
 } else {
+    $data = array (
+        "error"=>array(),
+        "lot_item" => array()
+    );
     echo connectTemplates("templates/header.php", $header_data);
-    echo connectTemplates("templates/form.php", array());
+    echo connectTemplates("templates/form.php", $data);
     echo connectTemplates("templates/footer.php", array());
 }
 ?>

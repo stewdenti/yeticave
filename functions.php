@@ -1,5 +1,4 @@
 <?php
-
 //Функция подключения шаблонов через буферизацию
 function connectTemplates ($filename, $data)
 {
@@ -50,6 +49,42 @@ function getCategories()
     return ["Доски и лыжи", "Крепления", "Ботинки", "Одежда", "Инструменты", "Разное"];
 }
 
+
+function getLots ()
+{
+    return array(
+        "announcement_1" => array('title' => "2014 Rossignol District Snowboard",
+            'category' => "Доски и лыжи",
+            'price' => "10999",
+            'URL-img' => "/img/lot-1.jpg",
+            'id' => "0"),
+        "announcement_2" => array('title'=>"DC Ply Mens 2016/2017 Snowboard",
+            'category' => "Доски и лыжи",
+            'price' => "159999",
+            'URL-img' => "/img/lot-2.jpg",
+            'id' => "1"),
+        "announcement_3" => array('title'=>"Крепления Union Contact Pro 2015 года размер L/XL",
+            'category' => "Крепления",
+            'price' => "8000",
+            'URL-img' => "/img/lot-3.jpg",
+            'id' => "2"),
+        "announcement_4" => array('title'=>"Ботинки для сноуборда DC Mutiny Charocal",
+            'category' => "Ботинки",
+            'price' => "10999",
+            'URL-img' => "/img/lot-4.jpg",
+            'id' => "3"),
+        "announcement_5" => array('title'=>"Куртка для сноуборда DC Mutiny Charocal",
+            'category' => "Одежда",
+            'price' => "7500",
+            'URL-img' => "/img/lot-5.jpg",
+            'id' => "4"),
+        "announcement_6" => array('title'=>"Маска Oakley Canopy",
+            'category' => "Разное",
+            'price' => "5400",
+            'URL-img' => "/img/lot-6.jpg",
+            'id' => "5")
+    );
+}
 //поиск пользователя по email
 //$find_value искомое значение
 //$search_in_key переменная, указывающая в каком ключе массива искать значение
@@ -64,4 +99,76 @@ function searchUserByKey($find_value, $search_in_key, $allUsers)
         }
     }
     return $result;
+}
+
+function formatTime ($time)
+{
+    $td = time() - $time;
+
+    if ($td > 86400) {
+        return date("d.m.y в H:i", $time);
+    } elseif ($td < 86400 && $td >= 3600){
+        $th = date("G", mktime(0, 0, $td));
+        if ($th == 1 || $th == 21){
+            return $th." час назад";
+        } elseif ($th == 2 || $th == 3 || $th == 4 ) {
+            return $th." часа назад";
+        } else {
+            return $th . " часов назад";
+        }
+    } else {
+        return date("i", mktime(0, 0, $td))." минут назад";
+    }
+}
+
+// Возвращает максимальную ставку по лоту в виде числа
+function getMaxBet($search_in)
+{
+    $result = 0;
+    foreach ($search_in as $bet){
+        if ($bet['price'] > $result) {
+            $result = $bet['price'];
+        }
+    }
+    return $result;
+
+}
+
+//функция выводит класс при наличии ошибки
+function printInvalidItemClass($errors, $name)
+{
+    if (isset($errors[$name])) {
+        echo "form__item--invalid";
+    }
+}
+//
+function printInputItemValue($item, $name)
+{
+    if (!empty($item[$name])) {
+        echo $item[$name];
+    }
+}
+//функция проверяет произведена ли аутентификация на сайте
+function requireAuthentication()
+{
+    if (isset($_SESSION["user"])) {
+        $header_data = array ("username"=>$_SESSION["user"]);
+        return $_SESSION["user"];
+    } else {
+        header("HTTP/1.1 403 Forbidden");
+        echo "Доступ закрыт для анонимных пользователей";
+        exit();
+    }
+}
+
+//поиск лота по id
+function findLotById($array_search_in, $id)
+{
+    foreach ($array_search_in as $key => $value) {
+        if ($value["id"] == $id) {
+            return $value;
+        }
+    }
+
+    return null;
 }

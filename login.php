@@ -35,26 +35,14 @@ if (isset($_POST["send"])) {
         }
 
     }
-
     $data["error"] = $error;
-
-    echo connectTemplates("templates/header.php", array());
-    echo connectTemplates("templates/main-login.php", $data);
-    echo connectTemplates("templates/footer.php", array());
-
 } else {
-
-    $data = array(
-        "categories_equipment" => getCategories(),
-        "announcement_list" => $announcement_list,
-        "lot_time_remaining" => getLotTimeRemaining(),
-    );
-    echo connectTemplates("templates/header.php", array());
-    echo connectTemplates("templates/main-login.php", $data);
-    echo connectTemplates("templates/footer.php", array());
+    $data = array ("error"=>array());
 }
 
-
+echo connectTemplates("templates/header.php", array());
+echo connectTemplates("templates/main-login.php", $data);
+echo connectTemplates("templates/footer.php", array());
 
 
 ?>

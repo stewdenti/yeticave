@@ -27,13 +27,11 @@
         <div class="lots__header">
             <h2>Открытые лоты</h2>
             <select class="lots__select">
-
                 <option>Все категории</option>
                 <?php foreach ($categories_equipment as $value):?>
                     <option><?=$value?></option>
                 <?php endforeach;?>
             </select>
-
         </div>
         <ul class="lots__list">
             <?php foreach ($announcement_list as $key =>$value):if (isset($announcement_list)) {
