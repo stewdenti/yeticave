@@ -47,7 +47,7 @@ if (isset($_POST["send"])) {
     $data = array (
         "categories_equipment" => getCategories(),
         "lot_time_remaining" => getLotTimeRemaining(),
-        "announcement_list" => array ()
+        "announcement_list" => getLots(),
     );
 
     echo connectTemplates("templates/header.php", $header_data);
