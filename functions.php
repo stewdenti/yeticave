@@ -1,5 +1,4 @@
 <?php
-$data = array();
 //Функция подключения шаблонов через буферизацию
 function connectTemplates ($filename, $data)
 {
@@ -50,6 +49,41 @@ function getCategories()
     return ["Доски и лыжи", "Крепления", "Ботинки", "Одежда", "Инструменты", "Разное"];
 }
 
+
+function getLots ()
+{
+    return array("announcement_1" => array('title' => "2014 Rossignol District Snowboard",
+        'category' => "Доски и лыжи",
+        'price' => "10999",
+        'URL-img' => "/img/lot-1.jpg",
+        'id' => "0"),
+        "announcement_2" => array('title'=>"DC Ply Mens 2016/2017 Snowboard",
+            'category' => "Доски и лыжи",
+            'price' => "159999",
+            'URL-img' => "/img/lot-2.jpg",
+            'id' => "1"),
+        "announcement_3" => array('title'=>"Крепления Union Contact Pro 2015 года размер L/XL",
+            'category' => "Крепления",
+            'price' => "8000",
+            'URL-img' => "/img/lot-3.jpg",
+            'id' => "2"),
+        "announcement_4" => array('title'=>"Ботинки для сноуборда DC Mutiny Charocal",
+            'category' => "Ботинки",
+            'price' => "10999",
+            'URL-img' => "/img/lot-4.jpg",
+            'id' => "3"),
+        "announcement_5" => array('title'=>"Куртка для сноуборда DC Mutiny Charocal",
+            'category' => "Одежда",
+            'price' => "7500",
+            'URL-img' => "/img/lot-5.jpg",
+            'id' => "4"),
+        "announcement_6" => array('title'=>"Маска Oakley Canopy",
+            'category' => "Разное",
+            'price' => "5400",
+            'URL-img' => "/img/lot-6.jpg",
+            'id' => "5")
+    );
+}
 //поиск пользователя по email
 //$find_value искомое значение
 //$search_in_key переменная, указывающая в каком ключе массива искать значение
@@ -112,4 +146,29 @@ function printInputItemValue($item, $name)
     if (!empty($item[$name])) {
         echo $item[$name];
     }
+}
+//функция проверяет есть ли такой пользоваетль
+function requireAuthentication()
+{
+    if (isset($_SESSION["user"])) {
+        $header_data = array ("username"=>$_SESSION["user"]);
+        return $_SESSION["user"];
+    } else {
+        header("HTTP/1.1 403 Forbidden");
+        echo "Доступ закрыт для анонимных пользователей";
+        exit();
+    }
+}
+
+//поиск лота по id
+function findLotById($array_search_in, $id)
+{
+    foreach ($array_search_in as $key => $value) {
+        if ($value["id"] == $id) {
+            $lot_item = $value;
+            break;
+        }
+    }
+
+    return $lot_item;
 }

@@ -1,6 +1,6 @@
 <?php
 include ('functions.php');
-include ('arrayLot.php');
+
 // ставки пользователей, которыми заполняется  таблица
 $bets = [
          ['name' => 'Иван', 'price' => 11500, 'ts' => strtotime('-' . rand(1, 50) .' minute')],
@@ -26,7 +26,7 @@ if (isset($_SESSION["user"])) {
 
 $lot_item = "";
 //цикл поиск запрошенного лота
-foreach ($announcement_list as $key => $value) {
+foreach (getLots() as $key => $value) {
     if ($value["id"] == $_REQUEST["id"]) {
         $lot_item = $value;
         break;
@@ -41,10 +41,6 @@ if ($lot_item == "") {
     $data["lot_item"] = $lot_item;
 }
 
-
-/**
- * @param $time
- */
 
 if (isset($_POST["send"])) {
     $time  = time();
@@ -96,8 +92,7 @@ if (isset($_POST["send"])) {
 
 } else {
     if (isset($_COOKIE["lot_bind"])) {
-        $serel_lot_item = $_COOKIE["lot_bind"];
-        $lot_bind = json_decode($serel_lot_item, true);
+        $lot_bind = json_decode($_COOKIE["lot_bind"], true);
         foreach ($lot_bind as $key => $value) {
             if ($key == $_REQUEST["id"] ) {
                 $data["bind_done"] = true;

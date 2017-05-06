@@ -1,11 +1,10 @@
 <?php 
 include ('functions.php');
-include ('arrayLot.php');
 
 session_start();
 $data = array(
     "categories_equipment" => getCategories(),
-    "announcement_list" => $announcement_list,
+    "announcement_list" => getLots(),
     "lot_time_remaining" => getLotTimeRemaining(),
     
 );

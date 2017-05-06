@@ -2,14 +2,7 @@
 include ('functions.php');
 session_start();
 
-if (isset($_SESSION["user"])) {
-    $header_data = array ("username"=>$_SESSION["user"]);
-
-} else {
-    header("HTTP/1.1 403 Forbidden");
-    echo "Доступ закрыт для анонимных пользователей";
-    exit();
-}
+$header_data['username'] = requireAuthentication();
 
 if (isset($_POST["send"])) {
     $lot_item = array();
@@ -64,6 +57,8 @@ if (isset($_POST["send"])) {
     }
     else {
         $lot_item["category"] = getCategories()[$lot_item["category"]-1] ;
+        $lot_item["title"] = $lot_item["lot-name"];
+        $lot_item["id"] = 6;
         $data["announcement_list"] = array ( $lot_item);
         echo connectTemplates("templates/main.php", $data);
     }
