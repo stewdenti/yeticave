@@ -12,17 +12,16 @@ if (!empty($_COOKIE["lot_bind"])) {
     $lot_bind = json_decode($_COOKIE["lot_bind"], true);
 
     foreach ($lot_bind as $bind_key => $bind_value) {
-        $lot_item = findLotById(getLots(), $bind_key);
-
-        $lot_bind_data[] = array (
-            "rates_id" => $bind_key,
-            "rates_title" => $lot_item["title"],
-            "rates_img" => $lot_item["URL-img"],
-            "rates_category" => $lot_item["category"],
-            "rates_price" => $bind_value["cost"],
-            "rates_time" => formatTime($bind_value["time"])
-        );
-
+        if ($lot_item = findLotById(getLots(), $bind_key)) {
+            $lot_bind_data[] = array(
+                "rates_id" => $bind_key,
+                "rates_title" => $lot_item["title"],
+                "rates_img" => $lot_item["URL-img"],
+                "rates_category" => $lot_item["category"],
+                "rates_price" => $bind_value["cost"],
+                "rates_time" => formatTime($bind_value["time"])
+            );
+        }
 
     }
 

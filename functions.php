@@ -52,11 +52,12 @@ function getCategories()
 
 function getLots ()
 {
-    return array("announcement_1" => array('title' => "2014 Rossignol District Snowboard",
-        'category' => "Доски и лыжи",
-        'price' => "10999",
-        'URL-img' => "/img/lot-1.jpg",
-        'id' => "0"),
+    return array(
+        "announcement_1" => array('title' => "2014 Rossignol District Snowboard",
+            'category' => "Доски и лыжи",
+            'price' => "10999",
+            'URL-img' => "/img/lot-1.jpg",
+            'id' => "0"),
         "announcement_2" => array('title'=>"DC Ply Mens 2016/2017 Snowboard",
             'category' => "Доски и лыжи",
             'price' => "159999",
@@ -147,7 +148,7 @@ function printInputItemValue($item, $name)
         echo $item[$name];
     }
 }
-//функция проверяет есть ли такой пользоваетль
+//функция проверяет произведена ли аутентификация на сайте
 function requireAuthentication()
 {
     if (isset($_SESSION["user"])) {
@@ -165,10 +166,9 @@ function findLotById($array_search_in, $id)
 {
     foreach ($array_search_in as $key => $value) {
         if ($value["id"] == $id) {
-            $lot_item = $value;
-            break;
+            return $value;
         }
     }
 
-    return $lot_item;
+    return null;
 }
