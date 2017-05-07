@@ -47,3 +47,5 @@ CREATE TABLE IF NOT EXISTS `users` (
 
 CREATE INDEX user_id ON binds(user_id);
 CREATE INDEX lot_id ON binds(lot_id);
+CREATE INDEX category_id ON lots(category_id);
+
