@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS `binds` (
   `price` INT  unsigned NOT NULL COMMENT 'user bind for lot',
   `date` DATETIME NOT NULL,
   PRIMARY KEY (`id`)
+
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='сделанные ставки для лотов';
 
 CREATE TABLE IF NOT EXISTS `categories` (
@@ -44,3 +45,5 @@ CREATE TABLE IF NOT EXISTS `users` (
   UNIQUE KEY `email` (`email`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Хранение данных о пользователях';
 
+CREATE INDEX user_id ON binds(user_id);
+CREATE INDEX lot_id ON binds(lot_id);
