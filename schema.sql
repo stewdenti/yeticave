@@ -8,7 +8,6 @@ CREATE TABLE IF NOT EXISTS `binds` (
   `price` INT  unsigned NOT NULL COMMENT 'user bind for lot',
   `date` DATETIME NOT NULL,
   PRIMARY KEY (`id`)
-
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='сделанные ставки для лотов';
 
 CREATE TABLE IF NOT EXISTS `categories` (
@@ -41,11 +40,11 @@ CREATE TABLE IF NOT EXISTS `users` (
   `name` VARCHAR(250) NOT NULL COMMENT 'user name',
   `contacts` VARCHAR(250) NOT NULL COMMENT 'user contancts',
   `avatar_img` VARCHAR(250) DEFAULT 'img/anon.jpg' COMMENT 'path to user avatar image',
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `email` (`email`)
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Хранение данных о пользователях';
 
 CREATE INDEX user_id ON binds(user_id);
 CREATE INDEX lot_id ON binds(lot_id);
 CREATE INDEX category_id ON lots(category_id);
+CREATE UNIQUE INDEX `email` ON users(`email`);
 
