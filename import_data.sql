@@ -1,10 +1,10 @@
-INSERT INTO `categories` (`id`, `name`) VALUES
-  (1, 'Доски и лыжи'),
-  (2, 'Крепления'),
-  (3, 'Ботинки'),
-  (4, 'Одежда'),
-  (5, 'Инструменты'),
-  (6, 'Разное');
+INSERT INTO `categories` (`name`) VALUES
+  ('Доски и лыжи'),
+  ('Крепления'),
+  ('Ботинки'),
+  ('Одежда'),
+  ('Инструменты'),
+  ('Разное');
 
   INSERT INTO `users` (`id`, `email`, `password`, `name`, `contacts`, `avatar_img`) VALUES
   (1, 'ignat.v@gmail.com', '$2y$10$OqvsKHQwr0Wk6FMZDoHo1uHoXd4UdxJG/5UDtUiie00XaxMHrW8ka', 'Игнат', '88005555555', 'img/anon.jpg'),
