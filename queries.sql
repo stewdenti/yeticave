@@ -3,13 +3,13 @@ SELECT * FROM categories;
 
 //получить самые новые, открытые лоты. Каждый лот должен включать название, стартовую цену, ссылку на изображение,
 //цену, количество ставок, название категории;
-SELECT lots.`name`, `initial_price`, `image`, `categories`.`name` AS 'category', COUNT(DISTINCT bets.id) AS bets, MAX(bets.`amount`) AS price
+SELECT lots.`name`, `start_price`, `image`, `categories`.`name` AS 'category', COUNT(DISTINCT bets.id) AS bets, MAX(bets.`amount`) AS price
 FROM lots
 JOIN `categories`
 ON lots.`category_id` = `categories`.id
 JOIN bets
 ON lots.id = bets.`lot_id`
-WHERE `completion_date` > NOW()
+WHERE `completion_date` > NOW() AND `winner` IS NULL
 GROUP BY lots.id
 ORDER BY lots.created_date DESC;
 
@@ -39,7 +39,7 @@ VALUE ("Super-Board 2017",
        "1");
 
 //обновить название лота по его идентификатору;
-UPDATE lots SET `name` = '' WHERE `id` = '';
+UPDATE lots SET `name` = '2014 Rossignol District Snowboard' WHERE `id` = '1';
 
 //добавить новую ставку для лота;
 INSERT INTO `bets` (`created_date`,
@@ -52,4 +52,4 @@ VALUE (NOW(),
        "7");
 
 //получить список ставок для лота по его идентификатору.
-SELECT * FROM bets WHERE `lot_id` = '';
+SELECT * FROM bets WHERE `lot_id` = '3';
