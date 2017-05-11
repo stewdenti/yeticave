@@ -48,3 +48,7 @@ CREATE INDEX lot_id ON binds(lot_id);
 CREATE INDEX category_id ON lots(category_id);
 CREATE UNIQUE INDEX `email` ON users(`email`);
 
+
+
+
+
