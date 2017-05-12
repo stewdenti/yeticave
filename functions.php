@@ -174,65 +174,73 @@ function findLotById($array_search_in, $id)
     return null;
 }
 
-//Функция для получения данных
-function dataRetrieval($con, $sql, $unit_data_sql)
+//Функция для получения данных. Функция возвращает простой, двумерный массив с данными из БД
+function dataRetrieval($con, $sql, $unitDataSql)
 {
-    $result_array = [];
+    $resultArray = [];
 
-    $sql_ready = db_get_prepare_stmt($con, $sql, $unit_data_sql);
-    if (!mysqli_stmt_execute($sql_ready)) {
+    $sqlReady = db_get_prepare_stmt($con, $sql, $unitDataSql);
 
-        return $result_array;
-    }
-    $result = mysqli_stmt_get_result($sql_ready);
+    if (!$sqlReady) return $resultArray;
+    
+    $result = mysqli_stmt_get_result($sqlReady);
     if ($result) {
         while ($row = mysqli_fetch_array($result, MYSQLI_NUM)) {
-            $result_array[] = $row;
+            $resultArray[] = $row;
         }
-        return $result_array;
-    } else {
-
-        return $result_array;
     }
-}
-
-//Функция для вставки данных
-function dataInsertion($con, $sql, $unit_data_sql)
-{
-    $sql_ready = db_get_prepare_stmt($con, $sql, $unit_data_sql);
-    if (mysqli_stmt_execute($sql_ready)) {
-       return  mysqli_stmt_insert_id($sql_ready);
-    } else {
-      return false;
-    }
+    mysqli_stmt_close($sqlReady);
+    return $resultArray;
 
 }
 
-//Функция для обновления данных
+//Функция для вставки данных, которая возвращает идентификатор последней добавленной записи
 
-function dataUpdate($con, $name_table, $unit_updated_data, $unit_data_conditions)
+function dataInsertion($con, $sql, $unitDataSql)
 {
-    $updating_fields = "";
-    $updating_values = [];
+    $sqlReady = db_get_prepare_stmt($con, $sql, $unitDataSql);
+    if (!$sqlReady) return false;
 
-    foreach ($unit_updated_data as $key => $value) {
-        $updating_fields .= "`$key`=?, ";
-        $updating_values[] = $value;
-    }
+    if (mysqli_stmt_execute($sqlReady)) {
+        $result = mysqli_stmt_insert_id($sqlReady);
 
-    $updating_fields = substr($updating_fields, 0, -2);
-
-    $where_field = array_keys($unit_data_conditions)[0];
-    $updating_values[] =array_values($unit_data_conditions)[0];
-
-    $sql = "UPDATE `$name_table` SET $updating_fields WHERE `$where_field`=?;";
-
-    $sql_ready = db_get_prepare_stmt($con, $sql, $updating_values);
-
-    if (mysqli_stmt_execute($sql_ready)) {
-        return  mysqli_stmt_affected_rows($sql_ready);
     } else {
-        return false;
+        $result = false;
     }
+    mysqli_stmt_close($sqlReady);
+    return $result;
+
+}
+
+//Функция для обновления данных, которая возвращает количество обновлённых записей.
+
+function dataUpdate($con, $nameTable, $unitUpdatedData, $unitDataConditions)
+{
+    $updatingFields = "";
+    $updatingValues = [];
+
+    foreach ($unitUpdatedData as $key => $value) {
+        $updatingFields .= "`$key`=?, ";
+        $updatingValues[] = $value;
+    }
+
+    $updatingFields = substr($updatingFields, 0, -2);
+
+    $whereField = array_keys($unitDataConditions)[0];
+    $updatingValues[] = array_values($unitDataConditions)[0];
+
+    $sql = "UPDATE `$nameTable` SET $updatingFields WHERE `$whereField`=?;";
+
+    $sqlReady = db_get_prepare_stmt($con, $sql, $updatingValues);
+
+    if (!$sqlReady) return false;
+    if (mysqli_stmt_execute($sqlReady)) {
+        $result = mysqli_stmt_affected_rows($sqlReady);
+
+    } else {
+        $result = false;
+    }
+    mysqli_stmt_close($sqlReady);
+    return $result;
 
 }
