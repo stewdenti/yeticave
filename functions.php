@@ -1,4 +1,5 @@
 <?php
+include "mysql_helper.php";
 //Функция подключения шаблонов через буферизацию
 function connectTemplates ($filename, $data)
 {
@@ -171,4 +172,75 @@ function findLotById($array_search_in, $id)
     }
 
     return null;
+}
+
+//Функция для получения данных. Функция возвращает простой, двумерный массив с данными из БД
+function dataRetrieval($con, $sql, $unitDataSql)
+{
+    $resultArray = [];
+
+    $sqlReady = db_get_prepare_stmt($con, $sql, $unitDataSql);
+
+    if (!$sqlReady) return $resultArray;
+    
+    $result = mysqli_stmt_get_result($sqlReady);
+    if ($result) {
+        while ($row = mysqli_fetch_array($result, MYSQLI_NUM)) {
+            $resultArray[] = $row;
+        }
+    }
+    mysqli_stmt_close($sqlReady);
+    return $resultArray;
+
+}
+
+//Функция для вставки данных, которая возвращает идентификатор последней добавленной записи
+
+function dataInsertion($con, $sql, $unitDataSql)
+{
+    $sqlReady = db_get_prepare_stmt($con, $sql, $unitDataSql);
+    if (!$sqlReady) return false;
+
+    if (mysqli_stmt_execute($sqlReady)) {
+        $result = mysqli_stmt_insert_id($sqlReady);
+
+    } else {
+        $result = false;
+    }
+    mysqli_stmt_close($sqlReady);
+    return $result;
+
+}
+
+//Функция для обновления данных, которая возвращает количество обновлённых записей.
+
+function dataUpdate($con, $nameTable, $unitUpdatedData, $unitDataConditions)
+{
+    $updatingFields = "";
+    $updatingValues = [];
+
+    foreach ($unitUpdatedData as $key => $value) {
+        $updatingFields .= "`$key`=?, ";
+        $updatingValues[] = $value;
+    }
+
+    $updatingFields = substr($updatingFields, 0, -2);
+
+    $whereField = array_keys($unitDataConditions)[0];
+    $updatingValues[] = array_values($unitDataConditions)[0];
+
+    $sql = "UPDATE `$nameTable` SET $updatingFields WHERE `$whereField`=?;";
+
+    $sqlReady = db_get_prepare_stmt($con, $sql, $updatingValues);
+
+    if (!$sqlReady) return false;
+    if (mysqli_stmt_execute($sqlReady)) {
+        $result = mysqli_stmt_affected_rows($sqlReady);
+
+    } else {
+        $result = false;
+    }
+    mysqli_stmt_close($sqlReady);
+    return $result;
+
 }
