@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS `lots` (
   `user_id` INT  unsigned NOT NULL COMMENT 'user id',
   `category_id` INT  unsigned NOT NULL COMMENT 'category id',
   `name` VARCHAR(2500) NOT NULL COMMENT 'lot name (title)',
-  `descriptioin` TEXT COMMENT 'lot desc',
+  `description` TEXT COMMENT 'lot desc',
   `img_path` VARCHAR(250) NOT NULL COMMENT 'lot image path',
   `start_price` INT  NOT NULL DEFAULT '0' COMMENT 'start price of lot',
   `step` INT  NOT NULL DEFAULT '0' COMMENT 'bind step',

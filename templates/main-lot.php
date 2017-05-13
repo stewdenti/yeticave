@@ -1,51 +1,29 @@
 <main>
     <nav class="nav">
         <ul class="nav__list container">
-            <li class="nav__item">
-                <a href="">Доски и лыжи</a>
-            </li>
-            <li class="nav__item">
-                <a href="">Крепления</a>
-            </li>
-            <li class="nav__item">
-                <a href="">Ботинки</a>
-            </li>
-            <li class="nav__item">
-                <a href="">Одежда</a>
-            </li>
-            <li class="nav__item">
-                <a href="">Инструменты</a>
-            </li>
-            <li class="nav__item">
-                <a href="">Разное</a>
-            </li>
+            <?php foreach ($categories_equipment as $value):?>
+                <li class="nav__item">
+                    <a href="/index.php?id=<?=$value[0]?>"><?=$value[1]?></a>
+                </li>
+            <?php endforeach;?>
         </ul>
     </nav>
     <section class="lot-item container">
-        <h2><?=$lot_item['title']?></h2>
+        <h2><?=$lot_item['name']?></h2>
         <div class="lot-item__content">
             <div class="lot-item__left">
                 <div class="lot-item__image">
                     <img src="<?=$lot_item['URL-img'] ?>" width="730" height="548" alt="Сноуборд">
                 </div>
-                <p class="lot-item__category">Категория: <span>Доски и лыжи</span></p>
-                <p class="lot-item__description">Легкий маневренный сноуборд, готовый дать жару в любом парке, растопив
-                    снег
-                    мощным щелчком и четкими дугами. Стекловолокно Bi-Ax, уложенное в двух направлениях, наделяет этот
-                    снаряд
-                    отличной гибкостью и отзывчивостью, а симметричная геометрия в сочетании с классическим прогибом
-                    кэмбер
-                    позволит уверенно держать высокие скорости. А если к концу катального дня сил совсем не останется,
-                    просто
-                    посмотрите на Вашу доску и улыбнитесь, крутая графика от Шона Кливера еще никого не оставляла
-                    равнодушным.</p>
+                <p class="lot-item__category">Категория: <span><?=$lot_item["category"]?></span></p>
+                <p class="lot-item__description"><?=$lot_item["description"]?></p>
             </div>
             <div class="lot-item__right">
                 <?php if (isset($username) && (!isset($bind_done))): ?>
 
                 <div class="lot-item__state">
                     <div class="lot-item__timer timer">
-                       <?=getLotTimeRemaining()?>
+                       <?=$lot_item["end_date"]?>
                     </div>
                     <div class="lot-item__cost-state">
                         <div class="lot-item__rate">
@@ -53,7 +31,7 @@
                             <span class="lot-item__cost"><?=$lot_item['price'] ?></span>
                         </div>
                         <div class="lot-item__min-cost">
-                            Мин. ставка <span>12 000 р</span>
+                            Мин. ставка <span><?php echo $lot_item["price"]+$lot_item["step"]?></span>
                         </div>
                     </div>
                     <form class="lot-item__form <?php if ($error):?>form--invalid<?php endif; ?>" action="/lot.php" method="post">
@@ -68,14 +46,14 @@
                 </div>
                 <?php endif; ?>
                 <div class="history">
-                    <h3>История ставок (<span>4</span>)</h3>
+                    <h3>История ставок (<span><?=count($bets)?></span>)</h3>
                     <!-- заполните эту таблицу данными из массива $bets-->
                     <table class="history__list">
                         <?php foreach ($bets as $key =>$value):?>
                             <tr class="history__item">
-                                <td class="history__name"><?=$value['name']?></td>
-                                <td class="history__price"><?=$value['price']?> р</td>
-                                <td class="history__time"><?=formatTime($value['ts']);?></td>
+                                <td class="history__name"><?=$value[0]?></td>
+                                <td class="history__price"><?=$value[1]?> р</td>
+                                <td class="history__time"><?=formatTime($value[2]);?></td>
                             </tr>
                         <?php endforeach; ?>
                     </table>

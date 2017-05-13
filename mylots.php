@@ -4,34 +4,46 @@ include ('functions.php');
 
 session_start();
 
-$header_data['username'] = requireAuthentication();
 
+$header_data = requireAuthentication();
+
+if (!$link = create_connect()) {
+    echo mysqli_connect_errno();
+    exit ();
+}
+$categories = getCategories($link);
+$data_footer["categories_equipment"] = $categories;
+
+
+$sql = "SELECT lots.id, lots.name, lots.img_path, categories.name AS category, binds.price, binds.date, lots.end_date 
+FROM lots
+JOIN binds on binds.lot_id=lots.id
+JOIN categories on lots.category_id=categories.id
+WHERE binds.user_id=? AND lots.start_price !=binds.price AND `end_date` > NOW()";
+
+$result = dataRetrieval($link,$sql,[$_SESSION["user_id"]]);
+
+$fields = ["rates_id","rates_title","rates_img","rates_category","rates_price","rates_time","rates_timer"];
 $lot_bind_data = array();
 
-if (!empty($_COOKIE["lot_bind"])) {
-    $lot_bind = json_decode($_COOKIE["lot_bind"], true);
-
-    foreach ($lot_bind as $bind_key => $bind_value) {
-        if ($lot_item = findLotById(getLots(), $bind_key)) {
-            $lot_bind_data[] = array(
-                "rates_id" => $bind_key,
-                "rates_title" => $lot_item["title"],
-                "rates_img" => $lot_item["URL-img"],
-                "rates_category" => $lot_item["category"],
-                "rates_price" => $bind_value["cost"],
-                "rates_time" => formatTime($bind_value["time"])
-            );
-        }
-
+foreach ($result as $row) {
+    $i=0;
+    $lot_bind=[];
+    foreach ($fields as $key) {
+        $lot_bind[$key] = $row[$i];
+        $i++;
     }
-
+    $lot_bind_data[] = $lot_bind;
 }
 
 $data["rates"] = $lot_bind_data;
 
+
+
+
 echo connectTemplates("templates/header.php", $header_data);
 echo connectTemplates("templates/mylot-main.php", $data);
-echo connectTemplates("templates/footer.php", array());
+echo connectTemplates("templates/footer.php", $data_footer);
 
 
 

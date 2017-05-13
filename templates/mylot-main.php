@@ -13,13 +13,13 @@
                 <?=$value["rates_category"]?>
             </td>
             <td class="rates__timer">
-                <div class="timer timer--finishing">07:13:34</div>
+                <div class="timer timer--finishing"><?=$value["rates_timer"]?></div>
             </td>
             <td class="rates__price">
                 <?=$value["rates_price"]?> р
             </td>
             <td class="rates__time">
-                <?=$value["rates_time"]?>
+                <?=formatTime($value["rates_time"])?>
             </td>
         </tr>
         <?php endforeach;?>

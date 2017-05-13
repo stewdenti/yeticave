@@ -11,11 +11,11 @@
             <label for="category">Категория</label>
             <select id="category" name="category">
                 <option value="">Выберите категорию</option>
-                <?php foreach (getCategories() as $key => $value) {
-                    if (isset($lot_item['category']) && $lot_item['category']-1==$key) {
-                        echo "<option value=\"".($key+1)."\" selected>".$value."</option>";
+                <?php foreach ($categories_equipment as $value) {
+                    if (isset($lot_item['category']) && $lot_item['category']==$value[0]) {
+                        echo "<option value=\"".$value[0]."\" selected>".$value[1]."</option>";
                     } else {
-                        echo "<option value=\"".($key+1)."\">".$value."</option>";
+                        echo "<option value=\"".$value[0]."\">".$value[1]."</option>";
                     }
                 } ?>
             </select>

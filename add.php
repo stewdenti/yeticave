@@ -2,7 +2,18 @@
 include ('functions.php');
 session_start();
 
-$header_data['username'] = requireAuthentication();
+$header_data = requireAuthentication();
+
+if (!$link = create_connect()) {
+    echo mysqli_connect_errno();
+    exit ();
+}
+
+$categories = getCategories($link);
+
+$data_footer["categories_equipment"] = $categories;
+
+
 
 if (isset($_POST["send"])) {
     $lot_item = array();
@@ -19,7 +30,7 @@ if (isset($_POST["send"])) {
             $error[$key] = "Заполните это поле";
         }
     }
-    
+
     foreach ($expectedNumericFields as $key) {
         if (!empty($_POST[$key]) && is_numeric($_POST[$key])) {
             $lot_item[$key] = $_POST[$key];
@@ -43,40 +54,69 @@ if (isset($_POST["send"])) {
         $error["lot-img"] = "файл не выбран";
     }
 
+    if (strtotime($lot_item["lot-date"]) < time()) {
+        $error["lot-date"] = "Неверно задана дата окончания";
+    }
+
     //в зависимости от выполнения условий в if, подключаем разные шаблоны
     $data = array (
-        "categories_equipment" => getCategories(),
-        "lot_time_remaining" => getLotTimeRemaining(),
-        "announcement_list" => getLots(),
+        "categories_equipment" => $categories,
+
     );
 
-    echo connectTemplates("templates/header.php", $header_data);
+
     if ($error) {
         $data["error"] = $error;        
         $data["lot_item"] = $lot_item;
+        echo connectTemplates("templates/header.php", $header_data);
         echo connectTemplates("templates/form.php", $data);
+        echo connectTemplates("templates/footer.php", $data_footer);
     }
     else {
-        $lot_item["category"] = getCategories()[$lot_item["category"]-1] ;
-        //использвуется шаблон  main.php для которого нужны переменные
-        // $data["announcement_list"] чтобы отобразить в цикле и поля как в изнаально заданном
-        // $announcement_list, возвращаемого теперь функцией getLots()
-        $lot_item["title"] = $lot_item["lot-name"];
-        $lot_item["id"] = count(getLots());
+        $sql = "INSERT lots SET 
+user_id = ?,
+category_id=?,
+name=?,
+description=?,
+img_path=?,
+start_price=?,
+step=?,
+end_date=?,
+add_date=NOW(),
+winner=0
+";
 
-        array_unshift($data["announcement_list"],$lot_item);
+    $lot_id = dataInsertion($link, $sql, [
+        $_SESSION["user_id"],
+        $lot_item["category"],
+        $lot_item["lot-name"],
+        $lot_item["message"],
+        $lot_item["URL-img"],
+        $lot_item["price"],
+        $lot_item["lot-step"],
+        date("Y:m:d H:i",strtotime($lot_item["lot-date"]))
+    ]);
+    $sql = " INSERT binds SET
+    user_id=?,
+    lot_id=?,
+    price=?,
+    date=NOW()    
+    ";
+    $result = dataInsertion($link,$sql,[
+        $_SESSION["user_id"], $lot_id, $lot_item["price"]
+    ]);
 
-        echo connectTemplates("templates/main.php", $data);
+    header("Location: /lot.php?id=".$lot_id);
     }
-    echo connectTemplates("templates/footer.php", array());
-
 } else {
     $data = array (
         "error"=>array(),
-        "lot_item" => array()
+        "lot_item" => array(),
+        "categories_equipment" => $categories,
     );
     echo connectTemplates("templates/header.php", $header_data);
     echo connectTemplates("templates/form.php", $data);
-    echo connectTemplates("templates/footer.php", array());
+    echo connectTemplates("templates/footer.php", $data_footer);
 }
+
 ?>

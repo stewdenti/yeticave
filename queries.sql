@@ -3,15 +3,15 @@ SELECT * FROM categories;
 
 //получить самые новые, открытые лоты. Каждый лот должен включать название, стартовую цену, ссылку на изображение,
 //цену, количество ставок, название категории;
-SELECT lots.`name`, `start_price`, `image`, `categories`.`name` AS 'category', COUNT(DISTINCT bets.id) AS bets, MAX(bets.`amount`) AS price
+SELECT lots.`name`, `start_price`, `img_path`, `categories`.`name` AS 'category', COUNT(DISTINCT binds.id) AS bets, MAX(binds.`price`) AS price
 FROM lots
 JOIN `categories`
 ON lots.`category_id` = `categories`.id
-JOIN bets
-ON lots.id = bets.`lot_id`
-WHERE `completion_date` > NOW() AND `winner` IS NULL
+JOIN binds
+ON lots.id = binds.`lot_id`
+WHERE `end_date` > NOW() AND `winner`=0
 GROUP BY lots.id
-ORDER BY lots.created_date DESC;
+ORDER BY lots.add_date DESC;
 
 //найти лот по его названию или описанию;
 SELECT * FROM lots

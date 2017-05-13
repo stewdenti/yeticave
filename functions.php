@@ -45,46 +45,57 @@ function getLotTimeRemaining()
     return date("H:i", mktime(0, 0, $tomorrow - $now));
 }
 
-function getCategories()
+function getCategories($link)
 {
-    return ["Доски и лыжи", "Крепления", "Ботинки", "Одежда", "Инструменты", "Разное"];
+    $sql = "SELECT `id`, `name` FROM categories;";
+    $categories = dataRetrieval($link, $sql, []);
+    return $categories;
+
 }
 
 
-function getLots ()
+function getLots ($link,$id=false)
 {
-    return array(
-        "announcement_1" => array('title' => "2014 Rossignol District Snowboard",
-            'category' => "Доски и лыжи",
-            'price' => "10999",
-            'URL-img' => "/img/lot-1.jpg",
-            'id' => "0"),
-        "announcement_2" => array('title'=>"DC Ply Mens 2016/2017 Snowboard",
-            'category' => "Доски и лыжи",
-            'price' => "159999",
-            'URL-img' => "/img/lot-2.jpg",
-            'id' => "1"),
-        "announcement_3" => array('title'=>"Крепления Union Contact Pro 2015 года размер L/XL",
-            'category' => "Крепления",
-            'price' => "8000",
-            'URL-img' => "/img/lot-3.jpg",
-            'id' => "2"),
-        "announcement_4" => array('title'=>"Ботинки для сноуборда DC Mutiny Charocal",
-            'category' => "Ботинки",
-            'price' => "10999",
-            'URL-img' => "/img/lot-4.jpg",
-            'id' => "3"),
-        "announcement_5" => array('title'=>"Куртка для сноуборда DC Mutiny Charocal",
-            'category' => "Одежда",
-            'price' => "7500",
-            'URL-img' => "/img/lot-5.jpg",
-            'id' => "4"),
-        "announcement_6" => array('title'=>"Маска Oakley Canopy",
-            'category' => "Разное",
-            'price' => "5400",
-            'URL-img' => "/img/lot-6.jpg",
-            'id' => "5")
-    );
+    if ($id && is_numeric($id)) {
+        $id = protectXSS($id);
+        $sql = "SELECT lots.id, lots.`name`, `categories`.`name` AS 'category', MAX( binds.`price`) AS price, `img_path`, `end_date`  
+FROM lots
+JOIN `categories`
+ON lots.`category_id` = `categories`.id
+JOIN binds
+ON lots.id = binds.`lot_id`
+WHERE `end_date` > NOW() AND `winner`=0 AND category_id = ?
+GROUP BY lots.id
+ORDER BY lots.add_date DESC;";
+        $lots_list = dataRetrieval($link, $sql, [$id]);
+    } else {
+        $sql = "SELECT lots.id, lots.`name`, `categories`.`name` AS 'category', MAX( binds.`price`) AS price, `img_path`, `end_date`  
+FROM lots
+JOIN `categories`
+ON lots.`category_id` = `categories`.id
+JOIN binds
+ON lots.id = binds.`lot_id`
+WHERE `end_date` > NOW() AND `winner`=0
+GROUP BY lots.id
+ORDER BY lots.add_date DESC;";
+        $lots_list = dataRetrieval($link, $sql, []);
+    }
+
+    $lots_data = [];
+    foreach ($lots_list as $value) {
+        $lots_data[] = array (
+            "id"=>$value[0],
+            "name"=>$value[1],
+            "category"=>$value[2],
+            "price"=>$value[3],
+            "URL-img"=>$value[4],
+            "time-remaining"=>$value[5]
+        );
+    }
+
+
+    return $lots_data;
+
 }
 //поиск пользователя по email
 //$find_value искомое значение
@@ -102,8 +113,10 @@ function searchUserByKey($find_value, $search_in_key, $allUsers)
     return $result;
 }
 
-function formatTime ($time)
+function formatTime ($date)
 {
+    //т.к. данные в базе хранятся в datetime формате, то приводим их к формату timestamp
+    $time = strtotime($date);
     $td = time() - $time;
 
     if ($td > 86400) {
@@ -123,15 +136,15 @@ function formatTime ($time)
 }
 
 // Возвращает максимальную ставку по лоту в виде числа
-function getMaxBet($search_in)
+function getMaxBet($link,$id)
 {
+
     $result = 0;
-    foreach ($search_in as $bet){
-        if ($bet['price'] > $result) {
-            $result = $bet['price'];
-        }
-    }
-    return $result;
+
+    $sql = "SELECT MAX(price) AS max_price, step FROM binds JOIN lots ON lots.id=binds.lot_id WHERE binds.lot_id=? GROUP BY lots.id;";
+    $result = dataRetrieval($link, $sql, [$id]);
+
+    return $result[0][0]+$result[0][1];
 
 }
 
@@ -152,9 +165,11 @@ function printInputItemValue($item, $name)
 //функция проверяет произведена ли аутентификация на сайте
 function requireAuthentication()
 {
-    if (isset($_SESSION["user"])) {
-        $header_data = array ("username"=>$_SESSION["user"]);
-        return $_SESSION["user"];
+    if (isset($_SESSION["user_name"])) {
+        
+        
+        return array ("username"=>$_SESSION["user_name"],
+            "avatar" => $_SESSION["avatar_img"]);
     } else {
         header("HTTP/1.1 403 Forbidden");
         echo "Доступ закрыт для анонимных пользователей";
@@ -182,9 +197,15 @@ function dataRetrieval($con, $sql, $unitDataSql)
     $sqlReady = db_get_prepare_stmt($con, $sql, $unitDataSql);
 
     if (!$sqlReady) return $resultArray;
-    
-    $result = mysqli_stmt_get_result($sqlReady);
+
+    if (mysqli_stmt_execute($sqlReady)) {
+        $result = mysqli_stmt_get_result($sqlReady);
+    } else {
+        $result = false;
+    }
+
     if ($result) {
+
         while ($row = mysqli_fetch_array($result, MYSQLI_NUM)) {
             $resultArray[] = $row;
         }
@@ -244,3 +265,12 @@ function dataUpdate($con, $nameTable, $unitUpdatedData, $unitDataConditions)
     return $result;
 
 }
+
+function create_connect() {
+    $link = mysqli_connect("localhost", "root", "", "yeticave_db");
+
+    if ($link) return $link; else return false;
+
+
+}
+

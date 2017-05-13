@@ -11,7 +11,7 @@ INSERT INTO `categories` (`name`) VALUES
   ('kitty_93@li.ru', '$2y$10$bWtSjUhwgggtxrnJ7rxmIe63ABubHQs0AS0hgnOo41IEdMHkYoSVa', 'Леночка', '88006666666', 'img/anon.jpg'),
   ('warrior07@mail.ru', '$2y$10$2OxpEH7narYpkOT1H5cApezuzh10tZEEQ2axgFOaKW.55LxIJBgWW', 'Руслан', '88007777777', 'img/anon.jpg');
 
-INSERT INTO `lots` (`user_id`, `category_id`, `name`, `descriptioin`, `img_path`, `start_price`, `step`, `end_date`, `add_date`, `winner`) VALUES
+INSERT INTO `lots` (`user_id`, `category_id`, `name`, `description`, `img_path`, `start_price`, `step`, `end_date`, `add_date`, `winner`) VALUES
   (1, 1, '014 Rossignol District Snowboard', 'NULL', '/img/lot-1.jpg', 10999, 500, '2017-06-06 19:57:41', '2017-05-06 19:57:45', 3),
   (1, 1, 'DC Ply Mens 2016/2017 Snowboard', NULL, '/img/lot-2.jpg', 15999, 1000, '2017-05-15 20:00:32', '2017-05-06 20:00:39', 2),
   (1, 2, 'Крепления Union Contact Pro 2015 года размер L/XL', NULL, '/img/lot-3.jpg', 8000, 500, '2017-05-13 22:02:12', '2017-05-06 20:02:20', 3),

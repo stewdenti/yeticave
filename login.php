@@ -1,6 +1,7 @@
 <?php
 include ('functions.php');
-include ('userdata.php');
+
+
 
 if (isset($_POST["send"])) {
 
@@ -17,12 +18,23 @@ if (isset($_POST["send"])) {
     }
 
     if (!$error) {
+        if (!$link = create_connect()) {
+            echo mysqli_connect_errno();
+            exit ();
+        }
 
-        if ($user = searchUserByKey($form_item["email"],"email", $users)) { //поиск пользователя по email
+        $sql = "SELECT * FROM users WHERE email=?;";
 
-            if (password_verify($form_item["password"], $user['password'])) {//сравнение пароля с хешом пароля в массиве
+
+        if ($user = dataRetrieval($link,$sql,[$form_item["email"]])) { //поиск пользователя по email
+
+            if (password_verify($form_item["password"], $user[0][2])) {//сравнение пароля с хешом пароля в массиве
                 session_start();
-                $_SESSION['user'] = $user["name"];
+                $_SESSION['user_name'] = $user[0][3];
+                $_SESSION["user_email"] = $user[0][1];
+                $_SESSION["user_id"] = $user[0][0];
+                $_SESSION["avatar_img"] = $user[0][5];
+
                 header("Location: /index.php");//если пароль верен, отправляем пользователя на главную стр
                 exit();
             } else {
@@ -39,10 +51,17 @@ if (isset($_POST["send"])) {
 } else {
     $data = array ("error"=>array());
 }
+if (!$link = create_connect()) {
+    echo mysqli_connect_errno();
+    exit ();
+}
+//получение всех категорий
+$categories = getCategories($link);
+$data_footer["categories_equipment"] = $categories;
 
 echo connectTemplates("templates/header.php", array());
 echo connectTemplates("templates/main-login.php", $data);
-echo connectTemplates("templates/footer.php", array());
+echo connectTemplates("templates/footer.php", $data_footer);
 
 
 ?>
