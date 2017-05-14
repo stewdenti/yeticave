@@ -1,11 +1,12 @@
 <?php
 include ('functions.php');
-
-if (!$link = create_connect()) {
+$link= create_connect();
+if (!$link) {
     echo mysqli_connect_errno();
     exit ();
 }
-$categories = getCategories($link);
+
+$categories = getAllCategories($link);
 
 $data_footer["categories_equipment"] = $categories;
 
@@ -42,9 +43,8 @@ if (isset($_POST["send"])) {
             $error["avatar"] = "файл не может быть загружен";
         }
     } else {
-        $form_item["avatar"] = "/img/anon.jpg";
+        $form_item["avatar"] = "/img/user.jpg";
     }
-
 
     if($error) {
         $data["error"] = $error;
@@ -52,38 +52,18 @@ if (isset($_POST["send"])) {
         echo connectTemplates("templates/header.php", array());
         echo connectTemplates("templates/registration-main.php", $data);
         echo connectTemplates("templates/footer.php", $data_footer);
-
      } else {
-
-         $sql = "INSERT users SET 
-            email = ?,
-            password = ?,
-            name = ?,
-            contacts = ?,
-            avatar_img = ?";
-         $unitDataSql = [];
-         foreach ($form_item as $value) {
-             $unitDataSql[] = $value;
-         }
-
-         $user_id = dataInsertion($link, $sql,  $unitDataSql);
+         $user_id = addNewUser($link, $form_item);
          header("Location: /login.php");
      }
-
-
 } else {
     $data = array (
         "error"=>array(),
         "form_item" => array(),
-
     );
     echo connectTemplates("templates/header.php", array());
     echo connectTemplates("templates/registration-main.php", $data);
     echo connectTemplates("templates/footer.php", $data_footer);
 }
-
-
-
-
 
 ?>

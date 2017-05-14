@@ -2,74 +2,49 @@
 include ('functions.php');
 
 // установка и проверка устновки соединения с бд
-
-if (!$link = create_connect()) {
+$link = create_connect();
+if (!$link) {
     echo mysqli_connect_errno();
     exit ();
 }
-//получение всех категорий
-$categories = getCategories($link);
+session_start();
+//Заполняем данные для шаблона header
+$categories = getAllCategories($link);
+$user_data = requireAuthentication();
+$header_data = $user_data;
+$header_data["categories_equipment"] =$categories;
+//заполняем данные для шаблона main
+$data = $user_data;
 $data["categories_equipment"] = $categories;
+//заполняем данные для шаблона footer
 $data_footer["categories_equipment"] = $categories;
 
 
-session_start();
-
-if (isset($_SESSION["user_name"])) {
-    $header_data = array ("username"=>$_SESSION["user_name"],
-        "avatar" => $_SESSION["avatar_img"]);
-    $data["username"] = $_SESSION["user_name"];
-
-
-} else {
-    $header_data = array();
-}
-
-
 // проверка пришел ли id лота и получение данных о лоте  из базы
-$lot_item_list = "";
+$lot_item = "";
 $bets = "";
+$lot_id = $_REQUEST["id"];
 
-if (!empty($_REQUEST["id"]) && is_numeric($_REQUEST["id"])) {
-    $sql = "SELECT lots.id, lots.`name`, `img_path`, `categories`.`name` AS 'category', MAX( binds.`price`) AS price,
-description, step, start_price, end_date
-FROM lots
-JOIN `categories`
-ON lots.`category_id` = `categories`.id
-JOIN binds
-ON lots.id = binds.`lot_id`
-WHERE lots.id = ?
-GROUP BY lots.id";
-    $lot_item_list = dataRetrieval($link, $sql, [$_REQUEST['id']]);
+$data["bind_done"] = false;
+if ($user_data) {
+    $data["bind_done"] = isMakeBindAllowed($link,$lot_id, $user_data["user_id"]);
 }
 
+if (!empty($lot_id) && is_numeric($lot_id)) {
+    $lot_item = getLotByKey($link,"id",$lot_id);
+    $lot_bets = getBetsByLotID($link,$lot_id);
+}
 
-if ($lot_item_list == "") {
+if ($lot_item == "") {
     header("HTTP/1.1 404 Not Found");
     echo "<h1>404 Страница не найдена</h1>";
     exit ();
 } else {
     //подготовка данных их базы для шаблона.
-    $lot_item = [];
-    $template_fields =["id","name","URL-img","category","price","description","step","start_price","end_date"];
-    $i = 0;
-    foreach ($template_fields as $value) {
-        $lot_item[$value] = $lot_item_list[0][$i];
-        $i++;
-    }
-
     $data["lot_item"] = $lot_item;
     //Получение данных о ставках для лота из базы
-    $sql = "SELECT users.name AS name, binds.price, binds.date FROM binds 
-JOIN users ON binds.user_id=users.id 
-JOIN lots ON lots.id = binds.lot_id
-WHERE binds.lot_id=? AND binds.price != lots.start_price
-ORDER BY price DESC";
-    $bets = dataRetrieval($link, $sql, [$_REQUEST['id']]);
-
-    $data["bets"] = $bets;
+    $data["bets"] = $lot_bets;
 }
-
 
 if (isset($_POST["send"])) {
     $time  = time();
@@ -85,15 +60,18 @@ if (isset($_POST["send"])) {
     }
     if (!$error) {
         $maxBet = getMaxBet($link, $form_item["id"]);
-
         if (!is_numeric($form_item['cost'])) {
             $error['cost'] = "Заполните ставку в виде числа";
         } else if ((int)$form_item['cost'] < $maxBet) {
             $error['cost'] = "Ставка должна быть больше ".$maxBet;
         } else {
+            $data = array (
+                "user_id"=>$user_data["user_id"],
+                "lot_id" =>$form_item["id"],
+                "cost"   =>$form_item["cost"]
+            );
 
-            $sql = "INSERT binds SET user_id=?, lot_id=?, price=?, date=NOW();";
-            $result = dataInsertion($link, $sql, [$_SESSION["user_id"], $form_item["id"], $form_item["cost"]]);
+            $result = addNewBind($link, $data);
 
             header("Location: /mylots.php");
         }
@@ -106,23 +84,6 @@ if (isset($_POST["send"])) {
     }
 
 } else {
-
-    if (isset($_SESSION["user_id"])) {
-        $sql = "SELECT COUNT(price) AS number FROM binds 
-JOIN lots ON binds.lot_id=lots.id 
-WHERE lot_id=? AND binds.user_id=? AND binds.price!=lots.start_price";
-        $res = dataRetrieval($link, $sql, [ $_REQUEST['id'], $_SESSION["user_id"] ]);
-    } else {
-        $sql = "SELECT COUNT(price) AS number FROM binds 
-JOIN lots ON binds.lot_id=lots.id 
-WHERE lot_id=? AND binds.price!=lots.start_price";
-        $res = dataRetrieval($link, $sql, [ $_REQUEST['id']]);
-    }
-
-
-    if ($res[0][0] > 0 ) {
-        $data["bind_done"] = true;
-    }
 
     $data ["error"] = array();
 

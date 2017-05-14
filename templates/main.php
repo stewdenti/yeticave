@@ -5,7 +5,7 @@
         <ul class="promo__list">
             <?php foreach ($categories_equipment as $value):?>
                 <li class="promo__item promo__item--boards">
-                    <a class="promo__link" href="/index.php?id=<?=$value[0]?>"><?=$value[1]?></a>
+                    <a class="promo__link" href="/index.php?id=<?=$value['id']?>"><?=$value['name']?></a>
                 </li>
             <?php endforeach;?>
         </ul>
@@ -16,7 +16,7 @@
             <select class="lots__select">
                 <option>Все категории</option>
                 <?php foreach ($categories_equipment as $value):?>
-                    <option value="<?=$value[0]?>"><?=$value[1]?></option>
+                    <option value="<?=$value['id']?>"><?=$value['name']?></option>
                 <?php endforeach;?>
             </select>
         </div>
@@ -25,7 +25,7 @@
                     ?>
                         <li class="lots__item lot">
                             <div class="lot__image">
-                                <img src="<?=$value['URL-img'] ?>" width="350" height="260" alt="Сноуборд">
+                                <img src="<?=$value['img_path'] ?>" width="350" height="260" alt="Сноуборд">
                             </div>
                             <div class="lot__info">
                                 <span class="lot__category"><?=$value['category'] ?></span>
@@ -36,7 +36,7 @@
                                         <span class="lot__cost"><?=$value['price'] ?><b class="rub">р</b></span>
                                     </div>
                                     <div class="lot__timer timer">
-                                        <?=$value["time-remaining"];?>
+                                        <?=$value["end_date"];?>
                                     </div>
                                 </div>
                             </div>

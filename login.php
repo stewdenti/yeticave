@@ -1,10 +1,12 @@
 <?php
 include ('functions.php');
-
-
+$link = create_connect();
+if (!$link) {
+    echo mysqli_connect_errno();
+    exit ();
+}
 
 if (isset($_POST["send"])) {
-
     $loginFormFilds = ['email', 'password'];
     $form_item = array();
     $error = array();
@@ -16,25 +18,15 @@ if (isset($_POST["send"])) {
             $error[$key] = "Не заполнено";
         }
     }
-
     if (!$error) {
-        if (!$link = create_connect()) {
-            echo mysqli_connect_errno();
-            exit ();
-        }
-
-        $sql = "SELECT * FROM users WHERE email=?;";
-
-
-        if ($user = dataRetrieval($link,$sql,[$form_item["email"]])) { //поиск пользователя по email
-
-            if (password_verify($form_item["password"], $user[0][2])) {//сравнение пароля с хешом пароля в массиве
+        $user = getUserByKey($link,"email",$form_item["email"] );
+        if ($user) { //поиск пользователя по email
+            if (password_verify($form_item["password"], $user["password"])) {//сравнение пароля с хешом пароля в массиве
                 session_start();
-                $_SESSION['user_name'] = $user[0][3];
-                $_SESSION["user_email"] = $user[0][1];
-                $_SESSION["user_id"] = $user[0][0];
-                $_SESSION["avatar_img"] = $user[0][5];
-
+                $_SESSION['user_name'] = $user["name"];
+                $_SESSION["user_email"] = $user["email"];
+                $_SESSION["user_id"] = $user["id"];
+                $_SESSION["avatar_img"] = $user["avatar_img"];
                 header("Location: /index.php");//если пароль верен, отправляем пользователя на главную стр
                 exit();
             } else {
@@ -45,23 +37,18 @@ if (isset($_POST["send"])) {
             $error["wrong_username"] = "Пользователья с такием email не существует";
             $error["email"] = True;
         }
-
     }
     $data["error"] = $error;
 } else {
     $data = array ("error"=>array());
 }
-if (!$link = create_connect()) {
-    echo mysqli_connect_errno();
-    exit ();
-}
+
 //получение всех категорий
-$categories = getCategories($link);
+$categories = getAllCategories($link);
 $data_footer["categories_equipment"] = $categories;
 
 echo connectTemplates("templates/header.php", array());
 echo connectTemplates("templates/main-login.php", $data);
 echo connectTemplates("templates/footer.php", $data_footer);
-
 
 ?>

@@ -3,7 +3,7 @@
         <ul class="nav__list container">
             <?php foreach ($categories_equipment as $value):?>
                 <li class="nav__item">
-                    <a href="/index.php?id=<?=$value[0]?>"><?=$value[1]?></a>
+                    <a href="/index.php?id=<?=$value["id"]?>"><?=$value["name"]?></a>
                 </li>
             <?php endforeach;?>
         </ul>
@@ -13,13 +13,13 @@
         <div class="lot-item__content">
             <div class="lot-item__left">
                 <div class="lot-item__image">
-                    <img src="<?=$lot_item['URL-img'] ?>" width="730" height="548" alt="Сноуборд">
+                    <img src="<?=$lot_item['img_path'] ?>" width="730" height="548" alt="Сноуборд">
                 </div>
                 <p class="lot-item__category">Категория: <span><?=$lot_item["category"]?></span></p>
                 <p class="lot-item__description"><?=$lot_item["description"]?></p>
             </div>
             <div class="lot-item__right">
-                <?php if (isset($username) && (!isset($bind_done))): ?>
+                <?php if (isset($username) && $bind_done): ?>
 
                 <div class="lot-item__state">
                     <div class="lot-item__timer timer">
@@ -37,7 +37,7 @@
                     <form class="lot-item__form <?php if ($error):?>form--invalid<?php endif; ?>" action="/lot.php" method="post">
                         <p class="lot-item__form-item  <?php printInvalidItemClass($error, 'cost'); ?>">
                             <label for="cost">Ваша ставка</label>
-                            <input id="cost" type="number" name="cost" placeholder="12 000">
+                            <input id="cost" type="number" name="cost" placeholder="<?php echo $lot_item["price"]+$lot_item["step"]?>">
                             <input type="hidden" name="id" value="<?=$lot_item['id'] ?>">
                             <span class="form__error"><?php if (isset($error["cost"])) {print($error["cost"]); } ?></span>
                         </p>
@@ -51,9 +51,9 @@
                     <table class="history__list">
                         <?php foreach ($bets as $key =>$value):?>
                             <tr class="history__item">
-                                <td class="history__name"><?=$value[0]?></td>
-                                <td class="history__price"><?=$value[1]?> р</td>
-                                <td class="history__time"><?=formatTime($value[2]);?></td>
+                                <td class="history__name"><?=$value["name"]?></td>
+                                <td class="history__price"><?=$value["price"]?> р</td>
+                                <td class="history__time"><?=formatTime($value["date"]);?></td>
                             </tr>
                         <?php endforeach; ?>
                     </table>

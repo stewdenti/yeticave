@@ -12,10 +12,10 @@
             <select id="category" name="category">
                 <option value="">Выберите категорию</option>
                 <?php foreach ($categories_equipment as $value) {
-                    if (isset($lot_item['category']) && $lot_item['category']==$value[0]) {
-                        echo "<option value=\"".$value[0]."\" selected>".$value[1]."</option>";
+                    if (isset($lot_item['category']) && $lot_item['category']==$value["id"]) {
+                        echo "<option value=\"".$value["id"]."\" selected>".$value["name"]."</option>";
                     } else {
-                        echo "<option value=\"".$value[0]."\">".$value[1]."</option>";
+                        echo "<option value=\"".$value["id"]."\">".$value["name"]."</option>";
                     }
                 } ?>
             </select>

@@ -1,19 +1,17 @@
 <?php
 include ('functions.php');
 session_start();
-
-$header_data = requireAuthentication();
-
-if (!$link = create_connect()) {
+$user_data = requireAuthentication(true);
+$header_data = $user_data;
+$link = create_connect();
+if (!$link) {
     echo mysqli_connect_errno();
     exit ();
 }
 
-$categories = getCategories($link);
-
+$categories = getAllCategories($link);
+$data ["categories_equipment"] = $categories;
 $data_footer["categories_equipment"] = $categories;
-
-
 
 if (isset($_POST["send"])) {
     $lot_item = array();
@@ -54,8 +52,8 @@ if (isset($_POST["send"])) {
         $error["lot-img"] = "файл не выбран";
     }
 
-    if (strtotime($lot_item["lot-date"]) < time()) {
-        $error["lot-date"] = "Неверно задана дата окончания";
+    if (!empty($lot_item["lot-date"]) && strtotime($lot_item["lot-date"]) < time()) {
+        $error["lot-date"] = "Время оконачания лота задано в прошлом";
     }
 
     //в зависимости от выполнения условий в if, подключаем разные шаблоны
@@ -73,40 +71,10 @@ if (isset($_POST["send"])) {
         echo connectTemplates("templates/footer.php", $data_footer);
     }
     else {
-        $sql = "INSERT lots SET 
-user_id = ?,
-category_id=?,
-name=?,
-description=?,
-img_path=?,
-start_price=?,
-step=?,
-end_date=?,
-add_date=NOW(),
-winner=0
-";
 
-    $lot_id = dataInsertion($link, $sql, [
-        $_SESSION["user_id"],
-        $lot_item["category"],
-        $lot_item["lot-name"],
-        $lot_item["message"],
-        $lot_item["URL-img"],
-        $lot_item["price"],
-        $lot_item["lot-step"],
-        date("Y:m:d H:i",strtotime($lot_item["lot-date"]))
-    ]);
-    $sql = " INSERT binds SET
-    user_id=?,
-    lot_id=?,
-    price=?,
-    date=NOW()    
-    ";
-    $result = dataInsertion($link,$sql,[
-        $_SESSION["user_id"], $lot_id, $lot_item["price"]
-    ]);
-
-    header("Location: /lot.php?id=".$lot_id);
+        $lot_item["user_id"] = $user_data["user_id"];
+        $lot_id = addNewLot($link,$lot_item);
+        header("Location: /lot.php?id=".$lot_id);
     }
 } else {
     $data = array (
