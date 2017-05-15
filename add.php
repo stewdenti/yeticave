@@ -1,8 +1,7 @@
 <?php
 include ('functions.php');
 session_start();
-$user_data = requireAuthentication(true);
-$header_data = $user_data;
+$header_data = requireAuthentication(true);
 $link = create_connect();
 if (!$link) {
     echo mysqli_connect_errno();
@@ -72,9 +71,10 @@ if (isset($_POST["send"])) {
     }
     else {
 
-        $lot_item["user_id"] = $user_data["user_id"];
+        $lot_item["user_id"] = $_SESSION["user"]["id"];
         $lot_id = addNewLot($link,$lot_item);
         header("Location: /lot.php?id=".$lot_id);
+        exit();
     }
 } else {
     $data = array (

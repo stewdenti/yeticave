@@ -23,10 +23,11 @@ if (isset($_POST["send"])) {
         if ($user) { //поиск пользователя по email
             if (password_verify($form_item["password"], $user["password"])) {//сравнение пароля с хешом пароля в массиве
                 session_start();
-                $_SESSION['user_name'] = $user["name"];
-                $_SESSION["user_email"] = $user["email"];
-                $_SESSION["user_id"] = $user["id"];
-                $_SESSION["avatar_img"] = $user["avatar_img"];
+                $_SESSION["user"] = $user;
+//                $_SESSION['user_name'] = $user["name"];
+//                $_SESSION["user_email"] = $user["email"];
+//                $_SESSION["user_id"] = $user["id"];
+//                $_SESSION["avatar_img"] = $user["avatar_img"];
                 header("Location: /index.php");//если пароль верен, отправляем пользователя на главную стр
                 exit();
             } else {

@@ -66,14 +66,15 @@ if (isset($_POST["send"])) {
             $error['cost'] = "Ставка должна быть больше ".$maxBet;
         } else {
             $data = array (
-                "user_id"=>$user_data["user_id"],
-                "lot_id" =>$form_item["id"],
-                "cost"   =>$form_item["cost"]
+                "user_id" => $user_data["user_id"],
+                "lot_id" => $form_item["id"],
+                "cost" => $form_item["cost"]
             );
 
             $result = addNewBind($link, $data);
 
             header("Location: /mylots.php");
+            exit();
         }
     }
     if ($error) {
@@ -82,15 +83,12 @@ if (isset($_POST["send"])) {
         echo connectTemplates("templates/main-lot.php", $data);
         echo connectTemplates("templates/footer.php", $data_footer);
     }
-
+    // блок else не нужен, т.к. если никаких ошибок не было найдено, то выполнение скрипта завершится раньше.
 } else {
-
     $data ["error"] = array();
 
     echo connectTemplates("templates/header.php", $header_data);
     echo connectTemplates("templates/main-lot.php", $data);
     echo connectTemplates("templates/footer.php", $data_footer);
 }
-
-
     ?>

@@ -70,9 +70,9 @@ function getMaxBet($link, $lot_id)
 {
     $result = 0;
 
-    $sql = "SELECT MAX(price) AS max_price, step FROM binds JOIN lots ON lots.id=binds.lot_id WHERE binds.lot_id=? GROUP BY lots.id;";
-    $result = dataRetrievalAssoc($link, $sql, [$lot_id],true);
-    
+    $sql = "SELECT if(MAX( binds.`price` ), MAX( binds.`price`), start_price) AS max_price, step 
+FROM lots LEFT JOIN binds ON lots.id=binds.lot_id WHERE lots.id=? GROUP BY lots.id ;";
+    $result = dataRetrievalAssoc($link, $sql, [$lot_id], true);
     return $result["max_price"]+$result["step"];
 
 }
@@ -101,11 +101,11 @@ function printInputItemValue($item, $name)
  */
 function requireAuthentication($accessDenied = false)
 {
-    if (isset($_SESSION["user_name"])) {
+    if (isset($_SESSION["user"])) {
     return array (
-        "user_id" => $_SESSION["user_id"],
-        "username"=>$_SESSION["user_name"],
-        "avatar" => $_SESSION["avatar_img"]);
+        "user_id" => $_SESSION["user"]["id"],
+        "username"=>$_SESSION["user"]["name"],
+        "avatar" => $_SESSION["user"]["avatar_img"]);
     } else {
         $not_auth = array();
     }
@@ -228,15 +228,14 @@ function dataRetrievalAssoc($con, $sql, $unitDataSql, $oneRow = false )
  * @return array
  */
 function getAllOpenLots($link){
-    $sql = "SELECT lots.id, lots.`name`, `categories`.`name` AS 'category', MAX( binds.`price`) AS price, `img_path`, `end_date`  
-FROM lots
-JOIN `categories`
-ON lots.`category_id` = `categories`.id
-JOIN binds
-ON lots.id = binds.`lot_id`
-WHERE `end_date` > NOW() AND `winner`=0
-GROUP BY lots.id
-ORDER BY lots.add_date DESC;";
+    $sql = "SELECT lots.id, lots.`name`,`categories`.`name` AS 'category', 
+if (MAX( binds.`price` ), MAX( binds.`price`), start_price) as price, 
+if (COUNT(binds.price) > 0, COUNT(binds.price), 0) as binds_number, 
+`img_path`, `end_date`   
+FROM lots JOIN `categories` ON lots.`category_id` = `categories`.id 
+LEFT JOIN binds ON lots.id = binds.`lot_id` WHERE `end_date` > NOW()
+GROUP BY lots.id ORDER BY lots.add_date DESC
+LIMIT 9;";
     $lots_data = dataRetrievalAssoc($link, $sql, []);
     return $lots_data;
 }
@@ -250,15 +249,16 @@ ORDER BY lots.add_date DESC;";
  */
 function getLotsByCategoryId($link, $category_id) {
     $id = protectXSS($category_id);
-    $sql = "SELECT lots.id, lots.`name`, `categories`.`name` AS 'category', MAX( binds.`price`) AS price, `img_path`, `end_date`  
-FROM lots
-JOIN `categories`
-ON lots.`category_id` = `categories`.id
-JOIN binds
-ON lots.id = binds.`lot_id`
-WHERE `end_date` > NOW() AND `winner`=0 AND category_id = ?
-GROUP BY lots.id
-ORDER BY lots.add_date DESC;";
+    $sql = "SELECT lots.id, lots.`name`,`categories`.`name` AS 'category', 
+if (MAX( binds.`price` ), MAX( binds.`price`), start_price) as price, 
+if (COUNT(binds.price) > 0, COUNT(binds.price), 0) as binds_number, 
+`img_path`, `end_date`   
+FROM lots JOIN `categories` ON lots.`category_id` = `categories`.id 
+LEFT JOIN binds ON lots.id = binds.`lot_id` 
+WHERE `end_date` > NOW() AND category_id = ?
+GROUP BY lots.id ORDER BY lots.add_date DESC
+LIMIT 9;    
+    ";
     $lots_data = dataRetrievalAssoc($link, $sql, [$id]);
     return $lots_data;
 }
@@ -302,13 +302,13 @@ function getUserByKey($link, $key="email", $value=""){
  * @return array|bool
  */
 function getLotByKey($link, $key="id", $value=""){
-    $sql = "SELECT lots.id, lots.`name`, `img_path`, `categories`.`name` AS 'category', MAX( binds.`price`) AS price,
+    $sql = "SELECT lots.id, lots.`name`, `img_path`, `categories`.`name` AS 'category',
+ if (MAX( binds.`price` ), MAX( binds.`price`), start_price) as price, 
 description, step, start_price, end_date
 FROM lots
 JOIN `categories`
 ON lots.`category_id` = `categories`.id
-JOIN binds
-ON lots.id = binds.`lot_id`
+LEFT JOIN binds ON lots.id = binds.`lot_id`
 WHERE lots.$key = ?
 GROUP BY lots.id";
 
@@ -351,8 +351,7 @@ ORDER BY price DESC";
  */
 function  isMakeBindAllowed($link, $lot_id, $user_id) {
     $sql = "SELECT COUNT(price) AS number FROM binds 
-JOIN lots ON binds.lot_id=lots.id 
-WHERE lot_id=? AND binds.user_id=? AND binds.price!=lots.start_price";
+WHERE lot_id=? AND user_id=? ";
 
     $res = dataRetrievalAssoc($link, $sql, [ $lot_id, $user_id],true);
     if ($res["number"] > 0 ) {
@@ -374,7 +373,7 @@ function getAllBindedLotsByUser ($link, $user_id) {
 FROM lots
 JOIN binds on binds.lot_id=lots.id
 JOIN categories on lots.category_id=categories.id
-WHERE binds.user_id=? AND lots.start_price !=binds.price AND `end_date` > NOW()";
+WHERE binds.user_id=? AND `end_date` > NOW()";
 
     $result = dataRetrievalAssoc($link,$sql,[$user_id]);
     return $result;
@@ -389,17 +388,14 @@ WHERE binds.user_id=? AND lots.start_price !=binds.price AND `end_date` > NOW()"
  */
 function addNewLot($link, $data=array()) {
     $sql = "INSERT lots SET user_id = ?, category_id=?, name=?, description=?, img_path=?,
-            start_price=?, step=?, end_date=?, add_date=NOW(), winner=0";
+            start_price=?, step=?, end_date=?, add_date=NOW()";
 
     $lot_id = dataInsertion($link, $sql, [
         $data["user_id"], $data["category"], $data["lot-name"], $data["message"], $data["URL-img"],
         $data["price"], $data["lot-step"], date("Y:m:d H:i",strtotime($data["lot-date"]))
     ]);
 
-    $sql = " INSERT binds SET user_id=?, lot_id=?, price=?, date=NOW()";
-    $result = dataInsertion($link,$sql,[$data["user_id"], $lot_id, $data["price"]]);
-
-    if ($result) return $lot_id; else return false;
+    if ($lot_id) return $lot_id; else return false;
 }
 
 /**

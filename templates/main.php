@@ -32,7 +32,11 @@
                                 <h3 class="lot__title"><a class="text-link" href="/lot.php?id=<?=$value["id"]; ?>"><?=$value['name'] ?></a></h3>
                                 <div class="lot__state">
                                     <div class="lot__rate">
-                                        <span class="lot__amount">Начальная цена</span>
+                                        <?php if ($value["binds_number"]>0): ?>
+                                            <span class="lot__amount"><?=$value["binds_number"]?> ставок</span>
+                                        <?php else: ?>
+                                            <span class="lot__amount">Начальная цена</span>
+                                        <?php endif; ?>
                                         <span class="lot__cost"><?=$value['price'] ?><b class="rub">р</b></span>
                                     </div>
                                     <div class="lot__timer timer">

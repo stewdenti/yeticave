@@ -15,7 +15,7 @@ $header_data = $user_data;
 
 $data_footer["categories_equipment"] = $categories;
 
-$data["rates"] = getAllBindedLotsByUser($link,$user_data["user_id"]);
+$data["rates"] = getAllBindedLotsByUser($link, $user_data["user_id"]);
 
 echo connectTemplates("templates/header.php", $header_data);
 echo connectTemplates("templates/mylot-main.php", $data);

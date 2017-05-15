@@ -11,7 +11,7 @@ if (!$link) {
 $categories_list = getAllCategories($link);
 
 if (!empty($_REQUEST["id"])) {
-    $lots_list = getLotsByCategoryId($link,$_REQUEST["id"]);
+    $lots_list = getLotsByCategoryId($link, $_REQUEST["id"]);
 }else {
     $lots_list = getAllOpenLots($link);
 }

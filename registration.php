@@ -1,6 +1,6 @@
 <?php
 include ('functions.php');
-$link= create_connect();
+$link = create_connect();
 if (!$link) {
     echo mysqli_connect_errno();
     exit ();
@@ -55,6 +55,7 @@ if (isset($_POST["send"])) {
      } else {
          $user_id = addNewUser($link, $form_item);
          header("Location: /login.php");
+         exit();
      }
 } else {
     $data = array (

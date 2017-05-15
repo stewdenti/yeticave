@@ -19,8 +19,6 @@
                 <p class="lot-item__description"><?=$lot_item["description"]?></p>
             </div>
             <div class="lot-item__right">
-                <?php if (isset($username) && $bind_done): ?>
-
                 <div class="lot-item__state">
                     <div class="lot-item__timer timer">
                        <?=$lot_item["end_date"]?>
@@ -34,6 +32,7 @@
                             Мин. ставка <span><?php echo $lot_item["price"]+$lot_item["step"]?></span>
                         </div>
                     </div>
+                    <?php if (isset($username) && $bind_done): ?>
                     <form class="lot-item__form <?php if ($error):?>form--invalid<?php endif; ?>" action="/lot.php" method="post">
                         <p class="lot-item__form-item  <?php printInvalidItemClass($error, 'cost'); ?>">
                             <label for="cost">Ваша ставка</label>
@@ -43,8 +42,9 @@
                         </p>
                         <button type="submit" class="button"  name="send">Сделать ставку</button>
                     </form>
+                    <?php endif; ?>
                 </div>
-                <?php endif; ?>
+
                 <div class="history">
                     <h3>История ставок (<span><?=count($bets)?></span>)</h3>
                     <!-- заполните эту таблицу данными из массива $bets-->
