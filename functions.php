@@ -68,13 +68,10 @@ function formatTime ($date)
  */
 function getMaxBet($link, $lot_id)
 {
-    $result = 0;
-
     $sql = "SELECT if(MAX( binds.`price` ), MAX( binds.`price`), start_price) AS max_price, step 
     FROM lots LEFT JOIN binds ON lots.id=binds.lot_id WHERE lots.id=? GROUP BY lots.id ;";
     $result = dataRetrievalAssoc($link, $sql, [$lot_id], true);
     return $result["max_price"] + $result["step"];
-
 }
 
 //функция выводит класс при наличии ошибки
@@ -106,16 +103,13 @@ function requireAuthentication($accessDenied = false)
             "user_id" => $_SESSION["user"]["id"],
             "username" => $_SESSION["user"]["name"],
             "avatar" => $_SESSION["user"]["avatar_img"]);
-    } else {
-        $not_auth = array();
     }
     if ($accessDenied) {
          header("HTTP/1.1 403 Forbidden");
          echo "Доступ закрыт для анонимных пользователей";
          exit();
-    } else {
-        return $not_auth;
     }
+    return [];
 }
 
 
@@ -124,11 +118,12 @@ function requireAuthentication($accessDenied = false)
 function dataInsertion($con, $sql, $unitDataSql)
 {
     $sqlReady = db_get_prepare_stmt($con, $sql, $unitDataSql);
-    if (!$sqlReady) return false;
+    if (!$sqlReady) {
+        return false;
+    }
 
     if (mysqli_stmt_execute($sqlReady)) {
         $result = mysqli_stmt_insert_id($sqlReady);
-
     } else {
         $result = false;
     }
