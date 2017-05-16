@@ -58,7 +58,6 @@ function formatTime ($date)
     }
 }
 
-
 /**
  * Возвращает минимальную ставку которую должен сделать пользователь
  *
@@ -237,7 +236,7 @@ function getAllOpenLots($link)
     if (COUNT(binds.price) > 0, COUNT(binds.price), 0) as binds_number, 
     `img_path`, `end_date`   
     FROM lots JOIN `categories` ON lots.`category_id` = `categories`.id 
-    LEFT JOIN binds ON lots.id = binds.`lot_id` WHERE `end_date` > NOW()
+    LEFT JOIN binds ON lots.id = binds.`lot_id` WHERE `end_date` > NOW() and winner is NULL 
     GROUP BY lots.id ORDER BY lots.add_date DESC
     LIMIT 9;";
     $lots_data = dataRetrievalAssoc($link, $sql, []);
@@ -260,7 +259,7 @@ function getLotsByCategoryId($link, $category_id)
     `img_path`, `end_date`   
     FROM lots JOIN `categories` ON lots.`category_id` = `categories`.id 
     LEFT JOIN binds ON lots.id = binds.`lot_id` 
-    WHERE `end_date` > NOW() AND category_id = ?
+    WHERE `end_date` > NOW() AND winner is NULL AND category_id = ?
     GROUP BY lots.id ORDER BY lots.add_date DESC
     LIMIT 9;    
     ";

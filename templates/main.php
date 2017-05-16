@@ -40,7 +40,7 @@
                                         <span class="lot__cost"><?=$value['price'] ?><b class="rub">р</b></span>
                                     </div>
                                     <div class="lot__timer timer">
-                                        <?=$value["end_date"];?>
+                                        <?=$value["end_date"]?>
                                     </div>
                                 </div>
                             </div>
