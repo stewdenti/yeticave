@@ -17,7 +17,7 @@ if (isset($_POST["send"])) {
 //проверяем значения глобального массива, куда ушли данные формы после отправки
     foreach ($segnFormFilds as $key) {
         if (!empty($_POST[$key])) {
-            if ($key=="password") {
+            if ($key == "password") {
                 $form_item[$key] = password_hash($_POST[$key],PASSWORD_BCRYPT);
             } else {
                 $form_item[$key] = htmlspecialchars($_POST[$key]);
@@ -59,7 +59,7 @@ if (isset($_POST["send"])) {
      }
 } else {
     $data = array (
-        "error"=>array(),
+        "error" => array(),
         "form_item" => array(),
     );
     echo connectTemplates("templates/header.php", array());

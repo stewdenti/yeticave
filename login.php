@@ -24,10 +24,6 @@ if (isset($_POST["send"])) {
             if (password_verify($form_item["password"], $user["password"])) {//сравнение пароля с хешом пароля в массиве
                 session_start();
                 $_SESSION["user"] = $user;
-//                $_SESSION['user_name'] = $user["name"];
-//                $_SESSION["user_email"] = $user["email"];
-//                $_SESSION["user_id"] = $user["id"];
-//                $_SESSION["avatar_img"] = $user["avatar_img"];
                 header("Location: /index.php");//если пароль верен, отправляем пользователя на главную стр
                 exit();
             } else {
@@ -41,7 +37,7 @@ if (isset($_POST["send"])) {
     }
     $data["error"] = $error;
 } else {
-    $data = array ("error"=>array());
+    $data = array ("error" => array());
 }
 
 //получение всех категорий

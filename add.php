@@ -78,7 +78,7 @@ if (isset($_POST["send"])) {
     }
 } else {
     $data = array (
-        "error"=>array(),
+        "error" => array(),
         "lot_item" => array(),
         "categories_equipment" => $categories,
     );

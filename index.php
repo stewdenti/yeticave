@@ -24,7 +24,7 @@ $data = array(
 );
 
 $footer_data = array (
-    "categories_equipment"=>$categories_list,
+    "categories_equipment" => $categories_list,
 );
 
 echo connectTemplates("templates/header.php", $header_data);
