@@ -1,9 +1,12 @@
 <?php
 include ('functions.php');
-include ('userdata.php');
+$link = create_connect();
+if (!$link) {
+    echo mysqli_connect_errno();
+    exit ();
+}
 
 if (isset($_POST["send"])) {
-
     $loginFormFilds = ['email', 'password'];
     $form_item = array();
     $error = array();
@@ -15,14 +18,12 @@ if (isset($_POST["send"])) {
             $error[$key] = "Не заполнено";
         }
     }
-
     if (!$error) {
-
-        if ($user = searchUserByKey($form_item["email"],"email", $users)) { //поиск пользователя по email
-
-            if (password_verify($form_item["password"], $user['password'])) {//сравнение пароля с хешом пароля в массиве
+        $user = getUserByKey($link,"email",$form_item["email"] );
+        if ($user) { //поиск пользователя по email
+            if (password_verify($form_item["password"], $user["password"])) {//сравнение пароля с хешом пароля в массиве
                 session_start();
-                $_SESSION['user'] = $user["name"];
+                $_SESSION["user"] = $user;
                 header("Location: /index.php");//если пароль верен, отправляем пользователя на главную стр
                 exit();
             } else {
@@ -33,16 +34,18 @@ if (isset($_POST["send"])) {
             $error["wrong_username"] = "Пользователья с такием email не существует";
             $error["email"] = True;
         }
-
     }
     $data["error"] = $error;
 } else {
-    $data = array ("error"=>array());
+    $data = array ("error" => array());
 }
+
+//получение всех категорий
+$categories = getAllCategories($link);
+$data_footer["categories_equipment"] = $categories;
 
 echo connectTemplates("templates/header.php", array());
 echo connectTemplates("templates/main-login.php", $data);
-echo connectTemplates("templates/footer.php", array());
-
+echo connectTemplates("templates/footer.php", $data_footer);
 
 ?>

@@ -1,8 +1,16 @@
 <?php
 include ('functions.php');
 session_start();
+$header_data = requireAuthentication(true);
+$link = create_connect();
+if (!$link) {
+    echo mysqli_connect_errno();
+    exit ();
+}
 
-$header_data['username'] = requireAuthentication();
+$categories = getAllCategories($link);
+$data ["categories_equipment"] = $categories;
+$data_footer["categories_equipment"] = $categories;
 
 if (isset($_POST["send"])) {
     $lot_item = array();
@@ -19,7 +27,7 @@ if (isset($_POST["send"])) {
             $error[$key] = "Заполните это поле";
         }
     }
-    
+
     foreach ($expectedNumericFields as $key) {
         if (!empty($_POST[$key]) && is_numeric($_POST[$key])) {
             $lot_item[$key] = $_POST[$key];
@@ -43,40 +51,40 @@ if (isset($_POST["send"])) {
         $error["lot-img"] = "файл не выбран";
     }
 
+    if (!empty($lot_item["lot-date"]) && strtotime($lot_item["lot-date"]) < time()) {
+        $error["lot-date"] = "Время оконачания лота задано в прошлом";
+    }
+
     //в зависимости от выполнения условий в if, подключаем разные шаблоны
     $data = array (
-        "categories_equipment" => getCategories(),
-        "lot_time_remaining" => getLotTimeRemaining(),
-        "announcement_list" => getLots(),
+        "categories_equipment" => $categories,
+
     );
 
-    echo connectTemplates("templates/header.php", $header_data);
+
     if ($error) {
         $data["error"] = $error;        
         $data["lot_item"] = $lot_item;
+        echo connectTemplates("templates/header.php", $header_data);
         echo connectTemplates("templates/form.php", $data);
+        echo connectTemplates("templates/footer.php", $data_footer);
     }
     else {
-        $lot_item["category"] = getCategories()[$lot_item["category"]-1] ;
-        //использвуется шаблон  main.php для которого нужны переменные
-        // $data["announcement_list"] чтобы отобразить в цикле и поля как в изнаально заданном
-        // $announcement_list, возвращаемого теперь функцией getLots()
-        $lot_item["title"] = $lot_item["lot-name"];
-        $lot_item["id"] = count(getLots());
 
-        array_unshift($data["announcement_list"],$lot_item);
-
-        echo connectTemplates("templates/main.php", $data);
+        $lot_item["user_id"] = $_SESSION["user"]["id"];
+        $lot_id = addNewLot($link,$lot_item);
+        header("Location: /lot.php?id=".$lot_id);
+        exit();
     }
-    echo connectTemplates("templates/footer.php", array());
-
 } else {
     $data = array (
-        "error"=>array(),
-        "lot_item" => array()
+        "error" => array(),
+        "lot_item" => array(),
+        "categories_equipment" => $categories,
     );
     echo connectTemplates("templates/header.php", $header_data);
     echo connectTemplates("templates/form.php", $data);
-    echo connectTemplates("templates/footer.php", array());
+    echo connectTemplates("templates/footer.php", $data_footer);
 }
+
 ?>

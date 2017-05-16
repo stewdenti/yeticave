@@ -35,75 +35,11 @@ function protectXSS($data)
 
 }
 
-// возвращает оставшееся время до начала следующих суток
-function getLotTimeRemaining()
-{
-    // временная метка для полночи следующего дня
-    $tomorrow = strtotime('tomorrow midnight');
-    // временная метка для настоящего времени
-    $now = time();
-    return date("H:i", mktime(0, 0, $tomorrow - $now));
-}
 
-function getCategories()
+function formatTime ($date)
 {
-    return ["Доски и лыжи", "Крепления", "Ботинки", "Одежда", "Инструменты", "Разное"];
-}
-
-
-function getLots ()
-{
-    return array(
-        "announcement_1" => array('title' => "2014 Rossignol District Snowboard",
-            'category' => "Доски и лыжи",
-            'price' => "10999",
-            'URL-img' => "/img/lot-1.jpg",
-            'id' => "0"),
-        "announcement_2" => array('title'=>"DC Ply Mens 2016/2017 Snowboard",
-            'category' => "Доски и лыжи",
-            'price' => "159999",
-            'URL-img' => "/img/lot-2.jpg",
-            'id' => "1"),
-        "announcement_3" => array('title'=>"Крепления Union Contact Pro 2015 года размер L/XL",
-            'category' => "Крепления",
-            'price' => "8000",
-            'URL-img' => "/img/lot-3.jpg",
-            'id' => "2"),
-        "announcement_4" => array('title'=>"Ботинки для сноуборда DC Mutiny Charocal",
-            'category' => "Ботинки",
-            'price' => "10999",
-            'URL-img' => "/img/lot-4.jpg",
-            'id' => "3"),
-        "announcement_5" => array('title'=>"Куртка для сноуборда DC Mutiny Charocal",
-            'category' => "Одежда",
-            'price' => "7500",
-            'URL-img' => "/img/lot-5.jpg",
-            'id' => "4"),
-        "announcement_6" => array('title'=>"Маска Oakley Canopy",
-            'category' => "Разное",
-            'price' => "5400",
-            'URL-img' => "/img/lot-6.jpg",
-            'id' => "5")
-    );
-}
-//поиск пользователя по email
-//$find_value искомое значение
-//$search_in_key переменная, указывающая в каком ключе массива искать значение
-//$allUsers переменная, укзывающая в каком массиве происходит поиск
-function searchUserByKey($find_value, $search_in_key, $allUsers)
-{
-    $result = null;
-    foreach ($allUsers as $user) {
-        if ($user[$search_in_key] == $find_value) {
-            $result = $user;
-            break;
-        }
-    }
-    return $result;
-}
-
-function formatTime ($time)
-{
+    //т.к. данные в базе хранятся в datetime формате, то приводим их к формату timestamp
+    $time = strtotime($date);
     $td = time() - $time;
 
     if ($td > 86400) {
@@ -122,17 +58,19 @@ function formatTime ($time)
     }
 }
 
-// Возвращает максимальную ставку по лоту в виде числа
-function getMaxBet($search_in)
+/**
+ * Возвращает минимальную ставку которую должен сделать пользователь
+ *
+ * @param $link resource link to db
+ * @param $lot_id lot id
+ * @return mixed возвращает сумму максимльной ставки и шага.
+ */
+function getMaxBet($link, $lot_id)
 {
-    $result = 0;
-    foreach ($search_in as $bet){
-        if ($bet['price'] > $result) {
-            $result = $bet['price'];
-        }
-    }
-    return $result;
-
+    $sql = "SELECT if(MAX( binds.`price` ), MAX( binds.`price`), start_price) AS max_price, step 
+    FROM lots LEFT JOIN binds ON lots.id=binds.lot_id WHERE lots.id=? GROUP BY lots.id ;";
+    $result = dataRetrievalAssoc($link, $sql, [$lot_id], true);
+    return $result["max_price"] + $result["step"];
 }
 
 //функция выводит класс при наличии ошибки
@@ -150,60 +88,41 @@ function printInputItemValue($item, $name)
     }
 }
 //функция проверяет произведена ли аутентификация на сайте
-function requireAuthentication()
+//возвращает либо данные пользователя из сессии
+//либо пустой массив
+//либо блокирует доступ к странице
+/**
+ * @param bool $accessDenied нужно ли блокировать доступ или нет
+ * @return array
+ */
+function requireAuthentication($accessDenied = false)
 {
     if (isset($_SESSION["user"])) {
-        $header_data = array ("username"=>$_SESSION["user"]);
-        return $_SESSION["user"];
-    } else {
-        header("HTTP/1.1 403 Forbidden");
-        echo "Доступ закрыт для анонимных пользователей";
-        exit();
+        return array (
+            "user_id" => $_SESSION["user"]["id"],
+            "username" => $_SESSION["user"]["name"],
+            "avatar" => $_SESSION["user"]["avatar_img"]);
     }
+    if ($accessDenied) {
+         header("HTTP/1.1 403 Forbidden");
+         echo "Доступ закрыт для анонимных пользователей";
+         exit();
+    }
+    return [];
 }
 
-//поиск лота по id
-function findLotById($array_search_in, $id)
-{
-    foreach ($array_search_in as $key => $value) {
-        if ($value["id"] == $id) {
-            return $value;
-        }
-    }
-
-    return null;
-}
-
-//Функция для получения данных. Функция возвращает простой, двумерный массив с данными из БД
-function dataRetrieval($con, $sql, $unitDataSql)
-{
-    $resultArray = [];
-
-    $sqlReady = db_get_prepare_stmt($con, $sql, $unitDataSql);
-
-    if (!$sqlReady) return $resultArray;
-    
-    $result = mysqli_stmt_get_result($sqlReady);
-    if ($result) {
-        while ($row = mysqli_fetch_array($result, MYSQLI_NUM)) {
-            $resultArray[] = $row;
-        }
-    }
-    mysqli_stmt_close($sqlReady);
-    return $resultArray;
-
-}
 
 //Функция для вставки данных, которая возвращает идентификатор последней добавленной записи
 
 function dataInsertion($con, $sql, $unitDataSql)
 {
     $sqlReady = db_get_prepare_stmt($con, $sql, $unitDataSql);
-    if (!$sqlReady) return false;
+    if (!$sqlReady) {
+        return false;
+    }
 
     if (mysqli_stmt_execute($sqlReady)) {
         $result = mysqli_stmt_insert_id($sqlReady);
-
     } else {
         $result = false;
     }
@@ -233,7 +152,9 @@ function dataUpdate($con, $nameTable, $unitUpdatedData, $unitDataConditions)
 
     $sqlReady = db_get_prepare_stmt($con, $sql, $updatingValues);
 
-    if (!$sqlReady) return false;
+    if (!$sqlReady) {
+        return false;
+    }
     if (mysqli_stmt_execute($sqlReady)) {
         $result = mysqli_stmt_affected_rows($sqlReady);
 
@@ -243,4 +164,291 @@ function dataUpdate($con, $nameTable, $unitUpdatedData, $unitDataConditions)
     mysqli_stmt_close($sqlReady);
     return $result;
 
+}
+
+/**
+ * осуществляет установку соединения к базе данных по указанным конфигурационным данныи
+ * и возвращает либо рерсурс соединения или false
+ * @return bool|mysqli
+ */
+function create_connect()
+{
+    $link = mysqli_connect("localhost", "root", "", "yeticave_db");
+    if ($link) {
+        return $link;
+    } else {
+        return false;
+    }
+}
+
+/**
+ * Функция для получения данных из БД в виде ассоциативного массива,
+ * где ключи это названия полей в запросе а значения значения этих полей в соответствующих столбцах 
+ *  
+ * 
+ * @param $con
+ * @param $sql
+ * @param $unitDataSql
+ * @param $oneRow нужно ли возвращать одну запись или все
+ * @return array
+ */
+function dataRetrievalAssoc($con, $sql, $unitDataSql, $oneRow = false )
+{
+    $resultArray = [];
+
+    $sqlReady = db_get_prepare_stmt($con, $sql, $unitDataSql);
+
+    if (!$sqlReady) {
+        return $resultArray;
+    }
+
+    if (mysqli_stmt_execute($sqlReady)) {
+        $result = mysqli_stmt_get_result($sqlReady);
+    } else {
+        $result = false;
+    }
+
+    if ($result) {
+        while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
+            $resultArray[] = $row;
+        }
+    }
+
+    mysqli_stmt_close($sqlReady);
+
+    if ($oneRow && count($resultArray) == 1) {
+        return $resultArray[0];
+    } else {
+        return $resultArray;
+    }
+}
+
+/**
+ * Получение всех открытых лотов.
+ *
+ * @param $link
+ * @return array
+ */
+function getAllOpenLots($link)
+{
+    $sql = "SELECT lots.id, lots.`name`,`categories`.`name` AS 'category', 
+    if (MAX( binds.`price` ), MAX( binds.`price`), start_price) as price, 
+    if (COUNT(binds.price) > 0, COUNT(binds.price), 0) as binds_number, 
+    `img_path`, `end_date`   
+    FROM lots JOIN `categories` ON lots.`category_id` = `categories`.id 
+    LEFT JOIN binds ON lots.id = binds.`lot_id` WHERE `end_date` > NOW() and winner is NULL 
+    GROUP BY lots.id ORDER BY lots.add_date DESC
+    LIMIT 9;";
+    $lots_data = dataRetrievalAssoc($link, $sql, []);
+    return $lots_data;
+}
+
+/**
+ * Получение всех открытых лотов заданной категории
+ *
+ * @param $link
+ * @param $category_id
+ * @return array
+ */
+function getLotsByCategoryId($link, $category_id)
+{
+    $id = protectXSS($category_id);
+    $sql = "SELECT lots.id, lots.`name`,`categories`.`name` AS 'category', 
+    if (MAX( binds.`price` ), MAX( binds.`price`), start_price) as price, 
+    if (COUNT(binds.price) > 0, COUNT(binds.price), 0) as binds_number, 
+    `img_path`, `end_date`   
+    FROM lots JOIN `categories` ON lots.`category_id` = `categories`.id 
+    LEFT JOIN binds ON lots.id = binds.`lot_id` 
+    WHERE `end_date` > NOW() AND winner is NULL AND category_id = ?
+    GROUP BY lots.id ORDER BY lots.add_date DESC
+    LIMIT 9;    
+    ";
+    $lots_data = dataRetrievalAssoc($link, $sql, [$id]);
+    return $lots_data;
+}
+
+/**
+ * Получение всех категорий
+ *
+ * @param $link
+ * @return array
+ */
+function getAllCategories($link)
+{
+    $sql = "SELECT `id`, `name` FROM categories;";
+    $categories = dataRetrievalAssoc($link, $sql, []);
+    return $categories;
+}
+
+/**
+ * получение данных пользователя из БД по заданному ключу и значению
+ *
+ * @param $link
+ * @param string $key
+ * @param string $value
+ * @return array|bool
+ */
+function getUserByKey($link, $key="email", $value="")
+{
+    $sql = "SELECT * FROM users WHERE $key=?;";
+    $user = dataRetrievalAssoc($link, $sql, [$value], true);
+    if ($user) {
+        return $user;
+    } else{
+        return false;
+    }
+}
+
+/**
+ * получение лота по определенному ключу и значению
+ *
+ * @param $link
+ * @param string $key
+ * @param string $value
+ * @return array|bool
+ */
+function getLotByKey($link, $key="id", $value="")
+{
+    $sql = "SELECT lots.id, lots.`name`, `img_path`, `categories`.`name` AS 'category',
+     if (MAX( binds.`price` ), MAX( binds.`price`), start_price) as price, 
+    description, step, start_price, end_date
+    FROM lots
+    JOIN `categories`
+    ON lots.`category_id` = `categories`.id
+    LEFT JOIN binds ON lots.id = binds.`lot_id`
+    WHERE lots.$key = ?
+    GROUP BY lots.id";
+
+    $lot_data = dataRetrievalAssoc($link,$sql,[$value],true);
+
+    if ($lot_data) {
+        return $lot_data;
+    } else {
+        return false;
+    }
+}
+
+/**
+ * Получение всех ставок для выбранного лота
+ *
+ * @param $link
+ * @param $id
+ * @return array
+ */
+function getBetsByLotID($link, $id)
+{
+    $sql = "SELECT users.name AS name, binds.price, binds.date FROM binds 
+    JOIN users ON binds.user_id=users.id 
+    JOIN lots ON lots.id = binds.lot_id
+    WHERE binds.lot_id=? AND binds.price != lots.start_price
+    ORDER BY price DESC";
+    $bets = dataRetrievalAssoc($link, $sql, [$id]);
+    return $bets;
+}
+
+/**
+ * осуществляется проверка разрешено ли пользователю сделать ставку для лота (возвращает true )
+ * или нет (false)
+ *
+ * @param $link
+ * @param $lot_id
+ * @param $user_id
+ * @return bool
+ */
+function  isMakeBindAllowed($link, $lot_id, $user_id)
+{
+    $sql = "SELECT COUNT(price) AS number FROM binds 
+    WHERE lot_id=? AND user_id=? ";
+
+    $res = dataRetrievalAssoc($link, $sql, [ $lot_id, $user_id], true);
+    if ($res["number"] > 0 ) {
+        return false;
+    } else {
+        return true;
+    }
+}
+
+/**
+ * Получение все лотов для которых пользователь сделал ставку
+ *
+ * @param $link
+ * @param $user_id
+ * @return array
+ */
+function getAllBindedLotsByUser ($link, $user_id)
+{
+    $sql = "SELECT lots.id, lots.name, lots.img_path, categories.name AS category, binds.price, binds.date, lots.end_date 
+    FROM lots
+    JOIN binds on binds.lot_id=lots.id
+    JOIN categories on lots.category_id=categories.id
+    WHERE binds.user_id=? AND `end_date` > NOW()";
+    $result = dataRetrievalAssoc($link, $sql, [$user_id]);
+    return $result;
+}
+
+/**
+ * Добавляет новый лот в базу данных
+ *
+ * @param $link
+ * @param array $data
+ * @return bool|mixed
+ */
+function addNewLot($link, $data=array())
+{
+    $sql = "INSERT lots SET user_id = ?, category_id=?, name=?, description=?, img_path=?,
+            start_price=?, step=?, end_date=?, add_date=NOW()";
+
+    $lot_id = dataInsertion($link, $sql, [
+        $data["user_id"], $data["category"], $data["lot-name"], $data["message"], $data["URL-img"],
+        $data["price"], $data["lot-step"], date("Y:m:d H:i",strtotime($data["lot-date"]))
+    ]);
+
+    if ($lot_id) {
+        return $lot_id;
+    } else {
+        return false;
+    }
+}
+
+/**
+ * Добавляет нового пользователя в базу данных
+ *
+ * @param $link
+ * @param array $data
+ * @return bool
+ */
+function addNewUser($link, $data = array())
+{
+    $sql = "INSERT users SET email = ?, password = ?, name = ?,
+            contacts = ?, avatar_img = ?";
+    $unitDataSql = [];
+    foreach ($data as $value) {
+        $unitDataSql[] = $value;
+    }
+    $user_id = dataInsertion($link, $sql,  $unitDataSql);
+    if ($user_id) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+/**
+ * Добавляет новую ставку для лота в базу данных
+ *
+ * @param $link
+ * @param array $data
+ * @return bool
+ */
+function addNewBind($link, $data = array())
+{
+    $sql = "INSERT binds SET user_id=?, lot_id=?, price=?, date=NOW();";
+    
+    $result = dataInsertion($link, $sql, [$data["user_id"], $data["lot_id"], $data["cost"]]);
+    
+    if ($result) {
+        return true;
+    } else {
+        return false;
+    }
 }

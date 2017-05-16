@@ -2,24 +2,34 @@
 include ('functions.php');
 
 session_start();
-$data = array(
-    "categories_equipment" => getCategories(),
-    "announcement_list" => getLots(),
-    "lot_time_remaining" => getLotTimeRemaining(),
-    
-);
-
-if (isset($_SESSION["user"])) {
-   $header_data = array ("username"=>$_SESSION["user"]);
-
-} else {
-   $header_data = array();
+$link = create_connect();
+if (!$link) {
+    echo mysqli_connect_errno();
+    exit ();
 }
 
+$categories_list = getAllCategories($link);
+
+if (!empty($_REQUEST["id"])) {
+    $lots_list = getLotsByCategoryId($link, $_REQUEST["id"]);
+}else {
+    $lots_list = getAllOpenLots($link);
+}
+
+$header_data = requireAuthentication();
+
+$data = array(
+    "categories_equipment" => $categories_list,
+    "announcement_list" => $lots_list,
+);
+
+$footer_data = array (
+    "categories_equipment" => $categories_list,
+);
 
 echo connectTemplates("templates/header.php", $header_data);
 echo connectTemplates("templates/main.php", $data);
-echo connectTemplates("templates/footer.php", array());
+echo connectTemplates("templates/footer.php", $footer_data);
 
 
 ?>

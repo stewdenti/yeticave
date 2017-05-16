@@ -1,36 +1,38 @@
 <?php
 include ('functions.php');
 
-// ставки пользователей, которыми заполняется  таблица
-$bets = [
-         ['name' => 'Иван', 'price' => 11500, 'ts' => strtotime('-' . rand(1, 50) .' minute')],
-         ['name' => 'Константин', 'price' => 11000, 'ts' => strtotime('-' . rand(1, 18) .' hour')],
-         ['name' => 'Семён', 'price' => 10000, 'ts' => strtotime('last week')],
-         ['name' => 'Евгений', 'price' => 10500, 'ts' => strtotime( '-' . rand(25, 50) .' hour')]
-         ];
-
+// установка и проверка устновки соединения с бд
+$link = create_connect();
+if (!$link) {
+    echo mysqli_connect_errno();
+    exit ();
+}
 session_start();
+//Заполняем данные для шаблона header
+$categories = getAllCategories($link);
+$user_data = requireAuthentication();
+$header_data = $user_data;
+$header_data["categories_equipment"] =$categories;
+//заполняем данные для шаблона main
+$data = $user_data;
+$data["categories_equipment"] = $categories;
+//заполняем данные для шаблона footer
+$data_footer["categories_equipment"] = $categories;
 
-$data = array (
-    "bets" => $bets,
-//    "lot_item" => $lot_item,
-);
 
+// проверка пришел ли id лота и получение данных о лоте  из базы
+$lot_item = "";
+$bets = "";
+$lot_id = $_REQUEST["id"];
 
-if (isset($_SESSION["user"])) {
-    $header_data = array ("username"=>$_SESSION["user"]);
-    $data["username"] = $_SESSION["user"];
-} else {
-    $header_data = array();
+$data["bind_done"] = false;
+if ($user_data) {
+    $data["bind_done"] = isMakeBindAllowed($link,$lot_id, $user_data["user_id"]);
 }
 
-$lot_item = "";
-//цикл поиск запрошенного лота
-foreach (getLots() as $key => $value) {
-    if ($value["id"] == $_REQUEST["id"]) {
-        $lot_item = $value;
-        break;
-    }
+if (!empty($lot_id) && is_numeric($lot_id)) {
+    $lot_item = getLotByKey($link,"id",$lot_id);
+    $lot_bets = getBetsByLotID($link,$lot_id);
 }
 
 if ($lot_item == "") {
@@ -38,9 +40,11 @@ if ($lot_item == "") {
     echo "<h1>404 Страница не найдена</h1>";
     exit ();
 } else {
+    //подготовка данных их базы для шаблона.
     $data["lot_item"] = $lot_item;
+    //Получение данных о ставках для лота из базы
+    $data["bets"] = $lot_bets;
 }
-
 
 if (isset($_POST["send"])) {
     $time  = time();
@@ -48,66 +52,43 @@ if (isset($_POST["send"])) {
     $error = [];
     $form_item = [];
     foreach ($lotFields as $key) {
-        if (!empty($_POST[$key]) || $_POST[$key]=== "0") {
+        if (!empty($_POST[$key]) || $_POST[$key] === "0") {
             $form_item[$key] = htmlspecialchars($_POST[$key]);
         } else {
             $error[$key] = "Заполните ставку";
         }
     }
     if (!$error) {
-        $maxBet = getMaxBet($bets);
+        $maxBet = getMaxBet($link, $form_item["id"]);
         if (!is_numeric($form_item['cost'])) {
             $error['cost'] = "Заполните ставку в виде числа";
         } else if ((int)$form_item['cost'] < $maxBet) {
             $error['cost'] = "Ставка должна быть больше ".$maxBet;
         } else {
-            $form_item['time'] = $time;
+            $data = array (
+                "user_id" => $user_data["user_id"],
+                "lot_id" => $form_item["id"],
+                "cost" => $form_item["cost"]
+            );
 
-            if (isset($_COOKIE["lot_bind"])) {
-                $serelized_lot_item = $_COOKIE["lot_bind"];
-                $lot_bind = json_decode($serelized_lot_item, true);
-                $lot_bind[$form_item["id"]] = array("cost" => $form_item["cost"],"time" => $form_item["time"]);
-                $serelized_form_item = json_encode( $lot_bind);
-                setcookie('lot_bind', $serelized_form_item, strtotime("+30 days"));
-            } else {
-                $lot_bind[$form_item["id"]] = array("cost" => $form_item["cost"],"time" => $form_item["time"]);
-                $serelized_form_item = json_encode($lot_bind);
-                setcookie('lot_bind', $serelized_form_item, strtotime("+30 days"));
-            }
-
-
+            $result = addNewBind($link, $data);
 
             header("Location: /mylots.php");
             exit();
         }
-
-
     }
     if ($error) {
         $data['error'] = $error;
         echo connectTemplates("templates/header.php", $header_data);
         echo connectTemplates("templates/main-lot.php", $data);
-        echo connectTemplates("templates/footer.php", array());
+        echo connectTemplates("templates/footer.php", $data_footer);
     }
-
+    // блок else не нужен, т.к. если никаких ошибок не было найдено, то выполнение скрипта завершится раньше.
 } else {
-    if (isset($_COOKIE["lot_bind"])) {
-        $lot_bind = json_decode($_COOKIE["lot_bind"], true);
-        foreach ($lot_bind as $key => $value) {
-            if ($key == $_REQUEST["id"] ) {
-                $data["bind_done"] = true;
-                break;
-            }
-        }
-    }
     $data ["error"] = array();
 
     echo connectTemplates("templates/header.php", $header_data);
     echo connectTemplates("templates/main-lot.php", $data);
-    echo connectTemplates("templates/footer.php", array());
+    echo connectTemplates("templates/footer.php", $data_footer);
 }
-?>
-
-
-
-
+    ?>
