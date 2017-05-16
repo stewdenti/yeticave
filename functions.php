@@ -102,10 +102,10 @@ function printInputItemValue($item, $name)
 function requireAuthentication($accessDenied = false)
 {
     if (isset($_SESSION["user"])) {
-    return array (
-        "user_id" => $_SESSION["user"]["id"],
-        "username" => $_SESSION["user"]["name"],
-        "avatar" => $_SESSION["user"]["avatar_img"]);
+        return array (
+            "user_id" => $_SESSION["user"]["id"],
+            "username" => $_SESSION["user"]["name"],
+            "avatar" => $_SESSION["user"]["avatar_img"]);
     } else {
         $not_auth = array();
     }
