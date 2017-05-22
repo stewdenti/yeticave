@@ -239,7 +239,7 @@ function getAllOpenLots($link)
     LEFT JOIN binds ON lots.id = binds.`lot_id` WHERE `end_date` > NOW() and winner is NULL 
     GROUP BY lots.id ORDER BY lots.add_date DESC
     LIMIT 9;";
-    $lots_data = dataRetrievalAssoc($link, $sql, []);
+    $lots_data = DB::dataRetrievalAssoc($sql, []);
     return $lots_data;
 }
 
@@ -263,7 +263,7 @@ function getLotsByCategoryId($link, $category_id)
     GROUP BY lots.id ORDER BY lots.add_date DESC
     LIMIT 9;    
     ";
-    $lots_data = dataRetrievalAssoc($link, $sql, [$id]);
+    $lots_data = DB::dataRetrievalAssoc($sql, [$id]);
     return $lots_data;
 }
 
