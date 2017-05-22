@@ -173,7 +173,7 @@ function dataUpdate($con, $nameTable, $unitUpdatedData, $unitDataConditions)
  */
 function create_connect()
 {
-    $link = mysqli_connect("localhost", "root", "", "yeticave_db");
+    $link = mysqli_connect("localhost", "root", "mysql", "yeticave_db");
     if ($link) {
         return $link;
     } else {

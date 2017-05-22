@@ -1,10 +1,13 @@
 <?php 
 include ('functions.php');
+include ('Classes/DB.php');
 
 session_start();
-$link = create_connect();
+// $link = create_connect();
+$link = DB::getConnection();
+
 if (!$link) {
-    echo mysqli_connect_errno();
+    echo mysqli_connect_error();
     exit ();
 }
 
