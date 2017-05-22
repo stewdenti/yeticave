@@ -65,11 +65,11 @@ function formatTime ($date)
  * @param $lot_id lot id
  * @return mixed возвращает сумму максимльной ставки и шага.
  */
-function getMaxBet($link, $lot_id)
+function getMaxBet($lot_id)
 {
     $sql = "SELECT if(MAX( binds.`price` ), MAX( binds.`price`), start_price) AS max_price, step
     FROM lots LEFT JOIN binds ON lots.id=binds.lot_id WHERE lots.id=? GROUP BY lots.id ;";
-    $result = dataRetrievalAssoc($link, $sql, [$lot_id], true);
+    $result = DB::dataRetrievalAssoc($sql, [$lot_id], true);
     return $result["max_price"] + $result["step"];
 }
 
@@ -173,7 +173,7 @@ function dataUpdate($con, $nameTable, $unitUpdatedData, $unitDataConditions)
  */
 function create_connect()
 {
-    $link = mysqli_connect("localhost", "root", "mysql", "yeticave_db");
+    $link = mysqli_connect("localhost", "root", "", "yeticave_db");
     if ($link) {
         return $link;
     } else {
@@ -375,14 +375,14 @@ function  isMakeBindAllowed($lot_id, $user_id)
  * @param $user_id
  * @return array
  */
-function getAllBindedLotsByUser ($link, $user_id)
+function getAllBindedLotsByUser ( $user_id)
 {
     $sql = "SELECT lots.id, lots.name, lots.img_path, categories.name AS category, binds.price, binds.date, lots.end_date
     FROM lots
     JOIN binds on binds.lot_id=lots.id
     JOIN categories on lots.category_id=categories.id
     WHERE binds.user_id=? AND `end_date` > NOW()";
-    $result = dataRetrievalAssoc($link, $sql, [$user_id]);
+    $result = DB::dataRetrievalAssoc($sql, [$user_id]);
     return $result;
 }
 
@@ -393,12 +393,12 @@ function getAllBindedLotsByUser ($link, $user_id)
  * @param array $data
  * @return bool|mixed
  */
-function addNewLot($link, $data=array())
+function addNewLot($data=array())
 {
     $sql = "INSERT lots SET user_id = ?, category_id=?, name=?, description=?, img_path=?,
             start_price=?, step=?, end_date=?, add_date=NOW()";
 
-    $lot_id = dataInsertion($link, $sql, [
+    $lot_id = DB::dataInsertion($sql, [
         $data["user_id"], $data["category"], $data["lot-name"], $data["message"], $data["URL-img"],
         $data["price"], $data["lot-step"], date("Y:m:d H:i",strtotime($data["lot-date"]))
     ]);
@@ -417,7 +417,7 @@ function addNewLot($link, $data=array())
  * @param array $data
  * @return bool
  */
-function addNewUser($link, $data = array())
+function addNewUser($data = array())
 {
     $sql = "INSERT users SET email = ?, password = ?, name = ?,
             contacts = ?, avatar_img = ?";
@@ -425,7 +425,7 @@ function addNewUser($link, $data = array())
     foreach ($data as $value) {
         $unitDataSql[] = $value;
     }
-    $user_id = dataInsertion($link, $sql,  $unitDataSql);
+    $user_id = DB::dataInsertion($sql,  $unitDataSql);
     if ($user_id) {
         return true;
     } else {
@@ -440,11 +440,11 @@ function addNewUser($link, $data = array())
  * @param array $data
  * @return bool
  */
-function addNewBind($link, $data = array())
+function addNewBind($data = array())
 {
     $sql = "INSERT binds SET user_id=?, lot_id=?, price=?, date=NOW();";
 
-    $result = dataInsertion($link, $sql, [$data["user_id"], $data["lot_id"], $data["cost"]]);
+    $result = DB::dataInsertion($sql, [$data["user_id"], $data["lot_id"], $data["cost"]]);
 
     if ($result) {
         return true;

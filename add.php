@@ -1,14 +1,17 @@
 <?php
 include ('functions.php');
-session_start();
-$header_data = requireAuthentication(true);
-$link = create_connect();
-if (!$link) {
-    echo mysqli_connect_errno();
-    exit ();
-}
+include ('Classes/DB.php');
+include ('Classes/Authenticate.php');
 
-$categories = getAllCategories($link);
+session_start();
+DB::getConnection();
+$user = new Authenticate();
+$user->blockAccess();
+
+
+$header_data = $user->getAuthorizedData();
+
+$categories = getAllCategories();
 $data ["categories_equipment"] = $categories;
 $data_footer["categories_equipment"] = $categories;
 
@@ -63,7 +66,7 @@ if (isset($_POST["send"])) {
 
 
     if ($error) {
-        $data["error"] = $error;        
+        $data["error"] = $error;
         $data["lot_item"] = $lot_item;
         echo connectTemplates("templates/header.php", $header_data);
         echo connectTemplates("templates/form.php", $data);
@@ -71,8 +74,8 @@ if (isset($_POST["send"])) {
     }
     else {
 
-        $lot_item["user_id"] = $_SESSION["user"]["id"];
-        $lot_id = addNewLot($link,$lot_item);
+        $lot_item["user_id"] = $user->getAuthorizedData("id");
+        $lot_id = addNewLot($lot_item);
         header("Location: /lot.php?id=".$lot_id);
         exit();
     }

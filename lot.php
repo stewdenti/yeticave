@@ -58,19 +58,19 @@ if (isset($_POST["send"])) {
         }
     }
     if (!$error) {
-        $maxBet = getMaxBet($link, $form_item["id"]);
+        $maxBet = getMaxBet($form_item["id"]);
         if (!is_numeric($form_item['cost'])) {
             $error['cost'] = "Заполните ставку в виде числа";
         } else if ((int)$form_item['cost'] < $maxBet) {
             $error['cost'] = "Ставка должна быть больше ".$maxBet;
         } else {
             $data = array (
-                "user_id" => $user_data["user_id"],
+                "user_id" => $user->getAuthorizedData("id"),
                 "lot_id" => $form_item["id"],
                 "cost" => $form_item["cost"]
             );
 
-            $result = addNewBind($link, $data);
+            $result = addNewBind($data);
 
             header("Location: /mylots.php");
             exit();

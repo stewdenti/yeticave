@@ -1,12 +1,11 @@
 <?php
-include ('functions.php');
-$link = create_connect();
-if (!$link) {
-    echo mysqli_connect_errno();
-    exit ();
-}
 
-$categories = getAllCategories($link);
+include ('functions.php');
+include ('Classes/DB.php');
+include ('Classes/Authenticate.php');
+
+DB::getConnection();
+$categories = getAllCategories();
 
 $data_footer["categories_equipment"] = $categories;
 
@@ -53,7 +52,7 @@ if (isset($_POST["send"])) {
         echo connectTemplates("templates/registration-main.php", $data);
         echo connectTemplates("templates/footer.php", $data_footer);
      } else {
-         $user_id = addNewUser($link, $form_item);
+         $user_id = addNewUser($form_item);
          header("Location: /login.php");
          exit();
      }
