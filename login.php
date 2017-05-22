@@ -2,6 +2,8 @@
 include ('functions.php');
 include ('Classes/DB.php');
 include ('Classes/Authenticate.php');
+include ("Classes/Categories.php");
+include ("Classes/Templates.php");
 
 DB::getConnection();
 // $link = create_connect();
@@ -49,11 +51,11 @@ if (isset($_POST["send"])) {
 }
 
 //получение всех категорий
-$categories = getAllCategories();
-$data_footer["categories_equipment"] = $categories;
 
-echo connectTemplates("templates/header.php", array());
-echo connectTemplates("templates/main-login.php", $data);
-echo connectTemplates("templates/footer.php", $data_footer);
+$data_footer["categories_equipment"] = Categories::getAll();
+
+echo Templates::render("templates/header.php", array());
+echo Templates::render("templates/main-login.php", $data);
+echo Templates::render("templates/footer.php", $data_footer);
 
 ?>

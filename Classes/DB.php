@@ -27,7 +27,7 @@ class DB {
 	{
 	    $resultArray = [];
 
-	    $sqlReady = db_get_prepare_stmt(self::$link, $sql, $unitDataSql);
+	    $sqlReady = self::db_get_prepare_stmt($sql, $unitDataSql);
 
 	    if (!$sqlReady) {
 	        return $resultArray;
@@ -56,7 +56,7 @@ class DB {
 
 	public static function dataInsertion($sql, $unitDataSql)
 	{
-	    $sqlReady = db_get_prepare_stmt(self::$link, $sql, $unitDataSql);
+	    $sqlReady = self::db_get_prepare_stmt($sql, $unitDataSql);
 	    if (!$sqlReady) {
 	        return false;
 	    }
@@ -90,7 +90,7 @@ class DB {
 
 	    $sql = "UPDATE `$nameTable` SET $updatingFields WHERE `$whereField`=?;";
 
-	    $sqlReady = db_get_prepare_stmt(self::$link, $sql, $updatingValues);
+	    $sqlReady = self::db_get_prepare_stmt($sql, $updatingValues);
 
 	    if (!$sqlReady) {
 	        return false;
@@ -107,6 +107,41 @@ class DB {
 	}
 
 
+    protected static function db_get_prepare_stmt($sql, $data = [])
+    {
+        $stmt = mysqli_prepare(self::$link, $sql);
+
+        if ($data) {
+            $types = '';
+            $stmt_data = [];
+
+            foreach ($data as $value) {
+                $type = null;
+
+                if (is_int($value)) {
+                    $type = 'd';
+                }
+                else if (is_string($value)) {
+                    $type = 's';
+                }
+                else if (is_double($value)) {
+                    $type = 'd';
+                }
+
+                if ($type) {
+                    $types .= $type;
+                    $stmt_data[] = $value;
+                }
+            }
+
+            $values = array_merge([$stmt, $types], $stmt_data);
+
+            $func = 'mysqli_stmt_bind_param';
+            $func(...$values);
+        }
+
+        return $stmt;
+    }
 
 
 }

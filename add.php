@@ -2,6 +2,9 @@
 include ('functions.php');
 include ('Classes/DB.php');
 include ('Classes/Authenticate.php');
+include ("Classes/Categories.php");
+include ("Classes/Lots.php");
+include ("Classes/Templates.php");
 
 session_start();
 DB::getConnection();
@@ -11,7 +14,7 @@ $user->blockAccess();
 
 $header_data = $user->getAuthorizedData();
 
-$categories = getAllCategories();
+$categories = Categories::getAll();
 $data ["categories_equipment"] = $categories;
 $data_footer["categories_equipment"] = $categories;
 
@@ -68,14 +71,14 @@ if (isset($_POST["send"])) {
     if ($error) {
         $data["error"] = $error;
         $data["lot_item"] = $lot_item;
-        echo connectTemplates("templates/header.php", $header_data);
-        echo connectTemplates("templates/form.php", $data);
-        echo connectTemplates("templates/footer.php", $data_footer);
+        echo Templates::render("templates/header.php", $header_data);
+        echo Templates::render("templates/form.php", $data);
+        echo Templates::render("templates/footer.php", $data_footer);
     }
     else {
 
         $lot_item["user_id"] = $user->getAuthorizedData("id");
-        $lot_id = addNewLot($lot_item);
+        $lot_id = Lots::addNew($lot_item);
         header("Location: /lot.php?id=".$lot_id);
         exit();
     }
@@ -85,9 +88,9 @@ if (isset($_POST["send"])) {
         "lot_item" => array(),
         "categories_equipment" => $categories,
     );
-    echo connectTemplates("templates/header.php", $header_data);
-    echo connectTemplates("templates/form.php", $data);
-    echo connectTemplates("templates/footer.php", $data_footer);
+    echo Templates::render("templates/header.php", $header_data);
+    echo Templates::render("templates/form.php", $data);
+    echo Templates::render("templates/footer.php", $data_footer);
 }
 
 ?>
