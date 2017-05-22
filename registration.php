@@ -3,12 +3,13 @@
 include ('functions.php');
 include ('Classes/DB.php');
 include ('Classes/Authenticate.php');
+include ("Classes/Categories.php");
+include ("Classes/Users.php");
 include ("Classes/Templates.php");
 
 DB::getConnection();
-$categories = getAllCategories();
 
-$data_footer["categories_equipment"] = $categories;
+$data_footer["categories_equipment"] = Categories::getAll();
 
 if (isset($_POST["send"])) {
     $segnFormFilds = ['email', 'password', 'name', 'message'];
@@ -53,7 +54,7 @@ if (isset($_POST["send"])) {
         echo Templates::render("templates/registration-main.php", $data);
         echo Templates::render("templates/footer.php", $data_footer);
      } else {
-         $user_id = addNewUser($form_item);
+         $user_id = Users::addNew($form_item);
          header("Location: /login.php");
          exit();
      }
