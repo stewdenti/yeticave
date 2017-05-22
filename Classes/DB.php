@@ -6,9 +6,9 @@ class DB {
 
 	public static function getConnection() {
 		if (self::$link) {
-			return $link;
+			return self::$link;
 		} else {
-			self::$link = mysqli_connect("localhost", "root", "mysql", "yeticave_db");
+			self::$link = mysqli_connect("localhost", "root", "", "yeticave_db");
 			return self::$link;
 		}
    	}
@@ -22,7 +22,7 @@ class DB {
    		}
    	}
 
-   	   	
+
    	public static function dataRetrievalAssoc($sql, $unitDataSql, $oneRow = false )
 	{
 	    $resultArray = [];

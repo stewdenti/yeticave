@@ -67,7 +67,7 @@ function formatTime ($date)
  */
 function getMaxBet($link, $lot_id)
 {
-    $sql = "SELECT if(MAX( binds.`price` ), MAX( binds.`price`), start_price) AS max_price, step 
+    $sql = "SELECT if(MAX( binds.`price` ), MAX( binds.`price`), start_price) AS max_price, step
     FROM lots LEFT JOIN binds ON lots.id=binds.lot_id WHERE lots.id=? GROUP BY lots.id ;";
     $result = dataRetrievalAssoc($link, $sql, [$lot_id], true);
     return $result["max_price"] + $result["step"];
@@ -183,9 +183,9 @@ function create_connect()
 
 /**
  * Функция для получения данных из БД в виде ассоциативного массива,
- * где ключи это названия полей в запросе а значения значения этих полей в соответствующих столбцах 
- *  
- * 
+ * где ключи это названия полей в запросе а значения значения этих полей в соответствующих столбцах
+ *
+ *
  * @param $con
  * @param $sql
  * @param $unitDataSql
@@ -229,14 +229,14 @@ function dataRetrievalAssoc($con, $sql, $unitDataSql, $oneRow = false )
  * @param $link
  * @return array
  */
-function getAllOpenLots($link)
+function getAllOpenLots()
 {
-    $sql = "SELECT lots.id, lots.`name`,`categories`.`name` AS 'category', 
-    if (MAX( binds.`price` ), MAX( binds.`price`), start_price) as price, 
-    if (COUNT(binds.price) > 0, COUNT(binds.price), 0) as binds_number, 
-    `img_path`, `end_date`   
-    FROM lots JOIN `categories` ON lots.`category_id` = `categories`.id 
-    LEFT JOIN binds ON lots.id = binds.`lot_id` WHERE `end_date` > NOW() and winner is NULL 
+    $sql = "SELECT lots.id, lots.`name`,`categories`.`name` AS 'category',
+    if (MAX( binds.`price` ), MAX( binds.`price`), start_price) as price,
+    if (COUNT(binds.price) > 0, COUNT(binds.price), 0) as binds_number,
+    `img_path`, `end_date`
+    FROM lots JOIN `categories` ON lots.`category_id` = `categories`.id
+    LEFT JOIN binds ON lots.id = binds.`lot_id` WHERE `end_date` > NOW() and winner is NULL
     GROUP BY lots.id ORDER BY lots.add_date DESC
     LIMIT 9;";
     $lots_data = DB::dataRetrievalAssoc($sql, []);
@@ -250,18 +250,18 @@ function getAllOpenLots($link)
  * @param $category_id
  * @return array
  */
-function getLotsByCategoryId($link, $category_id)
+function getLotsByCategoryId($category_id)
 {
     $id = protectXSS($category_id);
-    $sql = "SELECT lots.id, lots.`name`,`categories`.`name` AS 'category', 
-    if (MAX( binds.`price` ), MAX( binds.`price`), start_price) as price, 
-    if (COUNT(binds.price) > 0, COUNT(binds.price), 0) as binds_number, 
-    `img_path`, `end_date`   
-    FROM lots JOIN `categories` ON lots.`category_id` = `categories`.id 
-    LEFT JOIN binds ON lots.id = binds.`lot_id` 
+    $sql = "SELECT lots.id, lots.`name`,`categories`.`name` AS 'category',
+    if (MAX( binds.`price` ), MAX( binds.`price`), start_price) as price,
+    if (COUNT(binds.price) > 0, COUNT(binds.price), 0) as binds_number,
+    `img_path`, `end_date`
+    FROM lots JOIN `categories` ON lots.`category_id` = `categories`.id
+    LEFT JOIN binds ON lots.id = binds.`lot_id`
     WHERE `end_date` > NOW() AND winner is NULL AND category_id = ?
     GROUP BY lots.id ORDER BY lots.add_date DESC
-    LIMIT 9;    
+    LIMIT 9;
     ";
     $lots_data = DB::dataRetrievalAssoc($sql, [$id]);
     return $lots_data;
@@ -273,10 +273,10 @@ function getLotsByCategoryId($link, $category_id)
  * @param $link
  * @return array
  */
-function getAllCategories($link)
+function getAllCategories()
 {
     $sql = "SELECT `id`, `name` FROM categories;";
-    $categories = dataRetrievalAssoc($link, $sql, []);
+    $categories = DB::dataRetrievalAssoc($sql, []);
     return $categories;
 }
 
@@ -307,10 +307,10 @@ function getUserByKey($link, $key="email", $value="")
  * @param string $value
  * @return array|bool
  */
-function getLotByKey($link, $key="id", $value="")
+function getLotByKey($key="id", $value="")
 {
     $sql = "SELECT lots.id, lots.`name`, `img_path`, `categories`.`name` AS 'category',
-     if (MAX( binds.`price` ), MAX( binds.`price`), start_price) as price, 
+     if (MAX( binds.`price` ), MAX( binds.`price`), start_price) as price,
     description, step, start_price, end_date
     FROM lots
     JOIN `categories`
@@ -319,7 +319,7 @@ function getLotByKey($link, $key="id", $value="")
     WHERE lots.$key = ?
     GROUP BY lots.id";
 
-    $lot_data = dataRetrievalAssoc($link,$sql,[$value],true);
+    $lot_data = DB::dataRetrievalAssoc($sql,[$value],true);
 
     if ($lot_data) {
         return $lot_data;
@@ -335,14 +335,14 @@ function getLotByKey($link, $key="id", $value="")
  * @param $id
  * @return array
  */
-function getBetsByLotID($link, $id)
+function getBetsByLotID($id)
 {
-    $sql = "SELECT users.name AS name, binds.price, binds.date FROM binds 
-    JOIN users ON binds.user_id=users.id 
+    $sql = "SELECT users.name AS name, binds.price, binds.date FROM binds
+    JOIN users ON binds.user_id=users.id
     JOIN lots ON lots.id = binds.lot_id
     WHERE binds.lot_id=? AND binds.price != lots.start_price
     ORDER BY price DESC";
-    $bets = dataRetrievalAssoc($link, $sql, [$id]);
+    $bets = DB::dataRetrievalAssoc($sql, [$id]);
     return $bets;
 }
 
@@ -355,12 +355,12 @@ function getBetsByLotID($link, $id)
  * @param $user_id
  * @return bool
  */
-function  isMakeBindAllowed($link, $lot_id, $user_id)
+function  isMakeBindAllowed($lot_id, $user_id)
 {
-    $sql = "SELECT COUNT(price) AS number FROM binds 
+    $sql = "SELECT COUNT(price) AS number FROM binds
     WHERE lot_id=? AND user_id=? ";
 
-    $res = dataRetrievalAssoc($link, $sql, [ $lot_id, $user_id], true);
+    $res = DB::dataRetrievalAssoc($sql, [ $lot_id, $user_id], true);
     if ($res["number"] > 0 ) {
         return false;
     } else {
@@ -377,7 +377,7 @@ function  isMakeBindAllowed($link, $lot_id, $user_id)
  */
 function getAllBindedLotsByUser ($link, $user_id)
 {
-    $sql = "SELECT lots.id, lots.name, lots.img_path, categories.name AS category, binds.price, binds.date, lots.end_date 
+    $sql = "SELECT lots.id, lots.name, lots.img_path, categories.name AS category, binds.price, binds.date, lots.end_date
     FROM lots
     JOIN binds on binds.lot_id=lots.id
     JOIN categories on lots.category_id=categories.id
@@ -443,9 +443,9 @@ function addNewUser($link, $data = array())
 function addNewBind($link, $data = array())
 {
     $sql = "INSERT binds SET user_id=?, lot_id=?, price=?, date=NOW();";
-    
+
     $result = dataInsertion($link, $sql, [$data["user_id"], $data["lot_id"], $data["cost"]]);
-    
+
     if ($result) {
         return true;
     } else {

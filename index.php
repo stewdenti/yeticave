@@ -1,25 +1,22 @@
-<?php 
+<?php
 include ('functions.php');
 include ('Classes/DB.php');
+include ('Classes/Authenticate.php');
 
 session_start();
 // $link = create_connect();
-$link = DB::getConnection();
+DB::getConnection();
+$user = new Authenticate();
 
-if (!$link) {
-    echo mysqli_connect_error();
-    exit ();
-}
-
-$categories_list = getAllCategories($link);
+$categories_list = getAllCategories();
 
 if (!empty($_REQUEST["id"])) {
-    $lots_list = getLotsByCategoryId($link, $_REQUEST["id"]);
+    $lots_list = getLotsByCategoryId($_REQUEST["id"]);
 }else {
-    $lots_list = getAllOpenLots($link);
+    $lots_list = getAllOpenLots();
 }
 
-$header_data = requireAuthentication();
+$header_data = $user->getAuthorizedData();
 
 $data = array(
     "categories_equipment" => $categories_list,

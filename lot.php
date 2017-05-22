@@ -1,20 +1,19 @@
 <?php
 include ('functions.php');
+include ('Classes/DB.php');
+include ('Classes/Authenticate.php');
 
 // установка и проверка устновки соединения с бд
-$link = create_connect();
-if (!$link) {
-    echo mysqli_connect_errno();
-    exit ();
-}
 session_start();
+DB::getConnection();
+$user = new Authenticate();
 //Заполняем данные для шаблона header
-$categories = getAllCategories($link);
-$user_data = requireAuthentication();
-$header_data = $user_data;
+$categories = getAllCategories();
+
+$header_data = $user->getAuthorizedData();
 $header_data["categories_equipment"] =$categories;
 //заполняем данные для шаблона main
-$data = $user_data;
+$data = $user->getAuthorizedData();
 $data["categories_equipment"] = $categories;
 //заполняем данные для шаблона footer
 $data_footer["categories_equipment"] = $categories;
@@ -26,13 +25,13 @@ $bets = "";
 $lot_id = $_REQUEST["id"];
 
 $data["bind_done"] = false;
-if ($user_data) {
-    $data["bind_done"] = isMakeBindAllowed($link,$lot_id, $user_data["user_id"]);
+if ($user->getAuthorizedData()) {
+    $data["bind_done"] = isMakeBindAllowed($lot_id, $user->getAuthorizedData("id"));
 }
 
 if (!empty($lot_id) && is_numeric($lot_id)) {
-    $lot_item = getLotByKey($link,"id",$lot_id);
-    $lot_bets = getBetsByLotID($link,$lot_id);
+    $lot_item = getLotByKey("id",$lot_id);
+    $lot_bets = getBetsByLotID($lot_id);
 }
 
 if ($lot_item == "") {
