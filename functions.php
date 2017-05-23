@@ -1,4 +1,5 @@
 <?php
+include "classes/DB.php";
 include "mysql_helper.php";
 //Функция подключения шаблонов через буферизацию
 function connectTemplates ($filename, $data)
@@ -231,6 +232,8 @@ function dataRetrievalAssoc($con, $sql, $unitDataSql, $oneRow = false )
  */
 function getAllOpenLots($link)
 {
+    $db = new DB();
+    $db->create_connect();
     $sql = "SELECT lots.id, lots.`name`,`categories`.`name` AS 'category', 
     if (MAX( binds.`price` ), MAX( binds.`price`), start_price) as price, 
     if (COUNT(binds.price) > 0, COUNT(binds.price), 0) as binds_number, 
@@ -239,7 +242,9 @@ function getAllOpenLots($link)
     LEFT JOIN binds ON lots.id = binds.`lot_id` WHERE `end_date` > NOW() and winner is NULL 
     GROUP BY lots.id ORDER BY lots.add_date DESC
     LIMIT 9;";
-    $lots_data = dataRetrievalAssoc($link, $sql, []);
+    $lots_data = $db->dataRetrievalAssoc($sql, [] );
+
+    //$lots_data = dataRetrievalAssoc($link, $sql, []);
     return $lots_data;
 }
 
