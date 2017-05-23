@@ -81,7 +81,7 @@ class Lot {
      *
      * @return array список всех лотов для  которых сделал пользователь ставки
      */
-    public static function getAllBindsByUser ($user_id)
+    public static function getAllBindsByUser($user_id)
     {
         $sql = "SELECT lots.id, lots.name, lots.img_path, categories.name AS category, binds.price, binds.date, lots.end_date
         FROM lots

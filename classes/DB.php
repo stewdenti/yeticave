@@ -35,7 +35,7 @@ class DB {
     }
 
     /**
-     *  Десктруктор для разрыва соедиения в случае уничтожения объекта
+     *  Десктруктор для закрытия соедиения при уничтожении объекта
      *
      */
     private function __destructor()
@@ -105,7 +105,7 @@ class DB {
 	{
 	    $resultArray = [];
 
-	    $sqlReady = self::db_get_prepare_stmt($sql, $unitDataSql);
+	    $sqlReady = DB::getInstance()->db_get_prepare_stmt($sql, $unitDataSql);
 
 	    if (!$sqlReady) {
 	        return $resultArray;
@@ -142,7 +142,7 @@ class DB {
      */
 	public static function dataInsertion($sql, $unitDataSql)
 	{
-	    $sqlReady = self::db_get_prepare_stmt($sql, $unitDataSql);
+	    $sqlReady = DB::getInstance()->db_get_prepare_stmt($sql, $unitDataSql);
 	    if (!$sqlReady) {
 	        return false;
 	    }
@@ -181,7 +181,7 @@ class DB {
 
 	    $sql = "UPDATE `$nameTable` SET $updatingFields WHERE `$whereField`=?;";
 
-	    $sqlReady = self::db_get_prepare_stmt($sql, $updatingValues);
+	    $sqlReady = DB::getInstance()->db_get_prepare_stmt($sql, $updatingValues);
 
 	    if (!$sqlReady) {
 	        return false;
@@ -206,10 +206,10 @@ class DB {
      *
      * @return mysqli_stmt Подготовленное выражение
      */
-    protected static function db_get_prepare_stmt($sql, $data = [])
+    protected function db_get_prepare_stmt($sql, $data = [])
     {
-        $db = self::getInstance();
-        $stmt = mysqli_prepare($db->link, $sql);
+
+        $stmt = mysqli_prepare($this->link, $sql);
 
         if ($data) {
             $types = '';

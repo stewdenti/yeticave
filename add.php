@@ -1,14 +1,13 @@
 <?php
 include ('functions.php');
 session_start();
-$header_data = requireAuthentication(true);
-$link = create_connect();
-if (!$link) {
-    echo mysqli_connect_errno();
-    exit ();
-}
 
-$categories = getAllCategories($link);
+Authorization::blockAccess();
+
+$user_data = Authorization::getAuthData();
+$header_data["user"] = $user_data;
+
+$categories = Category::getAll();
 $data ["categories_equipment"] = $categories;
 $data_footer["categories_equipment"] = $categories;
 
@@ -58,21 +57,18 @@ if (isset($_POST["send"])) {
     //в зависимости от выполнения условий в if, подключаем разные шаблоны
     $data = array (
         "categories_equipment" => $categories,
-
     );
 
-
     if ($error) {
-        $data["error"] = $error;        
+        $data["error"] = $error;
         $data["lot_item"] = $lot_item;
-        echo connectTemplates("templates/header.php", $header_data);
-        echo connectTemplates("templates/form.php", $data);
-        echo connectTemplates("templates/footer.php", $data_footer);
+        echo Templates::render("templates/header.php", $header_data);
+        echo Templates::render("templates/form.php", $data);
+        echo Templates::render("templates/footer.php", $data_footer);
     }
     else {
-
-        $lot_item["user_id"] = $_SESSION["user"]["id"];
-        $lot_id = addNewLot($link,$lot_item);
+        $lot_item["user_id"] = $user_data["id"];
+        $lot_id = Lot::addNew($lot_item);
         header("Location: /lot.php?id=".$lot_id);
         exit();
     }
@@ -82,9 +78,9 @@ if (isset($_POST["send"])) {
         "lot_item" => array(),
         "categories_equipment" => $categories,
     );
-    echo connectTemplates("templates/header.php", $header_data);
-    echo connectTemplates("templates/form.php", $data);
-    echo connectTemplates("templates/footer.php", $data_footer);
+    echo Templates::render("templates/header.php", $header_data);
+    echo Templates::render("templates/form.php", $data);
+    echo Templates::render("templates/footer.php", $data_footer);
 }
 
 ?>

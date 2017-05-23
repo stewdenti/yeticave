@@ -1,10 +1,5 @@
 <?php
 include ('functions.php');
-$link = create_connect();
-if (!$link) {
-    echo mysqli_connect_errno();
-    exit ();
-}
 
 if (isset($_POST["send"])) {
     $loginFormFilds = ['email', 'password'];
@@ -19,20 +14,13 @@ if (isset($_POST["send"])) {
         }
     }
     if (!$error) {
-        $user = getUserByKey($link,"email",$form_item["email"] );
-        if ($user) { //поиск пользователя по email
-            if (password_verify($form_item["password"], $user["password"])) {//сравнение пароля с хешом пароля в массиве
-                session_start();
-                $_SESSION["user"] = $user;
-                header("Location: /index.php");//если пароль верен, отправляем пользователя на главную стр
-                exit();
-            } else {
-                $error["wrong_password"] = "Вы ввели не верный пароль";
-                $error["password"] = True;
-            }
+        $user = Authorization::authorize($form_item["email"], $form_item["password"]);
+        if ($user === true) {
+            //если пароль верен, отправляем пользователя на главную стр
+            header("Location: /index.php");
+            exit();
         } else {
-            $error["wrong_username"] = "Пользователья с такием email не существует";
-            $error["email"] = True;
+            $error = $user;
         }
     }
     $data["error"] = $error;
@@ -41,11 +29,11 @@ if (isset($_POST["send"])) {
 }
 
 //получение всех категорий
-$categories = getAllCategories($link);
-$data_footer["categories_equipment"] = $categories;
 
-echo connectTemplates("templates/header.php", array());
-echo connectTemplates("templates/main-login.php", $data);
-echo connectTemplates("templates/footer.php", $data_footer);
+$data_footer["categories_equipment"] = Category::getAll();
+
+echo Templates::render("templates/header.php", array());
+echo Templates::render("templates/main-login.php", $data);
+echo Templates::render("templates/footer.php", $data_footer);
 
 ?>

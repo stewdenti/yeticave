@@ -17,11 +17,7 @@ class Bind {
         WHERE lot_id=? AND user_id=? ";
 
         $res = DB::getOne($sql, [ $lot_id, $user_id]);
-        if ($res["number"] > 0 ) {
-            return false;
-        } else {
-            return true;
-        }
+        return $res["number"]<=0;
     }
 
     /**

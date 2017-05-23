@@ -11,7 +11,6 @@ class Authorization {
      */
     public static function checkAccess()
     {
-        @session_start();
         if (!empty($_SESSION["user"])) {
             return true;
         }
@@ -38,14 +37,11 @@ class Authorization {
      */
     public static function getAuthData ()
     {
+        $result = array ();
         if (self::checkAccess()) {
-            return array (
-                "user_id" => $_SESSION["user"]["id"],
-                "username" => $_SESSION["user"]["name"],
-                "avatar" => $_SESSION["user"]["avatar_img"]);
-        } else {
-            return array();
+            $result = $_SESSION["user"];
         }
+        return $result;
     }
 
     /**
@@ -55,9 +51,9 @@ class Authorization {
      *
      * @param string $email email пользователя для авторизации
      * @param string $password пароль пользователя для авторизации
-     * @return [type]
+     * @return boolean|array если авторизация успешна возвращает true, если нет массив с ошибками
      */
-    public static function authorize($email,$password)
+    public static function authorize($email, $password)
     {
         $errors = array();
 
@@ -83,7 +79,6 @@ class Authorization {
      */
     public static function logout ()
     {
-        session_start();
         session_unset();
         session_destroy();
     }
