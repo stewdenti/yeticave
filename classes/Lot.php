@@ -56,7 +56,7 @@ class Lot {
     public static function getByKey($key = "id", $value = "")
     {
         $sql = "SELECT lots.id, lots.`name`, `img_path`, `categories`.`name` AS 'category',
-         if (MAX( binds.`price` ), MAX( binds.`price`), start_price) as price,
+        if (MAX( binds.`price` ), MAX( binds.`price`), start_price) as price,
         description, step, start_price, end_date
         FROM lots
         JOIN `categories`
