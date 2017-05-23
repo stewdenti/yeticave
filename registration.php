@@ -1,15 +1,7 @@
 <?php
-
 include ('functions.php');
-include ('Classes/DB.php');
-include ('Classes/Authenticate.php');
-include ("Classes/Categories.php");
-include ("Classes/Users.php");
-include ("Classes/Templates.php");
 
-DB::getConnection();
-
-$data_footer["categories_equipment"] = Categories::getAll();
+$data_footer["categories_equipment"] = Category::getAll();
 
 if (isset($_POST["send"])) {
     $segnFormFilds = ['email', 'password', 'name', 'message'];
@@ -54,7 +46,7 @@ if (isset($_POST["send"])) {
         echo Templates::render("templates/registration-main.php", $data);
         echo Templates::render("templates/footer.php", $data_footer);
      } else {
-         $user_id = Users::addNew($form_item);
+         $user_id = User::addNew($form_item);
          header("Location: /login.php");
          exit();
      }

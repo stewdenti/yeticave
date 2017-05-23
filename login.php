@@ -1,16 +1,5 @@
 <?php
 include ('functions.php');
-include ('Classes/DB.php');
-include ('Classes/Authenticate.php');
-include ("Classes/Categories.php");
-include ("Classes/Templates.php");
-
-DB::getConnection();
-// $link = create_connect();
-// if (!$link) {
-//     echo mysqli_connect_errno();
-//     exit ();
-// }
 
 if (isset($_POST["send"])) {
     $loginFormFilds = ['email', 'password'];
@@ -25,25 +14,14 @@ if (isset($_POST["send"])) {
         }
     }
     if (!$error) {
-        $user = new Authenticate();
-        $user->authorize($form_item["email"], $form_item["password"]);
-        echo DB::lastError();
-        $error = $user->getErrors();
-        // $user = getUserByKey($link,"email",$form_item["email"] );
-        // if ($user) { //поиск пользователя по email
-        //     if (password_verify($form_item["password"], $user["password"])) {//сравнение пароля с хешом пароля в массиве
-        //         session_start();
-        //         $_SESSION["user"] = $user;
-        //         header("Location: /index.php");//если пароль верен, отправляем пользователя на главную стр
-        //         exit();
-        //     } else {
-        //         $error["wrong_password"] = "Вы ввели не верный пароль";
-        //         $error["password"] = True;
-        //     }
-        // } else {
-        //     $error["wrong_username"] = "Пользователья с такием email не существует";
-        //     $error["email"] = True;
-        // }
+        $user = Authorization::authorize($form_item["email"], $form_item["password"]);
+        if ($user === true) {
+            //если пароль верен, отправляем пользователя на главную стр
+            header("Location: /index.php");
+            exit();
+        } else {
+            $error = $user;
+        }
     }
     $data["error"] = $error;
 } else {
@@ -52,7 +30,7 @@ if (isset($_POST["send"])) {
 
 //получение всех категорий
 
-$data_footer["categories_equipment"] = Categories::getAll();
+$data_footer["categories_equipment"] = Category::getAll();
 
 echo Templates::render("templates/header.php", array());
 echo Templates::render("templates/main-login.php", $data);

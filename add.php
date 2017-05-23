@@ -1,20 +1,12 @@
 <?php
 include ('functions.php');
-include ('Classes/DB.php');
-include ('Classes/Authenticate.php');
-include ("Classes/Categories.php");
-include ("Classes/Lots.php");
-include ("Classes/Templates.php");
 
-session_start();
-DB::getConnection();
-$user = new Authenticate();
-$user->blockAccess();
+Authorization::blockAccess();
 
+$user_data = Authorization::getAuthData();
+$header_data = $user_data;
 
-$header_data = $user->getAuthorizedData();
-
-$categories = Categories::getAll();
+$categories = Category::getAll();
 $data ["categories_equipment"] = $categories;
 $data_footer["categories_equipment"] = $categories;
 
@@ -64,9 +56,7 @@ if (isset($_POST["send"])) {
     //в зависимости от выполнения условий в if, подключаем разные шаблоны
     $data = array (
         "categories_equipment" => $categories,
-
     );
-
 
     if ($error) {
         $data["error"] = $error;
@@ -76,9 +66,8 @@ if (isset($_POST["send"])) {
         echo Templates::render("templates/footer.php", $data_footer);
     }
     else {
-
-        $lot_item["user_id"] = $user->getAuthorizedData("id");
-        $lot_id = Lots::addNew($lot_item);
+        $lot_item["user_id"] = $user_data["user_id"];
+        $lot_id = Lot::addNew($lot_item);
         header("Location: /lot.php?id=".$lot_id);
         exit();
     }

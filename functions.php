@@ -1,8 +1,17 @@
 <?php
+include ("classes/DB.php");
+include ("classes/Authorization.php");
+include ("classes/Category.php");
+include ("classes/Lot.php");
+include ("classes/Bind.php");
+include ("classes/Templates.php");
+include ("classes/User.php");
+
+
+
 /*Функция  protectXSS() проверяет, является ли аргумент строкой. Если яволяется, то пропускает эту строку через функцию
   htmlspecialchars(), которая заменяет символы тегов на мнимоники(спецсимволы). Если аргумент является массивом, то
   через рекурсию доходит до уровня строки и тогда для изменения строки использует фунцию htmlspecialchars().*/
-
 function protectXSS($data)
 {
     if (is_array($data)) {

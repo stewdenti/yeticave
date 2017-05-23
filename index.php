@@ -1,25 +1,15 @@
 <?php
 include ('functions.php');
-include ('Classes/DB.php');
-include ('Classes/Authenticate.php');
-include ("Classes/Categories.php");
-include ("Classes/Lots.php");
-include ("Classes/Templates.php");
 
-session_start();
+$header_data = Authorization::getAuthData();
 
-DB::getConnection();
-$user = new Authenticate();
-
-$categories_list = Categories::getAll();
+$categories_list = Category::getAll();
 
 if (!empty($_REQUEST["id"])) {
-    $lots_list = Lots::getByCategoryId($_REQUEST["id"]);
+    $lots_list = Lot::getByCategoryId($_REQUEST["id"]);
 }else {
-    $lots_list = Lots::getAllOpened();
+    $lots_list = Lot::getAllOpened();
 }
-
-$header_data = $user->getAuthorizedData();
 
 $data = array(
     "categories_equipment" => $categories_list,
@@ -33,6 +23,5 @@ $footer_data = array (
 echo Templates::render("templates/header.php", $header_data);
 echo Templates::render("templates/main.php", $data);
 echo Templates::render("templates/footer.php", $footer_data);
-
 
 ?>

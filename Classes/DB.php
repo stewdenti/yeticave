@@ -1,29 +1,107 @@
 <?php
 
+/**
+ * Класс для работы с базой данных
+ *
+ */
 class DB {
-	protected static $link = null;
+    /**
+     * свойство для хранения ресурса соединения до базы данных
+     * @var null
+     */
+	private $link = null;
+    /**
+     * Хранение текста сообщения последней ошибки
+     * @var null
+     */
+    private $error = null;
 
+    /**
+     * статическая переменная для хранения объекта соединения с базой данных
+     * @var null
+     */
+    private static $_instance = null;
 
-	public static function getConnection() {
-		if (self::$link) {
-			return self::$link;
-		} else {
-			self::$link = mysqli_connect("localhost", "root", "", "yeticave_db");
-			return self::$link;
+    /**
+     * Конструктор объекта для работы с базой данных
+     *
+     */
+    private function __construct()
+    {
+        $this->link = mysqli_connect("localhost", "root", "", "yeticave_db");
+        if (!$this->link) {
+            $this->error = mysqli_connect_error();
+        }
+    }
+
+    /**
+     *  Десктруктор для разрыва соедиения в случае уничтожения объекта
+     *
+     */
+    private function __destructor()
+    {
+        mysqli_close($this->link);
+    }
+
+    /**
+     *  функция получения последней ошибки при работе с базой данных
+     *
+     * @return [type]
+     */
+    public function getlastError() {
+        return $this->error;
+    }
+
+    /**
+     * Метод для получения объекта соединения с базой данных.
+     * Если объект не существует,то создается новый и помещяется
+     * в статичную переменную
+     *
+     * @return DB instance
+     */
+	public static function getInstance() {
+		if (self::$_instance === null) {
+			self::$_instance = new self;
 		}
+        return self::$_instance;
    	}
 
+    /**
+     * Получение данных в виде одной записи
+     *
+     * @param string $sql строка запроса с метками
+     * @param  array $unitDataSql данные для запроса
+     *
+     * @return array ассоциативный массив
+     */
+    public static function getOne($sql, $unitDataSql)
+    {
+        return self::dataRetrievalAssoc($sql, $unitDataSql,$oneRow = True);
+    }
 
-   	public static function lastError() {
-   		if (self::$link == null) {
-   			return mysqli_connect_error();
-   		} else {
-   			return mysqli_error(self::$link);
-   		}
-   	}
+    /**
+     * Получение всех записей в виде массива ассоциативных массивов
+     *
+     * @param string $sql строка запроса с метками
+     * @param array $unitDataSql данные для запроса
+     *
+     * @return array массив ассоциативных массивов
+     */
+    public static function getAll($sql, $unitDataSql)
+    {
+        return self::dataRetrievalAssoc($sql, $unitDataSql,$oneRow = False);
+    }
 
-
-   	public static function dataRetrievalAssoc($sql, $unitDataSql, $oneRow = false )
+    /**
+     * Получение записей согласно запросу
+     *
+     * @param string $sql строка запроса с метками
+     * @param array $unitDataSql данные для запроса
+     * @param booleans $oneRow вернуть в виде ассоциативного массива одной записи или
+     *                         массив ассоциативных массивов
+     * @return array результат запроса
+     */
+   	protected static function dataRetrievalAssoc($sql, $unitDataSql, $oneRow = false )
 	{
 	    $resultArray = [];
 
@@ -54,6 +132,14 @@ class DB {
 	    }
 	}
 
+    /**
+     *  Добавление записей в базу данных
+     *
+     * @param string $sql строка запроса с метками
+     * @param array $unitDataSql данные для запроса
+     *
+     * @return integer результат записи в таблицу. id записи.
+     */
 	public static function dataInsertion($sql, $unitDataSql)
 	{
 	    $sqlReady = self::db_get_prepare_stmt($sql, $unitDataSql);
@@ -71,8 +157,13 @@ class DB {
 
 	}
 
-	//Функция для обновления данных, которая возвращает количество обновлённых записей.
-
+    /**
+     * @param string $nameTable имя таблицы для обновления данных
+     * @param array $unitUpdatedData массив данных для обновления записей
+     * @param array $unitDataConditions массив данных для условия where
+     *
+     * @return integer количество обновленных записей
+     */
 	public static function dataUpdate($nameTable, $unitUpdatedData, $unitDataConditions)
 	{
 	    $updatingFields = "";
@@ -106,10 +197,19 @@ class DB {
 
 	}
 
-
+    /**
+     * Создает подготовленное выражение на основе готового SQL запроса и переданных данных
+     *
+     *
+     * @param string $sql SQL запрос с плейсхолдерами вместо значений
+     * @param array $data Данные для вставки на место плейсхолдеров
+     *
+     * @return mysqli_stmt Подготовленное выражение
+     */
     protected static function db_get_prepare_stmt($sql, $data = [])
     {
-        $stmt = mysqli_prepare(self::$link, $sql);
+        $db = self::getInstance();
+        $stmt = mysqli_prepare($db->link, $sql);
 
         if ($data) {
             $types = '';

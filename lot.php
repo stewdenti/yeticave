@@ -1,22 +1,15 @@
 <?php
 include ("functions.php");
-include ('Classes/DB.php');
-include ('Classes/Authenticate.php');
-include ("Classes/Categories.php");
-include ("Classes/Lots.php");
-include ("Classes/Binds.php");
-include ("Classes/Templates.php");
-// установка и проверка устновки соединения с бд
-session_start();
-DB::getConnection();
-$user = new Authenticate();
-//Заполняем данные для шаблона header
-$categories = Categories::getAll();
 
-$header_data = $user->getAuthorizedData();
+//проверка авторизации и получение данных
+$user_data = Authorization::getAuthData();
+
+$categories = Category::getAll();
+//заполняем данные для шаблона header
+$header_data = $user_data;
 $header_data["categories_equipment"] =$categories;
 //заполняем данные для шаблона main
-$data = $user->getAuthorizedData();
+$data = $user_data;
 $data["categories_equipment"] = $categories;
 //заполняем данные для шаблона footer
 $data_footer["categories_equipment"] = $categories;
@@ -25,16 +18,17 @@ $data_footer["categories_equipment"] = $categories;
 // проверка пришел ли id лота и получение данных о лоте  из базы
 $lot_item = "";
 $bets = "";
-$lot_id = $_REQUEST["id"];
+$lot_id = protectXSS($_REQUEST["id"]);
 
 $data["bind_done"] = false;
-if ($user->getAuthorizedData()) {
-    $data["bind_done"] = Binds::isPutAllowed($lot_id, $user->getAuthorizedData("id"));
+
+if ($user_data) {
+    $data["bind_done"] = Bind::isPutAllowed($lot_id, $user_data["user_id"]);
 }
 
 if (!empty($lot_id) && is_numeric($lot_id)) {
-    $lot_item = Lots::getByKey("id",$lot_id);
-    $lot_bets = Binds::getByLotID($lot_id);
+    $lot_item = Lot::getByKey("id",$lot_id);
+    $lot_bets = Bind::getByLotID($lot_id);
 }
 
 if ($lot_item == "") {
@@ -61,19 +55,19 @@ if (isset($_POST["send"])) {
         }
     }
     if (!$error) {
-        $maxBet = Binds::getMax($form_item["id"]);
+        $maxBet = Bind::getMax($form_item["id"]);
         if (!is_numeric($form_item['cost'])) {
             $error['cost'] = "Заполните ставку в виде числа";
         } else if ((int)$form_item['cost'] < $maxBet) {
             $error['cost'] = "Ставка должна быть больше ".$maxBet;
         } else {
             $data = array (
-                "user_id" => $user->getAuthorizedData("id"),
+                "user_id" => $user_data["user_id"],
                 "lot_id" => $form_item["id"],
                 "cost" => $form_item["cost"]
             );
 
-            $result = Binds::addNew($data);
+            $result = Bind::addNew($data);
 
             header("Location: /mylots.php");
             exit();
