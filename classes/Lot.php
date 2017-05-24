@@ -23,7 +23,7 @@ class Lot {
         GROUP BY lots.id ORDER BY lots.add_date DESC
         LIMIT 9;
         ";
-        $lots_data =  DB::getInstance()->getAll($sql, [$id]);
+        $lots_data = DB::getInstance()->getAll($sql, [$id]);
         return $lots_data;
     }
 
@@ -42,7 +42,7 @@ class Lot {
         LEFT JOIN binds ON lots.id = binds.`lot_id` WHERE `end_date` > NOW() and winner is NULL
         GROUP BY lots.id ORDER BY lots.add_date DESC
         LIMIT 9;";
-        $lots_data =  DB::getInstance()->getAll($sql, []);
+        $lots_data = DB::getInstance()->getAll($sql, []);
         return $lots_data;
     }
 
@@ -65,7 +65,7 @@ class Lot {
         WHERE lots.$key = ?
         GROUP BY lots.id";
 
-        $lot_data =  DB::getInstance()->getOne($sql, [$value]);
+        $lot_data = DB::getInstance()->getOne($sql, [$value]);
 
         if ($lot_data) {
             return $lot_data;
@@ -102,7 +102,7 @@ class Lot {
         $sql = "INSERT lots SET user_id = ?, category_id=?, name=?, description=?, img_path=?,
                 start_price=?, step=?, end_date=?, add_date=NOW()";
 
-        $lot_id =  DB::getInstance()->dataInsertion($sql, [
+        $lot_id = DB::getInstance()->dataInsertion($sql, [
             $data["user_id"], $data["category"], $data["lot-name"], $data["message"], $data["URL-img"],
             $data["price"], $data["lot-step"], date("Y:m:d H:i", strtotime($data["lot-date"]))
         ]);
