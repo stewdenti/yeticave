@@ -32,7 +32,7 @@
                             Мин. ставка <span><?php echo $lot_item["price"]+$lot_item["step"]?></span>
                         </div>
                     </div>
-                    <?php if (isset($username) && $bind_done): ?>
+                    <?php if (isset($user) && $bind_done): ?>
                     <form class="lot-item__form <?php if ($error):?>form--invalid<?php endif; ?>" action="/lot.php" method="post">
                         <p class="lot-item__form-item  <?php printInvalidItemClass($error, 'cost'); ?>">
                             <label for="cost">Ваша ставка</label>

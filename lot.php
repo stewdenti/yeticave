@@ -1,20 +1,15 @@
 <?php
-include ('functions.php');
-
-// установка и проверка устновки соединения с бд
-$link = create_connect();
-if (!$link) {
-    echo mysqli_connect_errno();
-    exit ();
-}
+include ("functions.php");
 session_start();
-//Заполняем данные для шаблона header
-$categories = getAllCategories($link);
-$user_data = requireAuthentication();
-$header_data = $user_data;
+//проверка авторизации и получение данных
+$user_data = Authorization::getAuthData();
+
+$categories = Category::getAll();
+//заполняем данные для шаблона header
+$header_data["user"] = $user_data;
 $header_data["categories_equipment"] =$categories;
 //заполняем данные для шаблона main
-$data = $user_data;
+$data["user"] = $user_data;
 $data["categories_equipment"] = $categories;
 //заполняем данные для шаблона footer
 $data_footer["categories_equipment"] = $categories;
@@ -23,16 +18,17 @@ $data_footer["categories_equipment"] = $categories;
 // проверка пришел ли id лота и получение данных о лоте  из базы
 $lot_item = "";
 $bets = "";
-$lot_id = $_REQUEST["id"];
+$lot_id = protectXSS($_REQUEST["id"]);
 
 $data["bind_done"] = false;
+
 if ($user_data) {
-    $data["bind_done"] = isMakeBindAllowed($link,$lot_id, $user_data["user_id"]);
+    $data["bind_done"] = Bind::isPutAllowed($lot_id, $user_data["id"]);
 }
 
 if (!empty($lot_id) && is_numeric($lot_id)) {
-    $lot_item = getLotByKey($link,"id",$lot_id);
-    $lot_bets = getBetsByLotID($link,$lot_id);
+    $lot_item = Lot::getByKey("id",$lot_id);
+    $lot_bets = Bind::getByLotID($lot_id);
 }
 
 if ($lot_item == "") {
@@ -59,19 +55,19 @@ if (isset($_POST["send"])) {
         }
     }
     if (!$error) {
-        $maxBet = getMaxBet($link, $form_item["id"]);
+        $maxBet = Bind::getMax($form_item["id"]);
         if (!is_numeric($form_item['cost'])) {
             $error['cost'] = "Заполните ставку в виде числа";
         } else if ((int)$form_item['cost'] < $maxBet) {
             $error['cost'] = "Ставка должна быть больше ".$maxBet;
         } else {
             $data = array (
-                "user_id" => $user_data["user_id"],
+                "user_id" => $user_data["id"],
                 "lot_id" => $form_item["id"],
                 "cost" => $form_item["cost"]
             );
 
-            $result = addNewBind($link, $data);
+            $result = Bind::addNew($data);
 
             header("Location: /mylots.php");
             exit();
@@ -79,16 +75,16 @@ if (isset($_POST["send"])) {
     }
     if ($error) {
         $data['error'] = $error;
-        echo connectTemplates("templates/header.php", $header_data);
-        echo connectTemplates("templates/main-lot.php", $data);
-        echo connectTemplates("templates/footer.php", $data_footer);
+        echo Templates::render("templates/header.php", $header_data);
+        echo Templates::render("templates/main-lot.php", $data);
+        echo Templates::render("templates/footer.php", $data_footer);
     }
     // блок else не нужен, т.к. если никаких ошибок не было найдено, то выполнение скрипта завершится раньше.
 } else {
     $data ["error"] = array();
 
-    echo connectTemplates("templates/header.php", $header_data);
-    echo connectTemplates("templates/main-lot.php", $data);
-    echo connectTemplates("templates/footer.php", $data_footer);
+    echo Templates::render("templates/header.php", $header_data);
+    echo Templates::render("templates/main-lot.php", $data);
+    echo Templates::render("templates/footer.php", $data_footer);
 }
     ?>

@@ -1,22 +1,17 @@
-<?php 
+<?php
 include ('functions.php');
-
 session_start();
-$link = create_connect();
-if (!$link) {
-    echo mysqli_connect_errno();
-    exit ();
-}
 
-$categories_list = getAllCategories($link);
+
+$header_data["user"] = Authorization::getAuthData();
+
+$categories_list = Category::getAll();
 
 if (!empty($_REQUEST["id"])) {
-    $lots_list = getLotsByCategoryId($link, $_REQUEST["id"]);
+    $lots_list = Lot::getByCategoryId($_REQUEST["id"]);
 }else {
-    $lots_list = getAllOpenLots($link);
+    $lots_list = Lot::getAllOpened();
 }
-
-$header_data = requireAuthentication();
 
 $data = array(
     "categories_equipment" => $categories_list,
@@ -27,9 +22,8 @@ $footer_data = array (
     "categories_equipment" => $categories_list,
 );
 
-echo connectTemplates("templates/header.php", $header_data);
-echo connectTemplates("templates/main.php", $data);
-echo connectTemplates("templates/footer.php", $footer_data);
-
+echo Templates::render("templates/header.php", $header_data);
+echo Templates::render("templates/main.php", $data);
+echo Templates::render("templates/footer.php", $footer_data);
 
 ?>

@@ -1,14 +1,7 @@
 <?php
 include ('functions.php');
-$link = create_connect();
-if (!$link) {
-    echo mysqli_connect_errno();
-    exit ();
-}
 
-$categories = getAllCategories($link);
-
-$data_footer["categories_equipment"] = $categories;
+$data_footer["categories_equipment"] = Category::getAll();
 
 if (isset($_POST["send"])) {
     $segnFormFilds = ['email', 'password', 'name', 'message'];
@@ -49,11 +42,11 @@ if (isset($_POST["send"])) {
     if($error) {
         $data["error"] = $error;
         $data["form_item"] = $form_item;
-        echo connectTemplates("templates/header.php", array());
-        echo connectTemplates("templates/registration-main.php", $data);
-        echo connectTemplates("templates/footer.php", $data_footer);
+        echo Templates::render("templates/header.php", array());
+        echo Templates::render("templates/registration-main.php", $data);
+        echo Templates::render("templates/footer.php", $data_footer);
      } else {
-         $user_id = addNewUser($link, $form_item);
+         $user_id = User::addNew($form_item);
          header("Location: /login.php");
          exit();
      }
@@ -62,9 +55,9 @@ if (isset($_POST["send"])) {
         "error" => array(),
         "form_item" => array(),
     );
-    echo connectTemplates("templates/header.php", array());
-    echo connectTemplates("templates/registration-main.php", $data);
-    echo connectTemplates("templates/footer.php", $data_footer);
+    echo Templates::render("templates/header.php", array());
+    echo Templates::render("templates/registration-main.php", $data);
+    echo Templates::render("templates/footer.php", $data_footer);
 }
 
 ?>
