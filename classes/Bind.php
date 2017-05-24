@@ -16,7 +16,7 @@ class Bind {
         $sql = "SELECT COUNT(price) AS number FROM binds
         WHERE lot_id=? AND user_id=? ";
 
-        $res = DB::getOne($sql, [ $lot_id, $user_id]);
+        $res = DB::getInstance()->getOne($sql, [ $lot_id, $user_id]);
         return $res["number"]<=0;
     }
 
@@ -33,7 +33,7 @@ class Bind {
         JOIN lots ON lots.id = binds.lot_id
         WHERE binds.lot_id=? AND binds.price != lots.start_price
         ORDER BY price DESC";
-        $bets = DB::getAll($sql, [$id]);
+        $bets = DB::getInstance()->getAll($sql, [$id]);
         return $bets;
     }
 
@@ -48,7 +48,7 @@ class Bind {
     {
         $sql = "INSERT binds SET user_id=?, lot_id=?, price=?, date=NOW();";
 
-        $result = DB::dataInsertion($sql, [$data["user_id"], $data["lot_id"], $data["cost"]]);
+        $result = DB::getInstance()->dataInsertion($sql, [$data["user_id"], $data["lot_id"], $data["cost"]]);
 
         if ($result) {
             return true;
@@ -67,7 +67,7 @@ class Bind {
     {
         $sql = "SELECT if(MAX( binds.`price` ), MAX( binds.`price`), start_price) AS max_price, step
         FROM lots LEFT JOIN binds ON lots.id=binds.lot_id WHERE lots.id=? GROUP BY lots.id ;";
-        $result = DB::getOne($sql, [$lot_id]);
+        $result = DB::getInstance()->getOne($sql, [$lot_id]);
         return $result["max_price"] + $result["step"];
     }
 

@@ -18,7 +18,7 @@ class User {
         foreach ($data as $value) {
             $unitDataSql[] = $value;
         }
-        $user_id = DB::dataInsertion($sql,  $unitDataSql);
+        $user_id =  DB::getInstance()->dataInsertion($sql,  $unitDataSql);
         if ($user_id) {
             return true;
         } else {
@@ -48,7 +48,7 @@ class User {
     {
         $result = null;
         $sql = "SELECT * FROM users WHERE $key=?;";
-        $result = DB::getOne($sql, [$value]);
+        $result =  DB::getInstance()->getOne($sql, [$value]);
         return $result;
     }
 

@@ -11,7 +11,7 @@ class Category {
     public static function getAll()
     {
         $sql = "SELECT `id`, `name` FROM categories;";
-        $categories = DB::getAll($sql, []);
+        $categories =  DB::getInstance()->getAll($sql, []);
         return $categories;
     }
 

@@ -38,7 +38,7 @@ class DB {
      *  Десктруктор для закрытия соедиения при уничтожении объекта
      *
      */
-    private function __destructor()
+    public function __destructor()
     {
         mysqli_close($this->link);
     }
@@ -74,9 +74,9 @@ class DB {
      *
      * @return array ассоциативный массив
      */
-    public static function getOne($sql, $unitDataSql)
+    public function getOne($sql, $unitDataSql)
     {
-        return self::dataRetrievalAssoc($sql, $unitDataSql,$oneRow = True);
+        return $this->dataRetrievalAssoc($sql, $unitDataSql, $oneRow = True);
     }
 
     /**
@@ -87,9 +87,9 @@ class DB {
      *
      * @return array массив ассоциативных массивов
      */
-    public static function getAll($sql, $unitDataSql)
+    public function getAll($sql, $unitDataSql)
     {
-        return self::dataRetrievalAssoc($sql, $unitDataSql,$oneRow = False);
+        return $this->dataRetrievalAssoc($sql, $unitDataSql, $oneRow = False);
     }
 
     /**
@@ -101,11 +101,11 @@ class DB {
      *                         массив ассоциативных массивов
      * @return array результат запроса
      */
-   	protected static function dataRetrievalAssoc($sql, $unitDataSql, $oneRow = false )
+   	protected function dataRetrievalAssoc($sql, $unitDataSql, $oneRow = false )
 	{
 	    $resultArray = [];
 
-	    $sqlReady = DB::getInstance()->db_get_prepare_stmt($sql, $unitDataSql);
+	    $sqlReady = $this->db_get_prepare_stmt($sql, $unitDataSql);
 
 	    if (!$sqlReady) {
 	        return $resultArray;
@@ -140,9 +140,9 @@ class DB {
      *
      * @return integer результат записи в таблицу. id записи.
      */
-	public static function dataInsertion($sql, $unitDataSql)
+	public function dataInsertion($sql, $unitDataSql)
 	{
-	    $sqlReady = DB::getInstance()->db_get_prepare_stmt($sql, $unitDataSql);
+	    $sqlReady = $this->db_get_prepare_stmt($sql, $unitDataSql);
 	    if (!$sqlReady) {
 	        return false;
 	    }
@@ -164,7 +164,7 @@ class DB {
      *
      * @return integer количество обновленных записей
      */
-	public static function dataUpdate($nameTable, $unitUpdatedData, $unitDataConditions)
+	public function dataUpdate($nameTable, $unitUpdatedData, $unitDataConditions)
 	{
 	    $updatingFields = "";
 	    $updatingValues = [];
@@ -181,7 +181,7 @@ class DB {
 
 	    $sql = "UPDATE `$nameTable` SET $updatingFields WHERE `$whereField`=?;";
 
-	    $sqlReady = DB::getInstance()->db_get_prepare_stmt($sql, $updatingValues);
+	    $sqlReady = $this->db_get_prepare_stmt($sql, $updatingValues);
 
 	    if (!$sqlReady) {
 	        return false;
