@@ -58,7 +58,8 @@ if (isset($_POST["send"])) {
         }
     }
     if (!$error) {
-        $maxBet = Bind::getMax($form_item["id"]);
+        $lot_item = Lot::getById($form_item["id"]);
+        $maxBet = $lot_item->getMinNextBet();
         if (!is_numeric($form_item['cost'])) {
             $error['cost'] = "Заполните ставку в виде числа";
         } else if ((int)$form_item['cost'] < $maxBet) {
