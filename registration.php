@@ -1,5 +1,6 @@
 <?php
-include ('functions.php');
+
+include ('autoload.php');
 
 $data_footer["categories_equipment"] = Category::getAll();
 
@@ -7,7 +8,7 @@ if (isset($_POST["send"])) {
     $segnFormFilds = ['email', 'password', 'name', 'message'];
     $form_item = array();
     $error = array();
-//проверяем значения глобального массива, куда ушли данные формы после отправки
+    // проверяем значения глобального массива, куда ушли данные формы после отправки
     foreach ($segnFormFilds as $key) {
         if (!empty($_POST[$key])) {
             if ($key == "password") {
@@ -22,7 +23,7 @@ if (isset($_POST["send"])) {
 
     if (!empty($_FILES["avatar"]["name"])) {
         $file = $_FILES["avatar"];
-    //Проверяем принят ли файл
+        //Проверяем принят ли файл
         if (file_exists($file['tmp_name'])) {
             $info = @getimagesize($file['tmp_name']);
             if (preg_match('{image/(.*)}is', $info["mime"], $p)) {

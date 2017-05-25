@@ -1,5 +1,7 @@
 <?php
-include ('functions.php');
+
+include ('autoload.php');
+
 session_start();
 
 

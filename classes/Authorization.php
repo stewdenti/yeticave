@@ -33,7 +33,7 @@ class Authorization {
      * получить данные о пользователе, которые хранятся в переменной сессии
      * если пользователь не авторизован,то вернется пустой массив
      *
-     * @return array массив данных о пользователе хранящихся в сессии
+     * @return User в сессии
      */
     public static function getAuthData ()
     {
@@ -57,9 +57,9 @@ class Authorization {
     {
         $errors = array();
 
-        $user = User::findByMail($email);
+        $user = User::findByEmail($email);
         if ($user) { //поиск пользователя по email
-            if (password_verify($password, $user["password"])) {//сравнение пароля с хешом пароля в массиве
+            if (password_verify($password, $user->password)) {//сравнение пароля с хешом пароля в массиве
                 session_start();
                 $_SESSION["user"] = $user;
                 return true;
