@@ -1,13 +1,4 @@
 <?php
-include ("classes/DB.php");
-include ("classes/Authorization.php");
-include ("classes/Category.php");
-include ("classes/Lot.php");
-include ("classes/Bind.php");
-include ("classes/Templates.php");
-include ("classes/User.php");
-
-
 
 /*Функция  protectXSS() проверяет, является ли аргумент строкой. Если яволяется, то пропускает эту строку через функцию
   htmlspecialchars(), которая заменяет символы тегов на мнимоники(спецсимволы). Если аргумент является массивом, то
@@ -19,10 +10,10 @@ function protectXSS($data)
             $data[$key] = protectXSS($value);
         }
         return $data;
-    } else {
+    } else if (is_string($data)) {
         return htmlspecialchars($data);
     }
-
+    return $data;
 }
 
 

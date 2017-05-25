@@ -1,5 +1,6 @@
 <?php
-include ('functions.php');
+
+include ('autoload.php');
 
 if (isset($_POST["send"])) {
     $loginFormFilds = ['email', 'password'];

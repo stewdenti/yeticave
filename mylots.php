@@ -1,5 +1,7 @@
 <?php
-include ('functions.php');
+
+include ('autoload.php');
+
 session_start();
 // проверяем авторизацию пользователя
 // $user_data = requireAuthentication(true);
@@ -10,7 +12,7 @@ $header_data["user"] = Authorization::getAuthData();
 
 $data_footer["categories_equipment"] = $categories;
 
-$data["rates"] = Lot::getAllBindsByUser($header_data["user"]["id"]);
+$data["rates"] = Bind::getByUserId($header_data["user"]->id);
 
 echo Templates::render("templates/header.php", $header_data);
 echo Templates::render("templates/mylot-main.php", $data);

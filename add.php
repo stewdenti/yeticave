@@ -1,5 +1,5 @@
 <?php
-include ('functions.php');
+include ('autoload.php');
 session_start();
 
 Authorization::blockAccess();
@@ -67,7 +67,7 @@ if (isset($_POST["send"])) {
         echo Templates::render("templates/footer.php", $data_footer);
     }
     else {
-        $lot_item["user_id"] = $user_data["id"];
+        $lot_item["user_id"] = $user_data->id;
         $lot_id = Lot::addNew($lot_item);
         header("Location: /lot.php?id=".$lot_id);
         exit();

@@ -76,7 +76,8 @@ class DB {
      */
     public function getOne($sql, $unitDataSql)
     {
-        return $this->dataRetrievalAssoc($sql, $unitDataSql, $oneRow = True);
+        $result = $this->dataRetrievalAssoc($sql, $unitDataSql, $oneRow = True);
+        return $result ?: null;
     }
 
     /**
@@ -97,7 +98,7 @@ class DB {
      *
      * @param string $sql строка запроса с метками
      * @param array $unitDataSql данные для запроса
-     * @param booleans $oneRow вернуть в виде ассоциативного массива одной записи или
+     * @param boolean $oneRow вернуть в виде ассоциативного массива одной записи или
      *                         массив ассоциативных массивов
      * @return array результат запроса
      */
@@ -208,8 +209,10 @@ class DB {
      */
     protected function db_get_prepare_stmt($sql, $data = [])
     {
-
         $stmt = mysqli_prepare($this->link, $sql);
+		if (!$stmt) {
+			throw new Exception('stmt error');
+		}
 
         if ($data) {
             $types = '';

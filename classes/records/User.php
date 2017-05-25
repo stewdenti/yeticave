@@ -1,14 +1,29 @@
 <?php
+
 /**
  * Класс для работы с пользователями
- *
  */
-class User {
+class User extends BaseRecord {
+
+    public $email;
+    public $password;
+    public $name;
+    public $contacts;
+    public $avatar_img;
+
+    protected static function tableName() {
+        return 'users';
+    }
+
+    public function dbFields()
+    {
+        return ['id', 'email', 'password', 'name', 'contacts', 'avatar_img'];
+    }
 
     /**
      * @param array $data массив с данными для добавления в таблицу
      *
-     * @return booleans результат выполнения команды
+     * @return boolean результат выполнения команды
      */
     public static function addNew($data = array())
     {
@@ -19,11 +34,7 @@ class User {
             $unitDataSql[] = $value;
         }
         $user_id = DB::getInstance()->dataInsertion($sql,  $unitDataSql);
-        if ($user_id) {
-            return true;
-        } else {
-            return false;
-        }
+        return $user_id ? true : false;
     }
 
     /**
@@ -33,25 +44,9 @@ class User {
      *
      * @return array|null возвращает результат поиска пользователя
      */
-    public static function findByMail($email)
+    public static function findByEmail($email)
     {
-        return self::getUserByKey($key = "email", $value = $email);
+        return self::getByKey($key = "email", $email);
     }
-
-    /**
-     * @param  string $key ключ для поиска пользователя в таблице
-     * @param  string $value значения ключа для поиска пользователя
-     *
-     * @return array|null
-     */
-    protected static function getUserByKey($key="email", $value="")
-    {
-        $result = null;
-        $sql = "SELECT * FROM users WHERE $key=?;";
-        $result = DB::getInstance()->getOne($sql, [$value]);
-        return $result;
-    }
-
-
 }
 

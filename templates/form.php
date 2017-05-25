@@ -1,4 +1,6 @@
-
+<?php
+/** @var Category[] $categories_equipment */
+?>
 <form class="form form--add-lot container <?php if ($error):?>form--invalid<?php endif; ?>" action="/add.php" method="post" enctype="multipart/form-data"> <!-- form--invalid -->
     <h2>Добавление лота</h2>
     <div class="form__container-two">
@@ -12,10 +14,10 @@
             <select id="category" name="category">
                 <option value="">Выберите категорию</option>
                 <?php foreach ($categories_equipment as $value) {
-                    if (isset($lot_item['category']) && $lot_item['category']==$value["id"]) {
-                        echo "<option value=\"".$value["id"]."\" selected>".$value["name"]."</option>";
+                    if (isset($lot_item['category']) && $lot_item['category']==$value->id) {
+                        echo "<option value=\"".$value->id."\" selected>".$value->name."</option>";
                     } else {
-                        echo "<option value=\"".$value["id"]."\">".$value["name"]."</option>";
+                        echo "<option value=\"".$value->id."\">".$value->name."</option>";
                     }
                 } ?>
             </select>
