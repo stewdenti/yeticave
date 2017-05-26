@@ -40,30 +40,43 @@ abstract class BaseRecord {
         throw new Exception('not implemented');
     }
 
-    public function insert()    
+    public function insert()
     {
-           $sql = ""
+            $insert_fields = "";
+            $insert_values = [];
+            foreach ($this->dbFields() as $field) {
+                if (isset($this->$field)) {
+                    $insert_fields .= "".$field." = ?, ";
+                    $insert_values[] = $this->$field;
+                } 
+            }
+            $insert_fields = substr($insert_fields, 0, -2);
+
+            $sql = "INSERT ".static::tableName()." SET $insert_fields;";
+
+            $this->id = DB::getInstance()->dataInsertion($sql, $insert_values);
     }
 
     public function update()
     {
-    
+            if (!isset($this->id)) {
+                $this->insert();
+            } else {
+                $update_data = [];
+                foreach ($this->dbFields() as $field) {
+                    if (isset($this->$field)) {
+                        $update_data[$field] = $this->$field;                                       
+                    }
+                }                
+                $update_result = DB::getInstance()->dataUpdate($this->tableName(), $update_data, ["id"=>$this->id]);
+                return $update_result;
+            }
+
+            
     }
 
-    public function delete ()
+    public function delete()
     {
-    
+        return DB::getInstance()->dataDelete($this->tableName(),["id"=>$this->id]);
     }
 }
-public static function addNew($data = array())
-    {
-        $sql = "INSERT lots SET user_id = ?, category_id=?, name=?, description=?, img_path=?,
-                start_price=?, step=?, end_date=?, add_date=NOW()";
-
-        $lot_id = DB::getInstance()->dataInsertion($sql, [
-            $data["user_id"], $data["category"], $data["lot-name"], $data["message"], $data["URL-img"],
-            $data["price"], $data["lot-step"], date("Y:m:d H:i", strtotime($data["lot-date"]))
-        ]);
-
-        return $lot_id ?: false;
-    }

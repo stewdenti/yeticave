@@ -9,7 +9,7 @@ class DB {
      * свойство для хранения ресурса соединения до базы данных
      * @var null
      */
-	private $link = null;
+    private $link = null;
     /**
      * Хранение текста сообщения последней ошибки
      * @var null
@@ -59,12 +59,12 @@ class DB {
      *
      * @return DB instance
      */
-	public static function getInstance() {
-		if (self::$_instance === null) {
-			self::$_instance = new self;
-		}
+    public static function getInstance() {
+        if (self::$_instance === null) {
+            self::$_instance = new self;
+        }
         return self::$_instance;
-   	}
+    }
 
     /**
      * Получение данных в виде одной записи
@@ -102,36 +102,36 @@ class DB {
      *                         массив ассоциативных массивов
      * @return array результат запроса
      */
-   	protected function dataRetrievalAssoc($sql, $unitDataSql, $oneRow = false )
-	{
-	    $resultArray = [];
+    protected function dataRetrievalAssoc($sql, $unitDataSql, $oneRow = false )
+    {
+        $resultArray = [];
 
-	    $sqlReady = $this->db_get_prepare_stmt($sql, $unitDataSql);
+        $sqlReady = $this->db_get_prepare_stmt($sql, $unitDataSql);
 
-	    if (!$sqlReady) {
-	        return $resultArray;
-	    }
+        if (!$sqlReady) {
+            return $resultArray;
+        }
 
-	    if (mysqli_stmt_execute($sqlReady)) {
-	        $result = mysqli_stmt_get_result($sqlReady);
-	    } else {
-	        $result = false;
-	    }
+        if (mysqli_stmt_execute($sqlReady)) {
+            $result = mysqli_stmt_get_result($sqlReady);
+        } else {
+            $result = false;
+        }
 
-	    if ($result) {
-	        while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
-	            $resultArray[] = $row;
-	        }
-	    }
+        if ($result) {
+            while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
+                $resultArray[] = $row;
+            }
+        }
 
-	    mysqli_stmt_close($sqlReady);
+        mysqli_stmt_close($sqlReady);
 
-	    if ($oneRow && count($resultArray) == 1) {
-	        return $resultArray[0];
-	    } else {
-	        return $resultArray;
-	    }
-	}
+        if ($oneRow && count($resultArray) == 1) {
+            return $resultArray[0];
+        } else {
+            return $resultArray;
+        }
+    }
 
     /**
      *  Добавление записей в базу данных
@@ -141,22 +141,22 @@ class DB {
      *
      * @return integer результат записи в таблицу. id записи.
      */
-	public function dataInsertion($sql, $unitDataSql)
-	{
-	    $sqlReady = $this->db_get_prepare_stmt($sql, $unitDataSql);
-	    if (!$sqlReady) {
-	        return false;
-	    }
+    public function dataInsertion($sql, $unitDataSql)
+    {
+        $sqlReady = $this->db_get_prepare_stmt($sql, $unitDataSql);
+        if (!$sqlReady) {
+            return false;
+        }
 
-	    if (mysqli_stmt_execute($sqlReady)) {
-	        $result = mysqli_stmt_insert_id($sqlReady);
-	    } else {
-	        $result = false;
-	    }
-	    mysqli_stmt_close($sqlReady);
-	    return $result;
+        if (mysqli_stmt_execute($sqlReady)) {
+            $result = mysqli_stmt_insert_id($sqlReady);
+        } else {
+            $result = false;
+        }
+        mysqli_stmt_close($sqlReady);
+        return $result;
 
-	}
+    }
 
     /**
      * @param string $nameTable имя таблицы для обновления данных
@@ -165,38 +165,53 @@ class DB {
      *
      * @return integer количество обновленных записей
      */
-	public function dataUpdate($nameTable, $unitUpdatedData, $unitDataConditions)
-	{
-	    $updatingFields = "";
-	    $updatingValues = [];
+    public function dataUpdate($nameTable, $unitUpdatedData, $unitDataConditions)
+    {
+        $updatingFields = "";
+        $updatingValues = [];
 
-	    foreach ($unitUpdatedData as $key => $value) {
-	        $updatingFields .= "`$key`=?, ";
-	        $updatingValues[] = $value;
-	    }
+        foreach ($unitUpdatedData as $key => $value) {
+            $updatingFields .= "`$key`=?, ";
+            $updatingValues[] = $value;
+        }
 
-	    $updatingFields = substr($updatingFields, 0, -2);
+        $updatingFields = substr($updatingFields, 0, -2);
 
-	    $whereField = array_keys($unitDataConditions)[0];
-	    $updatingValues[] = array_values($unitDataConditions)[0];
+        $whereField = array_keys($unitDataConditions)[0];
+        $updatingValues[] = array_values($unitDataConditions)[0];
 
-	    $sql = "UPDATE `$nameTable` SET $updatingFields WHERE `$whereField`=?;";
+        $sql = "UPDATE `$nameTable` SET $updatingFields WHERE `$whereField`=?;";
 
-	    $sqlReady = $this->db_get_prepare_stmt($sql, $updatingValues);
+        $sqlReady = $this->db_get_prepare_stmt($sql, $updatingValues);
 
-	    if (!$sqlReady) {
-	        return false;
-	    }
-	    if (mysqli_stmt_execute($sqlReady)) {
-	        $result = mysqli_stmt_affected_rows($sqlReady);
+        if (!$sqlReady) {
+            return false;
+        }
+        if (mysqli_stmt_execute($sqlReady)) {
+            $result = mysqli_stmt_affected_rows($sqlReady);
 
-	    } else {
-	        $result = false;
-	    }
-	    mysqli_stmt_close($sqlReady);
-	    return $result;
+        } else {
+            $result = false;
+        }
+        mysqli_stmt_close($sqlReady);
+        return $result;
 
-	}
+    }
+
+    public function dataDelete($nameTable, $unitDataConditions)
+    {
+        $whereField = array_keys($unitDataConditions)[0];
+        $whereValue = array_values($unitDataConditions)[0];
+
+        $sql = "DELETE FROM `$nameTable` WHERE `$whereField`=?";
+        $sqlReady = $this->db_get_prepare_stmt($sql, [$whereValue]);
+
+        if (!$sqlReady) {
+            return false;
+        }
+        $result = mysqli_stmt_execute($sqlReady);
+        return $result;
+    }
 
     /**
      * Создает подготовленное выражение на основе готового SQL запроса и переданных данных
@@ -210,9 +225,9 @@ class DB {
     protected function db_get_prepare_stmt($sql, $data = [])
     {
         $stmt = mysqli_prepare($this->link, $sql);
-		if (!$stmt) {
-			throw new Exception('stmt error');
-		}
+        if (!$stmt) {
+            throw new Exception('stmt error');
+        }
 
         if ($data) {
             $types = '';
