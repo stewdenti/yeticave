@@ -2,7 +2,7 @@
 
 abstract class BaseRecord {
 
-    public $id;
+    protected $id;
 
     /**
      * @param array $dataFromDb массив вида ['id' => 123, 'name' => 'some name'] пришедший из базы
@@ -14,6 +14,16 @@ abstract class BaseRecord {
                 $this->$field = $dataFromDb[$field];
             }
         }
+    }
+
+    public function __get($name) 
+    {
+        return $this->$name;
+    }
+
+    public function __set($name, $value) 
+    {
+        $this->$name = $value;
     }
 
     /**
@@ -30,33 +40,30 @@ abstract class BaseRecord {
         throw new Exception('not implemented');
     }
 
-    /**
-     * Выбор записи по id с созданием объекта класса, у которого этот метод вызван
-     * Например User::getById() создаст объект пользователя
-     * @param $id
-     * @return BaseRecord
-     * @throws Exception
-     */
-    public static function getById($id)
+    public function insert()    
     {
-        $sql = "SELECT * FROM ".static::tableName()." WHERE id = ?";
-        $result = DB::getInstance()->getOne($sql, [$id]);
-        $className = get_called_class();
-        return new $className($result);
+           $sql = ""
     }
 
-    /**
-     * Поиск в таблице по ключу, возвращает объект класса, у которого метод вызван
-     * @param  string $key ключ для поиска в таблице
-     * @param  string $value значения ключа для поиска
-     *
-     * @return array|null
-     */
-    protected static function getByKey($key, $value)
+    public function update()
     {
-        $sql = "SELECT * FROM ".static::tableName()." WHERE $key=?;";
-        $result = DB::getInstance()->getOne($sql, [$value]);
-        $className = get_called_class();
-        return new $className($result);
+    
+    }
+
+    public function delete ()
+    {
+    
     }
 }
+public static function addNew($data = array())
+    {
+        $sql = "INSERT lots SET user_id = ?, category_id=?, name=?, description=?, img_path=?,
+                start_price=?, step=?, end_date=?, add_date=NOW()";
+
+        $lot_id = DB::getInstance()->dataInsertion($sql, [
+            $data["user_id"], $data["category"], $data["lot-name"], $data["message"], $data["URL-img"],
+            $data["price"], $data["lot-step"], date("Y:m:d H:i", strtotime($data["lot-date"]))
+        ]);
+
+        return $lot_id ?: false;
+    }

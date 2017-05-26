@@ -8,6 +8,8 @@ $map = [
     'Category' => 'classes/records/Category.php',
     'Lot' => 'classes/records/Lot.php',
     'User' => 'classes/records/User.php',
+    "BaseFinder" => "classes/finders/BaseFinder.php",
+    "CategoryFinder" => "classes/finders/CategoryFinder.php",
 
     'Authorization' => 'classes/Authorization.php',
     'DB' => 'classes/DB.php',

@@ -4,8 +4,9 @@
  *
  */
 class Category extends BaseRecord {
-
-    public $name;
+    
+    protected $id;
+    protected $name;
 
     protected static function tableName() {
         return 'categories';
@@ -16,17 +17,20 @@ class Category extends BaseRecord {
         return ['id', 'name'];
     }
 
-    /**
-     * @return Category[]
-     */
-    public static function getAll()
-    {
-        $sql = "SELECT `id`, `name` FROM categories;";
-        return array_map(
-            function($c) {
-                return new Category($c);
-            },
-            DB::getInstance()->getAll($sql, [])
-        );
-    }
+
+    // /**
+    //  * @return Category[]
+    //  */
+    // public static function getAll()
+    // {
+    //     $sql = "SELECT `id`, `name` FROM categories;";
+    //     return array_map(
+    //         function($c) {
+    //             return new Category($c);
+    //         },
+    //         DB::getInstance()->getAll($sql, [])
+    //     );
+    // }
+
 }
+

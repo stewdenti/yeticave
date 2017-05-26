@@ -7,7 +7,7 @@ session_start();
 
 $header_data["user"] = Authorization::getAuthData();
 
-$categories_list = Category::getAll();
+$categories_list = CategoryFinder::getAll();
 
 if (!empty($_REQUEST["id"])) {
     $lots_list = Lot::getByCategoryId($_REQUEST["id"]);
