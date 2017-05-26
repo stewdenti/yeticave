@@ -57,7 +57,7 @@ class Authorization {
     {
         $errors = array();
 
-        $user = User::findByEmail($email);
+        $user = UserFinder::findByEmail($email);
         if ($user) { //поиск пользователя по email
             if (password_verify($password, $user->password)) {//сравнение пароля с хешом пароля в массиве
                 session_start();

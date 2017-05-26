@@ -16,12 +16,12 @@ abstract class BaseRecord {
         }
     }
 
-    public function __get($name) 
+    public function __get($name)
     {
         return $this->$name;
     }
 
-    public function __set($name, $value) 
+    public function __set($name, $value)
     {
         $this->$name = $value;
     }
@@ -48,15 +48,14 @@ abstract class BaseRecord {
                 if (isset($this->$field)) {
                     $insert_fields .= "".$field." = ?, ";
                     $insert_values[] = $this->$field;
-                } 
+                }
             }
             $insert_fields = substr($insert_fields, 0, -2);
 
-            $sql = "INSERT ".static::tableName()." SET $insert_fields;";
-
+            $sql = "INSERT ".static::tableName()." SET $insert_fields ;";
             $this->id = DB::getInstance()->dataInsertion($sql, $insert_values);
 
-            return $result ? true : false;
+            return $this->id ? true : false;
     }
 
     public function update()
@@ -67,14 +66,14 @@ abstract class BaseRecord {
                 $update_data = [];
                 foreach ($this->dbFields() as $field) {
                     if (isset($this->$field)) {
-                        $update_data[$field] = $this->$field;                                       
+                        $update_data[$field] = $this->$field;
                     }
-                }                
+                }
                 $update_result = DB::getInstance()->dataUpdate($this->tableName(), $update_data, ["id"=>$this->id]);
                 return $update_result;
             }
 
-            
+
     }
 
     public function delete()

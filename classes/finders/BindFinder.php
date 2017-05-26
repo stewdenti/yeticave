@@ -10,7 +10,7 @@ class BindFinder extends BaseFinder
 
     protected static function entityName()
     {
-        
+
         return "Bind";
     }
 
@@ -40,10 +40,17 @@ class BindFinder extends BaseFinder
 
     public static function getLastBindByUserIdAndLotId($userId, $lot_id) {
         $sql = "SELECT * FROM ".self::tableName()." WHERE user_id = ? AND lot_id = ? ORDER BY price DESC LIMIT 1";
-        $result = DB::getInstance()->getOne($sql, [$userId, $lot_id);
+        $result = DB::getInstance()->getOne($sql, [$userId, $lot_id]);
         $entity = self::entityName();
         return $result ? new $entity($result) : null;
     }
 
-    
+    public static function canMakeBet($lot_id, $user_id)
+    {
+        $bets = self::getByLotID($lot_id);  // первая в массиве = последняя по времени
+        if (empty($bets)) {
+            return true;
+        }
+        return $bets[0]->user_id != $user_id;
+    }
 }

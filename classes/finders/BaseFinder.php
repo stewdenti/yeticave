@@ -1,9 +1,9 @@
 <?php
 
-abstract class BaseFinder 
+abstract class BaseFinder
 {
-    
-    
+
+
 
     protected static function tableName()
     {
@@ -27,8 +27,8 @@ abstract class BaseFinder
         $sql = "SELECT * FROM ".static::tableName()." WHERE id = ?";
         $result = DB::getInstance()->getOne($sql, [$id]);
         $entityName =  static::entityName();
-        return new $entityName($result);
-        
+        return $result ? new $entityName($result): null;
+
     }
 
     /**
@@ -43,7 +43,7 @@ abstract class BaseFinder
         $sql = "SELECT * FROM ".static::tableName()." WHERE $key=?;";
         $result = DB::getInstance()->getOne($sql, [$value]);
         $entityName =  static::entityName();
-        return new $entityName($result);
+        return $result ? new $entityName($result) : null;
     }
 
 

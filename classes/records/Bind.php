@@ -37,7 +37,7 @@ class Bind extends BaseRecord {
         $user = UserFinder::getById($this->user_id);
         return $user->name;
     }
-    
+
     /**
      * Может ли пользователь сделать ставку
      *
@@ -45,14 +45,14 @@ class Bind extends BaseRecord {
      * @param  integer $user_id id пользователя
      * @return boolean разрешено или нет
      */
-    public static function canMakeBet($lot_id, $user_id)
-    {
-        $bets = BindFinder::getByLotID($lot_id);  // первая в массиве = последняя по времени
-        if (empty($bets)) {
-            return true;
-        }
-        return $bets[0]->user_id != $user_id;
-    }
+    // public static function canMakeBet($lot_id, $user_id)
+    // {
+    //     $bets = BindFinder::getByLotID($lot_id);  // первая в массиве = последняя по времени
+    //     if (empty($bets)) {
+    //         return true;
+    //     }
+    //     return $bets[0]->user_id != $user_id;
+    // }
 
     /**
      * получение всех ставок для лота

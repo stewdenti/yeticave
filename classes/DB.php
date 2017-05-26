@@ -28,7 +28,7 @@ class DB {
      */
     private function __construct()
     {
-        $this->link = mysqli_connect("localhost", "root", "mysql", "yeticave_db");
+        $this->link = mysqli_connect("localhost", "root", "", "yeticave_db");
         if (!$this->link) {
             $this->error = mysqli_connect_error();
         }
@@ -48,7 +48,7 @@ class DB {
      *
      * @return [type]
      */
-    public function getlastError() {
+    public function getLastError() {
         return $this->error;
     }
 
@@ -107,14 +107,15 @@ class DB {
         $resultArray = [];
 
         $sqlReady = $this->db_get_prepare_stmt($sql, $unitDataSql);
-
         if (!$sqlReady) {
+            $this->error = mysqli_error($this->link);
             return $resultArray;
         }
-
         if (mysqli_stmt_execute($sqlReady)) {
             $result = mysqli_stmt_get_result($sqlReady);
         } else {
+            $this->error = mysqli_error($this->link);
+
             $result = false;
         }
 
@@ -145,14 +146,17 @@ class DB {
     {
         $sqlReady = $this->db_get_prepare_stmt($sql, $unitDataSql);
         if (!$sqlReady) {
+
             return false;
         }
 
         if (mysqli_stmt_execute($sqlReady)) {
             $result = mysqli_stmt_insert_id($sqlReady);
         } else {
+            $this->error =mysqli_stmt_error($sqlReady);
             $result = false;
         }
+
         mysqli_stmt_close($sqlReady);
         return $result;
 
