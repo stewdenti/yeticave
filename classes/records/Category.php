@@ -4,29 +4,27 @@
  *
  */
 class Category extends BaseRecord {
+    
+    protected $id;
+    protected $name;
 
-    public $name;
-
+    /**
+     * возвращает имя таблицы
+     *
+     * @return string имя таблицы
+     */
     protected static function tableName() {
         return 'categories';
     }
+    
+    /**
+     * возвращает список полей таблицы
+     * @return array список полей
+     */
 
     public function dbFields()
     {
         return ['id', 'name'];
     }
-
-    /**
-     * @return Category[]
-     */
-    public static function getAll()
-    {
-        $sql = "SELECT `id`, `name` FROM categories;";
-        return array_map(
-            function($c) {
-                return new Category($c);
-            },
-            DB::getInstance()->getAll($sql, [])
-        );
-    }
 }
+

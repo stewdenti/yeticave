@@ -7,12 +7,12 @@ session_start();
 // $user_data = requireAuthentication(true);
 Authorization::blockAccess();
 
-$categories = Category::getAll();
+$categories = CategoryFinder::getAll();
 $header_data["user"] = Authorization::getAuthData();
 
 $data_footer["categories_equipment"] = $categories;
 
-$data["rates"] = Bind::getByUserId($header_data["user"]->id);
+$data["rates"] = BindFinder::getByUserId($header_data["user"]->id);
 
 echo Templates::render("templates/header.php", $header_data);
 echo Templates::render("templates/mylot-main.php", $data);

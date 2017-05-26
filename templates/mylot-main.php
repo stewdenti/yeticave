@@ -5,8 +5,8 @@
     <h2>Мои ставки</h2>
     <table class="rates__list">
         <?php
-        foreach ($rates as $value):
-            $lot = $value->getLot();
+        foreach ($rates as $bind):
+            $lot = $bind->getLot();
         ?>
         <tr class="rates__item">
             <td class="rates__info">
@@ -25,7 +25,7 @@
                 <?=$lot->getCurrentBet()?> р
             </td>
             <td class="rates__time">
-                <?=formatTime($lot->end_date)?>
+                <?=formatTime($bind->date)?>
             </td>
         </tr>
         <?php endforeach;?>

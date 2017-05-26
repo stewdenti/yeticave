@@ -7,7 +7,7 @@ Authorization::blockAccess();
 $user_data = Authorization::getAuthData();
 $header_data["user"] = $user_data;
 
-$categories = Category::getAll();
+$categories = CategoryFinder::getAll();
 $data ["categories_equipment"] = $categories;
 $data_footer["categories_equipment"] = $categories;
 
@@ -16,8 +16,8 @@ if (isset($_POST["send"])) {
     $error = array();
     //проверяем значения глобального массива, куда ушли данные формы после отправки
 
-    $expectedPostData = ['lot-name', 'message', 'category', 'lot-date', 'price', 'lot-step'];
-    $expectedNumericFields = ['price', 'lot-step'];
+    $expectedPostData = ['name', 'description', 'category_id', 'end_date', 'start_price', 'step'];
+    $expectedNumericFields = ['start_price', 'step'];
 
     foreach ($expectedPostData as $key) {
         if (!empty($_POST[$key])) {
@@ -35,23 +35,23 @@ if (isset($_POST["send"])) {
         }
     }
 
-    $file = $_FILES["lot-img"];
+    $file = $_FILES["img_path"];
     //Проверяем принят ли файл
     if (file_exists($file['tmp_name'])) {
         $info = @getimagesize($file['tmp_name']);
         if (preg_match('{image/(.*)}is', $info["mime"], $p)) {
             $name = "img/".time().".".$p[1];//делаем имя равным текущему времени в секундах
             move_uploaded_file($file['tmp_name'], $name);//добавляем файл в папку
-            $lot_item["URL-img"] = $name;//путь до папки
+            $lot_item["img_path"] = $name;//путь до папки
         } else {
-            $error["lot-img"] = "Попытка добавить файл недопустимого формата";
+            $error["img_path"] = "Попытка добавить файл недопустимого формата";
         }
     } else {
-        $error["lot-img"] = "файл не выбран";
+        $error["img_path"] = "файл не выбран";
     }
 
-    if (!empty($lot_item["lot-date"]) && strtotime($lot_item["lot-date"]) < time()) {
-        $error["lot-date"] = "Время оконачания лота задано в прошлом";
+    if (!empty($lot_item["end_date"]) && strtotime($lot_item["end_date"]) < time()) {
+        $error["end_date"] = "Время оконачания лота задано в прошлом";
     }
 
     //в зависимости от выполнения условий в if, подключаем разные шаблоны
@@ -68,8 +68,11 @@ if (isset($_POST["send"])) {
     }
     else {
         $lot_item["user_id"] = $user_data->id;
-        $lot_id = Lot::addNew($lot_item);
-        header("Location: /lot.php?id=".$lot_id);
+        $lot_item["add_date"] = date("Y:m:d H:i:s");
+        $lot_item["end_date"] = date("Y:m:d H:i", strtotime($lot_item["end_date"]));
+        $l = new Lot($lot_item);
+        $l->insert();
+        header("Location: /lot.php?id=".$l->id);
         exit();
     }
 } else {

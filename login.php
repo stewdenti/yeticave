@@ -31,7 +31,7 @@ if (isset($_POST["send"])) {
 
 //получение всех категорий
 
-$data_footer["categories_equipment"] = Category::getAll();
+$data_footer["categories_equipment"] = CategoryFinder::getAll();
 
 echo Templates::render("templates/header.php", array());
 echo Templates::render("templates/main-login.php", $data);
