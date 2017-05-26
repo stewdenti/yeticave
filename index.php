@@ -10,9 +10,9 @@ $header_data["user"] = Authorization::getAuthData();
 $categories_list = CategoryFinder::getAll();
 
 if (!empty($_REQUEST["id"])) {
-    $lots_list = Lot::getByCategoryId($_REQUEST["id"]);
+    $lots_list = LotFinder::getByCategoryId($_REQUEST["id"]);
 }else {
-    $lots_list = Lot::getAllOpened();
+    $lots_list = LotFinder::getAllOpened();
 }
 
 $data = array(

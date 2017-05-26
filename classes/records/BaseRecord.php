@@ -55,6 +55,8 @@ abstract class BaseRecord {
             $sql = "INSERT ".static::tableName()." SET $insert_fields;";
 
             $this->id = DB::getInstance()->dataInsertion($sql, $insert_values);
+
+            return $result ? true : false;
     }
 
     public function update()

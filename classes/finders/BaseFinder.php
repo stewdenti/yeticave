@@ -58,5 +58,6 @@ abstract class BaseFinder
             DB::getInstance()->getAll($sql, [])
         );
     }
+
 }
 

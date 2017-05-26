@@ -10,6 +10,9 @@ $map = [
     'User' => 'classes/records/User.php',
     "BaseFinder" => "classes/finders/BaseFinder.php",
     "CategoryFinder" => "classes/finders/CategoryFinder.php",
+    "BindFinder" => "classes/finders/BindFinder.php",
+    "LotFinder" => "classes/finders/LotFinder.php",
+    "UserFinder" => "classes/finders/UserFinder.php",
 
     'Authorization' => 'classes/Authorization.php',
     'DB' => 'classes/DB.php',
