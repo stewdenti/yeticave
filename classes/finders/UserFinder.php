@@ -30,7 +30,7 @@ class UserFinder extends BaseFinder
      */
     public static function findByEmail($email)
     {
-        return self::getByKey($key = "email", $email);
+        return self::getOneByKey($key = "email", $email);
     }
     
 }

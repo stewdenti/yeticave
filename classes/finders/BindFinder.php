@@ -30,14 +30,7 @@ class BindFinder extends BaseFinder
      */
     public static function getByLotID($lotId)
     {
-        $sql = "SELECT * FROM binds WHERE binds.lot_id=? ORDER BY price DESC";
-        return array_map(
-            function($b) {
-                $entity = self::entityName();
-                return new $entity($b);
-            },
-            DB::getInstance()->getAll($sql, [protectXSS($lotId)])
-        );
+        return self::getByKey('lot_id', $lotId, 'price DESC');
     }
 
     /**
@@ -47,14 +40,7 @@ class BindFinder extends BaseFinder
      */
     public static function getByUserId($userId)
     {
-        $sql = "SELECT * FROM binds WHERE user_id=? ORDER BY price DESC";
-        return array_map(
-            function($b) {
-                $entity = self::entityName();
-                return new $entity($b);
-            },
-            DB::getInstance()->getAll($sql, [protectXSS($userId)])
-        );
+        return self::getByKey('user_id', $userId, 'price DESC');
     }
 
     /**

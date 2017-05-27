@@ -19,7 +19,6 @@ class CategoryFinder extends BaseFinder
      */
     protected static function entityName()
     {
-        
         return "Category";
     }
     

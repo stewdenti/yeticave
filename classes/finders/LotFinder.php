@@ -19,7 +19,6 @@ class LotFinder extends BaseFinder
      */
     protected static function entityName()
     {
-        
         return "Lot";
     }
 
@@ -68,20 +67,13 @@ class LotFinder extends BaseFinder
      */
     public static function getByUserId($userId)
     {
-        $sql = "SELECT * FROM ".self::tableName()." WHERE user_id = ? ORDER BY add_date DESC LIMIT 9;";
-        return array_map(
-            function($l) {
-                $entity = self::entityName();
-                return new $entity($l);
-            },
-            DB::getInstance()->getAll($sql, [$userId])
-        );
+        return self::getByKey('user_id', $userId, 'add_date DESC', 9);
     }
 
     /**
      * осуществляет поиск по заданой строке
      *
-     * @param string $string строка по которой осуществляется поиск
+     * @param string $searchString строка по которой осуществляется поиск
      * @return array массив объектов класса Lot
      */
     public static function searchByString($searchString)
