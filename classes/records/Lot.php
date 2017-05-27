@@ -15,9 +15,19 @@ class Lot extends BaseRecord {
     public $add_date;
     public $winner;
 
+    /**
+     * возвращает имя таблицы
+     *
+     * @return string имя таблицы
+     */
     protected static function tableName() {
         return 'lots';
     }
+
+    /**
+     * возвращает список полей таблицы
+     * @return array список полей
+     */
 
     public function dbFields()
     {
@@ -33,7 +43,7 @@ class Lot extends BaseRecord {
      */
     public function getCategory() {
         /** @var Category $result */
-        $result = Category::getById($this->category_id);
+        $result = CategoryFinder::getById($this->category_id);
         return $result;
     }
 
@@ -42,7 +52,7 @@ class Lot extends BaseRecord {
      * @return Bind[]
      */
     public function getBinds() {
-        return Bind::getByLotID($this->id);
+        return BindFinder::getByLotID($this->id);
     }
 
     /**
@@ -51,9 +61,7 @@ class Lot extends BaseRecord {
      * @return Bind|null
      */
     public function getLastBindByUserId($userId) {
-        $sql = "SELECT * FROM ".Bind::tableName()." WHERE user_id = ? AND lot_id = ? ORDER BY price DESC LIMIT 1";
-        $result = DB::getInstance()->getOne($sql, [$userId, $this->id]);
-        return $result ? new Bind($result) : null;
+       return BindFinder::getLastBindByUserIdAndLotId($this->lot_id, $user_id);
     }
 
     /**
@@ -84,71 +92,4 @@ class Lot extends BaseRecord {
         }
     }
 
-    /**
-     * Возвращает лоты пользователя
-     * @param $userId
-     * @return Lot[]
-     * @throws Exception
-     */
-    public function getByUserId($userId) {
-        $sql = "SELECT * FROM ".static::tableName()." WHERE user_id = ? ORDER BY add_date DESC LIMIT 9;";
-        return array_map(
-            function($l) {
-                return new Lot($l);
-            },
-            DB::getInstance()->getAll($sql, [$userId])
-        );
-    }
-
-    /**
-     * Получение списка лотов для заданной категории
-     *
-     * @param integer $categoryId id категории по которой нужно найти лоты
-     * @return Lot[] массив всех лотов для заданной категории
-     */
-    public static function getByCategoryId($categoryId)
-    {
-        $categoryId = protectXSS($categoryId);
-        $sql = "SELECT * FROM ".static::tableName()." WHERE end_date > NOW() AND winner is NULL AND category_id = ? ORDER BY add_date DESC LIMIT 9;";
-        return array_map(
-            function($l) {
-                return new Lot($l);
-            },
-            DB::getInstance()->getAll($sql, [$categoryId])
-        );
-    }
-
-    /**
-     *  получение всех открытых лотов
-     *
-     * @return Lot[] список всех лотов
-     */
-    public static function getAllOpened()
-    {
-        $sql = "SELECT * FROM ".static::tableName()." WHERE end_date > NOW() and winner is NULL ORDER BY add_date DESC LIMIT 9;";
-        return array_map(
-            function($l) {
-                return new Lot($l);
-            },
-            DB::getInstance()->getAll($sql, [])
-        );
-    }
-
-    /**
-     * Добавление записи в таблицу о лоте
-     * @param array $data данные о лоте для добавления записи в таблицу
-     * @return int|bool
-     */
-    public static function addNew($data = array())
-    {
-        $sql = "INSERT lots SET user_id = ?, category_id=?, name=?, description=?, img_path=?,
-                start_price=?, step=?, end_date=?, add_date=NOW()";
-
-        $lot_id = DB::getInstance()->dataInsertion($sql, [
-            $data["user_id"], $data["category"], $data["lot-name"], $data["message"], $data["URL-img"],
-            $data["price"], $data["lot-step"], date("Y:m:d H:i", strtotime($data["lot-date"]))
-        ]);
-
-        return $lot_id ?: false;
-    }
 }

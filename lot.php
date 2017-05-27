@@ -6,7 +6,7 @@ session_start();
 //проверка авторизации и получение данных
 $user_data = Authorization::getAuthData();
 
-$categories = Category::getAll();
+$categories = CategoryFinder::getAll();
 //заполняем данные для шаблона header
 $header_data["user"] = $user_data;
 $header_data["categories_equipment"] = $categories;
@@ -26,12 +26,13 @@ $lot_id = protectXSS($_REQUEST["id"]);
 $data["can_make_bet"] = false;
 
 if ($user_data) {
-    $data["can_make_bet"] = Bind::canMakeBet($lot_id, $user_data->id);
+    $data["can_make_bet"] = BindFinder::canMakeBet($lot_id, $user_data->id);
+
 }
 
 if (!empty($lot_id) && is_numeric($lot_id)) {
-    $lot_item = Lot::getById($lot_id);
-    $lot_bets = Bind::getByLotID($lot_id);
+    $lot_item = LotFinder::getById($lot_id);
+    $lot_bets = BindFinder::getByLotID($lot_id);
 }
 
 if ($lot_item ===  null) {
@@ -58,7 +59,7 @@ if (isset($_POST["send"])) {
         }
     }
     if (!$error) {
-        $lot_item = Lot::getById($form_item["id"]);
+        $lot_item = LotFinder::getById($form_item["id"]);
         $maxBet = $lot_item->getMinNextBet();
         if (!is_numeric($form_item['cost'])) {
             $error['cost'] = "Заполните ставку в виде числа";
@@ -67,12 +68,13 @@ if (isset($_POST["send"])) {
         } else {
             $data = array (
                 "user_id" => $user_data->id,
-                "lot_id" => $form_item["id"],
-                "cost" => $form_item["cost"]
+                "lot_id" => (int)$form_item["id"],
+                "price" => (int)$form_item["cost"],
+                "date" => date("Y:m:d H:i:s")
             );
 
-            $result = Bind::addNew($data);
-
+            $b = new Bind($data);
+            $b->insert();
             header("Location: /mylots.php");
             exit();
         }

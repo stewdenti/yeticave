@@ -31,32 +31,61 @@ abstract class BaseRecord {
     }
 
     /**
-     * Выбор записи по id с созданием объекта класса, у которого этот метод вызван
-     * Например User::getById() создаст объект пользователя
-     * @param $id
-     * @return BaseRecord
+     * запись в таблицу по свойствам созданным при создании объекта.
+     *
+     * @return bool true если запись добавлена и false если запись не была добавлена
      * @throws Exception
      */
-    public static function getById($id)
+    public function insert()
     {
-        $sql = "SELECT * FROM ".static::tableName()." WHERE id = ?";
-        $result = DB::getInstance()->getOne($sql, [$id]);
-        $className = get_called_class();
-        return new $className($result);
+            $insert_fields = "";
+            $insert_values = [];
+            foreach ($this->dbFields() as $field) {
+                if (isset($this->$field)) {
+                    $insert_fields .= "".$field." = ?, ";
+                    $insert_values[] = $this->$field;
+                }
+            }
+            $insert_fields = substr($insert_fields, 0, -2);
+
+            $sql = "INSERT ".static::tableName()." SET $insert_fields ;";
+            $this->id = DB::getInstance()->dataInsertion($sql, $insert_values);
+
+            return $this->id ? true : false;
     }
 
     /**
-     * Поиск в таблице по ключу, возвращает объект класса, у которого метод вызван
-     * @param  string $key ключ для поиска в таблице
-     * @param  string $value значения ключа для поиска
+     * Обновление записи полученной соответствующей обхекту. Если свойство id не установлено, то запись считается новой
+     * и добавляется в таблицу.
      *
-     * @return array|null
+     * @return int число обновленных записей
+     * @throws Exception
      */
-    protected static function getByKey($key, $value)
+    public function update()
     {
-        $sql = "SELECT * FROM ".static::tableName()." WHERE $key=?;";
-        $result = DB::getInstance()->getOne($sql, [$value]);
-        $className = get_called_class();
-        return new $className($result);
+            if (!isset($this->id)) {
+                $this->insert();
+            } else {
+                $update_data = [];
+                foreach ($this->dbFields() as $field) {
+                    if (isset($this->$field)) {
+                        $update_data[$field] = $this->$field;
+                    }
+                }
+                $update_result = DB::getInstance()->dataUpdate($this->tableName(), $update_data, ["id"=>$this->id]);
+                return $update_result;
+            }
+
+
+    }
+
+    /**
+     * Удаляет запись соответствующей объекту.
+     * @return bool
+     * @throws Exception
+     */
+    public function delete()
+    {
+        return DB::getInstance()->dataDelete($this->tableName(),["id"=>$this->id]);
     }
 }
