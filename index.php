@@ -13,6 +13,8 @@ $template_path = "templates/main.php";
 
 if (!empty($_REQUEST["id"])) {
     $lots_list = LotFinder::getByCategoryId($_REQUEST["id"]);
+    $template_path = "templates/mainbycategory.php";
+    $data["for_category"] = CategoryFinder::getById(protectXSS($_REQUEST["id"]))->name;
 } else if (isset ($_REQUEST["find"]) && !empty(trim($_REQUEST["search"]))){
     $search = protectXSS(trim($_REQUEST["search"]));
     $lots_list = LotFinder::searchByString($search);
