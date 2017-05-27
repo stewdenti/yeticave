@@ -4,16 +4,16 @@
  */
 class Lot extends BaseRecord {
 
-    protected $user_id;
-    protected $category_id;
-    protected $name;
-    protected $description;
-    protected $img_path;
-    protected $start_price;
-    protected $step;
-    protected $end_date;
-    protected $add_date;
-    protected $winner;
+    public $user_id;
+    public $category_id;
+    public $name;
+    public $description;
+    public $img_path;
+    public $start_price;
+    public $step;
+    public $end_date;
+    public $add_date;
+    public $winner;
 
     /**
      * возвращает имя таблицы

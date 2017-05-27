@@ -4,10 +4,10 @@
  */
 class Bind extends BaseRecord {
 
-    protected $user_id;
-    protected $lot_id;
-    protected $price;
-    protected $date;
+    public $user_id;
+    public $lot_id;
+    public $price;
+    public $date;
 
     /**
      * возвращает имя таблицы

@@ -24,9 +24,9 @@ class BindFinder extends BaseFinder
     }
 
     /**
-     * получение всех ставок для лота
+     * получение всех ставок для лота. Возвращает массив объектов Bind
      * @param int $lotId
-     * @return Bind[]
+     * @return array массив объектов класса Bind
      */
     public static function getByLotID($lotId)
     {

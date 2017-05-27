@@ -20,9 +20,13 @@ if (isset($_POST["send"])) {
             $error[$key] = "Заполните это поле";
         }
     }
+
+    if (!filter_var($form_item["email"], FILTER_VALIDATE_EMAIL)){
+        $error["email"] = "Введенный email не соответствует формату email";
+        unset($form_item["email"]);
+    }
     if (isset($form_item["email"]) && UserFinder::findByEmail($form_item["email"])) {
         $error["email"] = "Пользователь с таким email уже существует";
-
     }
     if (!empty($_FILES["avatar_img"]["name"])) {
         $file = $_FILES["avatar_img"];
@@ -52,7 +56,7 @@ if (isset($_POST["send"])) {
      } else {
         $user = new User($form_item);
         $user->insert();
-        header("Location: /login.php");
+        header("Location: /login.php?welcome=1");
         exit();
      }
 } else {

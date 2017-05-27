@@ -2,7 +2,7 @@
 
 abstract class BaseRecord {
 
-    protected $id;
+    public $id;
 
     /**
      * @param array $dataFromDb массив вида ['id' => 123, 'name' => 'some name'] пришедший из базы
@@ -14,29 +14,6 @@ abstract class BaseRecord {
                 $this->$field = $dataFromDb[$field];
             }
         }
-    }
-
-    /**
-     * получение по имения поля таблицы свойства класса
-     *
-     * @param $name имя поля таблицы
-     *
-     * @return mixed
-     */
-    public function __get($name)
-    {
-        return $this->$name;
-    }
-
-    /**
-     * присвоение свойству класса по имени поля значения
-     *
-     * @param $name имя поля
-     * @param $value значение для свойства
-     */
-    public function __set($name, $value)
-    {
-        $this->$name = $value;
     }
 
     /**

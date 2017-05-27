@@ -5,11 +5,11 @@
  */
 class User extends BaseRecord {
 
-    protected $email;
-    protected $password;
-    protected $name;
-    protected $contacts;
-    protected $avatar_img;
+    public $email;
+    public $password;
+    public $name;
+    public $contacts;
+    public $avatar_img;
 
     /**
      * возвращает имя таблицы

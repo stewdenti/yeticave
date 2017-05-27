@@ -4,9 +4,9 @@
  *
  */
 class Category extends BaseRecord {
-    
-    protected $id;
-    protected $name;
+
+    public $id;
+    public $name;
 
     /**
      * возвращает имя таблицы

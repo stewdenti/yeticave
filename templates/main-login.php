@@ -1,5 +1,5 @@
 <form class="form container <?php if (!empty($error)):?>form--invalid<?php endif; ?>" action="/login.php" method="post"> <!-- form--invalid -->
-    <h2>Вход</h2>
+    <h2>Вход: <?php if (isset($w)):?>Теперь вы можете войти, используя свой email и пароль<? endif; ?></h2>
     <div class="form__item <?php printInvalidItemClass($error, 'email'); ?>"> <!-- form__item--invalid -->
         <label for="email">E-mail*</label>
         <input id="email" type="text" name="email" placeholder="Введите e-mail">

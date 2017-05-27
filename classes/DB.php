@@ -124,9 +124,7 @@ class DB {
                 $resultArray[] = $row;
             }
         }
-
         mysqli_stmt_close($sqlReady);
-
         if ($oneRow && count($resultArray) == 1) {
             return $resultArray[0];
         } else {
@@ -264,6 +262,4 @@ class DB {
 
         return $stmt;
     }
-
-
 }
