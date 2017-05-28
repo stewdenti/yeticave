@@ -26,31 +26,33 @@ class LotFinder extends BaseFinder
      * Получение списка лотов для заданной категории
      *
      * @param integer $categoryId id категории по которой нужно найти лоты
+     * @param int|null $offset оффсет для запроса
      * @return Lot[] массив всех лотов для заданной категории
      */
     public static function getByCategoryId($categoryId, $offset = null)
     {
         $where = "end_date > NOW() and winner is NULL AND category_id = ?";
         $orderBy = "add_date DESC";
-        return self::getAll($where, $orderBy, ITEMS_PER_PAGE, $offset, [$categoryId]);
+        return self::getAll($where, $orderBy, self::ITEMS_PER_PAGE, $offset, [$categoryId]);
 
     }
 
     /**
      *  получение всех открытых лотов
      *
+     * @param int|null $offset оффсет для запроса
      * @return Lot[] список всех лотов
      */
     public static function getAllOpened($offset = null)
     {
         $where = "end_date > NOW() and winner is NULL";
         $orderBy = "add_date DESC";
-        return self::getAll($where, $orderBy, ITEMS_PER_PAGE, $offset);
+        return self::getAll($where, $orderBy, self::ITEMS_PER_PAGE, $offset);
     }
 
     /**
      * Возвращает лоты пользователя
-     * @param $userId
+     * @param int $userId id пользователя
      * @return Lot[]
      * @throws Exception
      */
@@ -63,20 +65,20 @@ class LotFinder extends BaseFinder
      * осуществляет поиск по заданой строке
      *
      * @param string $searchString строка по которой осуществляется поиск
+     * @param int|null $offset оффсет для запроса
      * @return Lot[]
      */
     public static function searchByString($searchString, $offset = null)
     {
-        $sql = "SELECT * FROM " . self::tableName();
         $where = "(end_date > NOW() and winner is NULL) and (name LIKE ? or description LIKE ?)";
         $orderBy = "add_date DESC";
-        return self::getAll($where, $orderBy, ITEMS_PER_PAGE, $offset, ["%$searchString%", "%$searchString%"]);
+        return self::getAll($where, $orderBy, self::ITEMS_PER_PAGE, $offset, ["%$searchString%", "%$searchString%"]);
     }
 
     /**
      * получение числа всех отркрытых лотов для категории или для всех категорий
      *
-     * @param null $categoryId id категории
+     * @param int|null $categoryId id категории
      * @return int количество записей
      */
     public static function getCountLots($categoryId = null)
@@ -94,7 +96,7 @@ class LotFinder extends BaseFinder
     /**
      * Получение числа записей которые соответствуют искомой строке
      *
-     * @param null $search строка для поиска
+     * @param string|null $search строка для поиска
      * @return int количество записей
      */
     public static function getCountLotsForSearch($search = null)

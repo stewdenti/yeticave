@@ -2,10 +2,13 @@
 
 abstract class BaseFinder
 {
+
+    const ITEMS_PER_PAGE = 9;
+
     /**
      * возвращает имя таблицы
-     *
      * @return string имя таблицы
+     * @throws Exception
      */
     protected static function tableName()
     {
@@ -16,6 +19,7 @@ abstract class BaseFinder
      * возвращает имя класса
      *
      * @return string имя класса
+     * @throws Exception
      */
     protected static function entityName()
     {
@@ -101,11 +105,11 @@ abstract class BaseFinder
 
     /**
      * добавления условий к запросу для сортировки и выбора количества элементов
-     * 
-     * @param $sql
-     * @param $orderBy
-     * @param $limit
-     * @param $offset
+     *
+     * @param string $sql
+     * @param string $orderBy
+     * @param int $limit
+     * @param int $offset
      * @return string
      */
     private static function appendOrderByLimitOffset($sql, $orderBy, $limit, $offset) {
@@ -124,8 +128,9 @@ abstract class BaseFinder
     /**
      * добавлние where условия к запросу
      *
-     * @param $sql SQL запрос
-     * @param null $where условие выборки
+     * @param string $sql SQL запрос
+     * @param string|null $where условие выборки
+     *
      * @return string SQL запрос с условием WHERE
      */
     private static function appendWhereCondition($sql, $where = null)
@@ -136,11 +141,10 @@ abstract class BaseFinder
         return $sql;
     }
 
-
     /**
      * Получение количества записей по условию или без него
      *
-     * @param null $where  условие для выборки записей
+     * @param string|null $where  условие для выборки записей
      * @param array $placeHolderData значения для плейсхолдеров в запросе
      * @return int количество записей.
      * @throws Exception
