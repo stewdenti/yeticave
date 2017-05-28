@@ -76,6 +76,7 @@ class DB {
      */
     public function getOne($sql, $unitDataSql)
     {
+
         $result = $this->dataRetrievalAssoc($sql, $unitDataSql, $oneRow = True);
         return $result ?: null;
     }
@@ -105,7 +106,6 @@ class DB {
     protected function dataRetrievalAssoc($sql, $unitDataSql, $oneRow = false )
     {
         $resultArray = [];
-
         $sqlReady = $this->db_get_prepare_stmt($sql, $unitDataSql);
         if (!$sqlReady) {
             $this->error = mysqli_error($this->link);
@@ -200,6 +200,14 @@ class DB {
 
     }
 
+    /**
+     * Удаление записи из таблицы
+     *
+     * @param $nameTable имя таблицы
+     * @param $unitDataConditions условия для удаления
+     * @return bool
+     * @throws Exception
+     */
     public function dataDelete($nameTable, $unitDataConditions)
     {
         $whereField = array_keys($unitDataConditions)[0];

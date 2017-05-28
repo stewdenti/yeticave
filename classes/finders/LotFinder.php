@@ -28,36 +28,25 @@ class LotFinder extends BaseFinder
      * @param integer $categoryId id категории по которой нужно найти лоты
      * @return Lot[] массив всех лотов для заданной категории
      */
-    public static function getByCategoryId($categoryId)
+    public static function getByCategoryId($categoryId, $offset = null)
     {
-        $categoryId = protectXSS($categoryId);
-        $sql = "SELECT * FROM ".self::tableName()." WHERE end_date > NOW() AND winner is NULL AND category_id = ? ORDER BY add_date DESC LIMIT 9;";
-        return array_map(
-            function($l) {
-                $entity = self::entityName();
-                return new $entity($l);
-            },
-            DB::getInstance()->getAll($sql, [$categoryId])
-        );
+        $where = "end_date > NOW() and winner is NULL AND category_id = ?";
+        $orderBy = "add_date DESC";
+        return self::getAll($where, $orderBy, ITEMS_PER_PAGE, $offset, [$categoryId]);
+
     }
 
-     /**
+    /**
      *  получение всех открытых лотов
      *
      * @return Lot[] список всех лотов
      */
-    public static function getAllOpened()
+    public static function getAllOpened($offset = null)
     {
-        $sql = "SELECT * FROM ".self::tableName()." WHERE end_date > NOW() and winner is NULL ORDER BY add_date DESC LIMIT 9;";
-        return array_map(
-            function($l) {
-                $entity = self::entityName();
-                return new $entity($l);
-            },
-            DB::getInstance()->getAll($sql, [])
-        );
+        $where = "end_date > NOW() and winner is NULL";
+        $orderBy = "add_date DESC";
+        return self::getAll($where, $orderBy, ITEMS_PER_PAGE, $offset);
     }
-
 
     /**
      * Возвращает лоты пользователя
@@ -74,17 +63,53 @@ class LotFinder extends BaseFinder
      * осуществляет поиск по заданой строке
      *
      * @param string $searchString строка по которой осуществляется поиск
-     * @return array массив объектов класса Lot
+     * @return Lot[]
      */
-    public static function searchByString($searchString)
+    public static function searchByString($searchString, $offset = null)
     {
-        $sql = "SELECT * FROM ".self::tableName()." WHERE name LIKE ? or description LIKE ? ORDER BY add_date DESC LIMIT 9;";
-        return array_map(
-            function($l) {
-                $entity = self::entityName();
-                return new $entity($l);
-            },
-            DB::getInstance()->getAll($sql, ["%$searchString%", "%$searchString%"])
-        );
+        $sql = "SELECT * FROM " . self::tableName();
+        $where = "(end_date > NOW() and winner is NULL) and (name LIKE ? or description LIKE ?)";
+        $orderBy = "add_date DESC";
+        return self::getAll($where, $orderBy, ITEMS_PER_PAGE, $offset, ["%$searchString%", "%$searchString%"]);
     }
+
+    /**
+     * получение числа всех отркрытых лотов для категории или для всех категорий
+     *
+     * @param null $categoryId id категории
+     * @return int количество записей
+     */
+    public static function getCountLots($categoryId = null)
+    {
+        $where = "end_date > NOW() and winner is NULL";
+        if ($categoryId !== null) {
+            $where .= " AND category_id=?";
+            $data = [$categoryId];
+        } else {
+            $data = [];
+        }
+        return self::getAllCount($where, $data);
+    }
+
+    /**
+     * Получение числа записей которые соответствуют искомой строке
+     *
+     * @param null $search строка для поиска
+     * @return int количество записей
+     */
+    public static function getCountLotsForSearch($search = null)
+    {
+        $where = "(end_date > NOW() and winner is NULL)";
+        if ($search !== null) {
+            $where .= "and (name LIKE ? or description LIKE ?)";
+            $data = ["%$search%", "%$search%"];
+        } else {
+            $data = [];
+        }
+        return self::getAllCount($where, $data);
+    }
+
+
+
+
 }

@@ -78,25 +78,36 @@ abstract class BaseFinder
 
     /**
      * Получение всех записей таблицы и возвращает массив объектов класса у которого вызван метод
-     * @param string|null $orderBy;
+     * @param null $where
+     * @param string|null $orderBy ;
      * @param int|null $limit
      * @param int|null $offset
      * @return array
      * @throws Exception
      */
-    public static function getAll($orderBy = null, $limit = null, $offset = null)
+    public static function getAll($where = null, $orderBy = null, $limit = null, $offset = null, $placeHoldersValues = null)
     {
         $sql = "SELECT * FROM ".static::tableName();
+        $sql = self::appendWhereCondition($sql,$where);
         $sql = self::appendOrderByLimitOffset($sql, $orderBy, $limit, $offset);
         return array_map(
             function($c) {
                 $entityName =  static::entityName();
                 return new $entityName($c);
             },
-            DB::getInstance()->getAll($sql, [])
+            DB::getInstance()->getAll($sql, $placeHoldersValues)
         );
     }
 
+    /**
+     * добавления условий к запросу для сортировки и выбора количества элементов
+     * 
+     * @param $sql
+     * @param $orderBy
+     * @param $limit
+     * @param $offset
+     * @return string
+     */
     private static function appendOrderByLimitOffset($sql, $orderBy, $limit, $offset) {
         if ($orderBy !== null) {
             $sql .= ' ORDER BY '.$orderBy;
@@ -108,5 +119,38 @@ abstract class BaseFinder
             $sql .= ' OFFSET '.$offset;
         }
         return $sql;
+    }
+
+    /**
+     * добавлние where условия к запросу
+     *
+     * @param $sql SQL запрос
+     * @param null $where условие выборки
+     * @return string SQL запрос с условием WHERE
+     */
+    private static function appendWhereCondition($sql, $where = null)
+    {
+        if ($where !== null) {
+            $sql .= " WHERE ".$where;
+        }
+        return $sql;
+    }
+
+
+    /**
+     * Получение количества записей по условию или без него
+     *
+     * @param null $where  условие для выборки записей
+     * @param array $placeHolderData значения для плейсхолдеров в запросе
+     * @return int количество записей.
+     * @throws Exception
+     */
+    public static function getAllCount($where = null, $placeHolderData = [])
+    {
+        $sql = "SELECT COUNT(*) AS number FROM ".static::tableName();
+        $sql = self::appendWhereCondition($sql, $where);
+
+        $result = DB::getInstance()->getOne($sql, $placeHolderData);
+        return $result["number"] ? (int)$result["number"] : 0;
     }
 }
