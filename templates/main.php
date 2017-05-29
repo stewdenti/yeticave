@@ -2,8 +2,9 @@
 /** @var Category[] $categories_equipment */
 /** @var Lot[] $announcement_list */
 ?>
-<main class="container">
-    <?php if (!isset ($search_string) && !isset($for_category)): ?>
+<main>
+    <?php if (empty ($search_string) && empty($category_id)): ?>
+    <div class="container">
     <section class="promo">
         <h2 class="promo__title">Нужен стафф для катки?</h2>
         <p class="promo__text">На нашем интернет-аукционе ты найдёшь самое эксклюзивное сноубордическое и горнолыжное снаряжение.</p>
@@ -15,25 +16,31 @@
             <?php endforeach;?>
         </ul>
     </section>
+    </div>
     <?php else: ?>
     <nav class="nav">
         <ul class="nav__list container">
             <?php foreach ($categories_equipment as $value):?>
-                <li class="nav__item">
-                    <a href="/index.php?id=<?=$value->id?>"><?=$value->name?></a>
-                </li>
+                <?php if ($value->id == $category_id): ?>
+                    <li class="nav__item nav__item--current">
+                <?php else: ?>
+                    <li class="nav__item">
+                <?php endif; ?>
+                        <a href="/index.php?id=<?=$value->id?>"><?=$value->name?></a>
+                    </li>
             <?php endforeach;?>
         </ul>
     </nav>
     <?php endif; ?>
+    <div class="container">
     <section class="lots">
-        <?php if (isset($search_string)): ?>
+        <?php if (!empty($search_string)): ?>
             <h2>Результаты поиска по запросу «<span><?=$search_string?></span>»</h2>
         <? endif; ?>
-        <?php if (isset($for_category)): ?>
-            <h2>Все лоты в категории <span>«<?=$for_category?>»</span></h2>
+        <?php if (!empty($category_name)): ?>
+            <h2>Все лоты в категории <span>«<?=$category_name?>»</span></h2>
         <? endif; ?>
-        <?php if (!isset ($search_string) && !isset($for_category)): ?>
+        <?php if (!isset ($search_string) && !isset($category_name)): ?>
         <div class="lots__header">
             <h2>Открытые лоты</h2>
             <select class="lots__select">
@@ -72,6 +79,21 @@
                     </div>
                 </li>
             <?php endforeach; ?>
-        </ul>
+        </ul>        
     </section>
+    <?php if (isset($pages)): ?>
+    <ul class="pagination-list">
+        <li class="pagination-item pagination-item-prev"><a href="<?=$pages->prepareUrl("/index.php", $pages->back, $search_string, $category_id);?>">Назад</a></li>
+        <?php for ($i=1; $i<=$pages->total; $i++) {
+            if ($i == $pages->current){
+                echo "<li class=\"pagination-item pagination-item-active\"><a href=\"".$pages->prepareUrl("/index.php", $i, $search_string, $category_id)."\">$i</a></li>";
+            } else {
+                echo "<li class=\"pagination-item\"><a href=\"".$pages->prepareUrl("/index.php", $i, $search_string, $category_id)."\">$i</a></li>";
+            }
+        }
+        ?>
+        <li class="pagination-item pagination-item-next"><a href="<?=$pages->prepareUrl("/index.php", $pages->forward, $search_string, $category_id); ?>">Вперед</a></li>
+    </ul>
+    <?php endif; ?>
+    </div>
 </main>

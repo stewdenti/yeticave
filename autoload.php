@@ -1,5 +1,4 @@
 <?php
-
 require_once 'functions.php';
 
 $map = [
@@ -17,6 +16,7 @@ $map = [
     'Authorization' => 'classes/Authorization.php',
     'DB' => 'classes/DB.php',
     'Templates' => 'classes/Templates.php',
+    'Paginator' => 'classes/Paginator.php'
 
 ];
 
