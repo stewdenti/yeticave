@@ -90,8 +90,7 @@
             } else {
                 echo "<li class=\"pagination-item\"><a href=\"".$pages->prepareUrl("/index.php", $i, $search_string, $category_id)."\">$i</a></li>";
             }
-        }
-        ?>
+        }?>
         <li class="pagination-item pagination-item-next"><a href="<?=$pages->prepareUrl("/index.php", $pages->forward, $search_string, $category_id); ?>">Вперед</a></li>
     </ul>
     <?php endif; ?>
