@@ -22,11 +22,6 @@ class Paginator
      */
     public $current = null;
     /**
-     * Оффсет для выборки из базы данных на основе номера текущей страницы
-     * @var int|null
-     */
-    public $offset = null;
-    /**
      * номер предыщей страницы
      * @var int|null
      */
@@ -116,8 +111,6 @@ class Paginator
         if ($page > $cnt_pages) {
             $page = $cnt_pages;
         }
-//        $offset = ($page - 1) * Paginator::getItemsPerPage();
-
         return new Paginator($cnt_pages, $page);
     }
 
