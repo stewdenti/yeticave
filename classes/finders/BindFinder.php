@@ -65,10 +65,16 @@ class BindFinder extends BaseFinder
      */
     public static function canMakeBet($lot_id, $user_id)
     {
+        // проверяем не истекла ли дата лота. Если истекла, то ставки делать нельзя
+        if (!LotFinder::getById($lot_id)->isOpenForBet()) {
+            return false;
+        }
+
         $bets = self::getByLotID($lot_id);  // первая в массиве = последняя по времени
         if (empty($bets)) {
             return true;
         }
+        
         return $bets[0]->user_id != $user_id;
     }
 }

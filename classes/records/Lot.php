@@ -68,7 +68,8 @@ class Lot extends BaseRecord {
      * Возвращает текущее значение ставки в виде числа
      * @return int
      */
-    public function getCurrentBet() {
+    public function getCurrentBet()
+    {
         $bets = $this->getBinds();
         $bets = array_map(function(Bind $b){return $b->price;}, $bets);
         if (empty($bets)) {
@@ -82,7 +83,8 @@ class Lot extends BaseRecord {
      * Возвращает минимальное значение возможной ставки для лота
      * @return int
      */
-    public function getMinNextBet() {
+    public function getMinNextBet()
+    {
         $bets = $this->getBinds();
         $bets = array_map(function(Bind $b){return $b->price;}, $bets);
         if (empty($bets)) {
@@ -92,4 +94,17 @@ class Lot extends BaseRecord {
         }
     }
 
+    /**
+     * проверяет дату закрытия лота и определяет открыт ли лот для ставок или нет
+     *
+     * @return bool
+     */
+    public function isOpenForBet()
+    {
+        if (strtotime($this->end_date) <= strtotime(date("Y:m:d H:i:s"))) {
+            return false;
+        } else {
+            return true;
+        }
+    }
 }

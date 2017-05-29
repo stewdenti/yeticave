@@ -1,12 +1,36 @@
 <?php
 
-
+/**
+ * Класс для вычисления, построения постраничного вывода
+ *
+ * Class Paginator
+ */
 class Paginator
 {
+    /**
+     * общее количество страниц
+     * @var int|null
+     */
     public $total = null;
+    /**
+     * номер текущей страницы
+     * @var int|null
+     */
     public $current = null;
+    /**
+     * Оффсет для выборки из базы данных на основе номера текущей страницы
+     * @var int|null
+     */
     public $offset = null;
+    /**
+     * номер предыщей страницы
+     * @var int|null
+     */
     public $back = null;
+    /**
+     * Номер следующей страницы
+     * @var int|null
+     */
     public $forward = null;
 
     /**
@@ -32,7 +56,6 @@ class Paginator
         } else {
             $this->forward = $total;
         }
-
     }
 
     /**
@@ -66,7 +89,7 @@ class Paginator
      * @param string|null $search строка запроса
      * @return Paginator
      */
-    public static function buildPages ($page = null, $categoryId = null, $search = null)
+    public static function buildPages($page = null, $categoryId = null, $search = null)
     {
         if ($categoryId !== null) {
             $total = LotFinder::getCountLots($categoryId);
@@ -83,7 +106,7 @@ class Paginator
             $page = $cnt_pages;
         }
         $offset = ($page - 1) * BaseFinder::ITEMS_PER_PAGE;
-        
+
         return new Paginator($cnt_pages, $page, $offset);
     }
 }

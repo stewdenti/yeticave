@@ -111,7 +111,15 @@ class LotFinder extends BaseFinder
         return self::getAllCount($where, $data);
     }
 
-
-
-
+    /**
+     * Получение всех лотов, у которых истекло время открытия.
+     *
+     * @return Lot[]
+     */
+    public static function getWithoutWinners()
+    {
+        $where = "end_date <= NOW() and winner is NULL";
+        $orderBy = "add_date DESC";
+        return self::getAll($where, $orderBy);
+    }
 }
