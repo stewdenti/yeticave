@@ -33,7 +33,7 @@ class LotFinder extends BaseFinder
     {
         $where = "end_date > NOW() and winner is NULL AND category_id = ?";
         $orderBy = "add_date DESC";
-        return self::getAll($where, $orderBy, self::ITEMS_PER_PAGE, $offset, [$categoryId]);
+        return self::getAll($where, $orderBy, Paginator::getItemsPerPage(), $offset, [$categoryId]);
 
     }
 
@@ -47,7 +47,7 @@ class LotFinder extends BaseFinder
     {
         $where = "end_date > NOW() and winner is NULL";
         $orderBy = "add_date DESC";
-        return self::getAll($where, $orderBy, self::ITEMS_PER_PAGE, $offset);
+        return self::getAll($where, $orderBy, Paginator::getItemsPerPage(), $offset);
     }
 
     /**
@@ -72,7 +72,7 @@ class LotFinder extends BaseFinder
     {
         $where = "(end_date > NOW() and winner is NULL) and (name LIKE ? or description LIKE ?)";
         $orderBy = "add_date DESC";
-        return self::getAll($where, $orderBy, self::ITEMS_PER_PAGE, $offset, ["%$searchString%", "%$searchString%"]);
+        return self::getAll($where, $orderBy, Paginator::getItemsPerPage(), $offset, ["%$searchString%", "%$searchString%"]);
     }
 
     /**

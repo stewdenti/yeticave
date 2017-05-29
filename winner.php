@@ -2,7 +2,7 @@
 // скрипт для определения победителей лотов
 
 //получаем список всех лотов у которых истекло время и не проставлен победитель
-$lots_without_winners = LotFinder::getWithoutWInners();
+$lots_without_winners = LotFinder::getWithoutWinners();
 
 // для каждого найденого лота :
 foreach ($lots_without_winners as $lot) {

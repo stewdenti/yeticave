@@ -8,6 +8,10 @@
 class Paginator
 {
     /**
+     * Количество элементов на странице
+     */
+    const ITEMS_PER_PAGE = 9;
+    /**
      * общее количество страниц
      * @var int|null
      */
@@ -39,13 +43,11 @@ class Paginator
      * Paginator constructor.
      * @param int $total общее количество страниц
      * @param int $current текущая старница
-     * @param int $offset оффсет для запроса к базе данных
      */
-    public function __construct($total, $current, $offset)
+    public function __construct($total, $current)
     {
         $this->total = $total;
         $this->current = $current;
-        $this->offset = $offset;
         if ($current > 1) {
             $this->back = $current - 1;
         } else {
@@ -81,11 +83,20 @@ class Paginator
     }
 
     /**
+     * Получение оффсета для запроса
+     *
+     * @return int|null
+     */
+    public function getOffset()
+    {
+        return ($this->current - 1) * Paginator::getItemsPerPage();
+    }
+    /**
      * Вычисление количества страниц, на основе текущей страницы
      * для всех лотов, для лотов по категории, для поиска по строке
      *
      * @param int|null $page номер текущей страницы
-     * @param ing|null $categoryId id катекории
+     * @param int|null $categoryId id катекории
      * @param string|null $search строка запроса
      * @return Paginator
      */
@@ -101,12 +112,18 @@ class Paginator
         if (!$page) {
             $page=1;
         }
-        $cnt_pages = ceil($total / BaseFinder::ITEMS_PER_PAGE);
+        $cnt_pages = ceil($total / Paginator::getItemsPerPage());
         if ($page > $cnt_pages) {
             $page = $cnt_pages;
         }
-        $offset = ($page - 1) * BaseFinder::ITEMS_PER_PAGE;
+//        $offset = ($page - 1) * Paginator::getItemsPerPage();
 
-        return new Paginator($cnt_pages, $page, $offset);
+        return new Paginator($cnt_pages, $page);
     }
+
+    public static function getItemsPerPage ()
+    {
+        return self::ITEMS_PER_PAGE;
+    }
+
 }

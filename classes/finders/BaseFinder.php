@@ -2,9 +2,6 @@
 
 abstract class BaseFinder
 {
-
-    const ITEMS_PER_PAGE = 9;
-
     /**
      * возвращает имя таблицы
      * @return string имя таблицы
