@@ -33,6 +33,7 @@ class BaseForm
             }
         }
 
+        return count($this->errors) == 0 ? true : false;
     }
 
     public static function isSent() 
@@ -66,7 +67,7 @@ class BaseForm
             $result = $this->$method($value);
         }
 
-        
+
     }
     
 }
