@@ -46,39 +46,32 @@ if ($lot_item ===  null) {
     $data["bets"] = $lot_bets;
 }
 
-if (isset($_POST["send"])) {
+if (isset($_POST["AddBindForm"])) {
     $time  = time();
-    $lotFields = ['cost', 'id'];
-    $error = [];
-    $form_item = [];
-    foreach ($lotFields as $key) {
-        if (!empty($_POST[$key]) || $_POST[$key] === "0") {
-            $form_item[$key] = htmlspecialchars($_POST[$key]);
-        } else {
-            $error[$key] = "Заполните ставку";
-        }
-    }
-    if (!$error) {
-        $lot_item = LotFinder::getById($form_item["id"]);
+    $form = AddBindForm::getFormData();
+
+    if ($form->isValid()) {
+        $lot_item = LotFinder::getById($form->lot_id);
         $maxBet = $lot_item->getMinNextBet();
-        if (!is_numeric($form_item['cost'])) {
-            $error['cost'] = "Заполните ставку в виде числа";
-        } else if ((int)$form_item['cost'] < $maxBet) {
-            $error['cost'] = "Ставка должна быть больше ".$maxBet;
+        if ((int)$form->price < $maxBet) {
+            $error['price'] = "Ставка должна быть больше ".$maxBet;
         } else {
             $data = array (
                 "user_id" => $user_data->id,
-                "lot_id" => (int)$form_item["id"],
-                "price" => (int)$form_item["cost"],
+                "lot_id" => (int)$form->lot_id,
+                "price" => (int)$form->price,
                 "date" => date("Y:m:d H:i:s")
             );
 
             $b = new Bind($data);
             $b->insert();
-            header("Location: /mylots.php");
+            header("Location: /lot.php?id=".$b->lot_id);
             exit();
         }
+    } else {
+        $error = $form->getErrors();
     }
+
     if ($error) {
         $data['error'] = $error;
         echo Templates::render("templates/header.php", $header_data);

@@ -28,7 +28,7 @@ class DB {
      */
     private function __construct()
     {
-        $this->link = mysqli_connect("localhost", "root", "mysql", "yeticave_db");
+        $this->link = mysqli_connect("localhost", "root", "", "yeticave_db");
         if (!$this->link) {
             $this->error = mysqli_connect_error();
         }

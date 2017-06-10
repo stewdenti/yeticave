@@ -2,29 +2,20 @@
 
 include ('autoload.php');
 
-if (isset($_POST["send"])) {
-    $loginFormFilds = ['email', 'password'];
-    $form_item = array();
-    $error = array();
-    //проверка на правильность заполнения полей
-    foreach ($loginFormFilds as $key) {
-        if (!empty($_POST[$key])) {
-            $form_item[$key] = htmlspecialchars($_POST[$key]);
-        } else {
-            $error[$key] = "Не заполнено";
-        }
-    }
-    if (!$error) {
-        $user = Authorization::authorize($form_item["email"], $form_item["password"]);
+if (isset($_POST["AuthForm"])) {
+    $form = AuthForm::getFormData();
+    if ($form->isValid()) {
+        $user = Authorization::authorize($form->email, $form->password);
         if ($user === true) {
             //если пароль верен, отправляем пользователя на главную стр
             header("Location: /index.php");
             exit();
         } else {
-            $error = $user;
+            $data["error"] = $user;
         }
+    } else {
+        $data["error"]= $form->getErrors();
     }
-    $data["error"] = $error;
 } else {
     $data = array ("error" => array());
 }
@@ -38,5 +29,3 @@ $data_footer["categories_equipment"] = CategoryFinder::getAll();
 echo Templates::render("templates/header.php", array());
 echo Templates::render("templates/main-login.php", $data);
 echo Templates::render("templates/footer.php", $data_footer);
-
-?>

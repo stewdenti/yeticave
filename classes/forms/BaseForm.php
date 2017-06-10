@@ -1,49 +1,41 @@
 <?php
 
 /**
- * Базовый Класс для обработки форм 
+ * Базовый Класс для обработки форм
  *
  */
-class BaseForm 
+class BaseForm
 {
-    protected $fields;
-    protected $rules;
     protected $errors;
     protected $data;
+    protected $rules;
 
-    public $formName;
- 
-    protected function __construct($data = [])
+    protected static function fields()
     {
-
+        throw new Exception("Error Processing Request", 1);
     }
 
-    public function validate() 
+    protected static function formName()
     {
-        if (!$this->isSent()) {
-            return null;
-        }
+        throw new Exception("error");
+    }
 
+    public function __construct($data = [])
+    {
+        foreach ($data as $key => $value) {
+            $this->data[$key] = $value;
 
-        foreach ($this->fields as $field) {
-            if (empty($_REQUEST[$field])) {
-                $this->errors[$field] = "Заполните это поле";
-            } else {
-                $this->runValidatorField($field, $_REQUEST[$field]);
+            foreach ($this->rules as $rule => $fields) {
+                if (in_array($key, $fields)) {
+                    $this->runValidator($rule, $key);
+                }
             }
         }
-
-        return count($this->errors) == 0 ? true : false;
-    }
-
-    public static function isSent() 
-    {
-        return isset($_REQUEST[$this->getFormName]) ? true : false;
     }
 
     public function getData()
     {
-        return $this->fields;
+        return $this->data;
     }
 
     public function getErrors()
@@ -53,23 +45,52 @@ class BaseForm
 
     public function __get($field)
     {
-        if (strpos("error",$field) === false) {
-            return $this->errors[$field];
-        } else {
+        if (array_key_exists($field, $this->data)) {
             return $this->data[$field];
+        } else {
+            return null;
         }
     }
 
-    protected function runValidatorField($field, $value) 
+    public function isValid()
     {
-        $method = "run".ucfirst($field)."Validator";
-        if (method_exists($this, $method)) {
-            $result = $this->$method($value);
+        return empty($this->errors) ? true: false;
+    }
+
+    public static function getFormData()
+    {
+        $formName = static::formName();
+        $formFields = static::fields();
+        $data = [];
+
+        foreach ($formFields as $field) {
+            if (array_key_exists($field, $_REQUEST)){
+                $data[$field] = $_REQUEST[$field];
+            } else {
+                $data[$field] = null;
+            }
+
         }
 
+        return new $formName($data);
+    }
+
+    protected function runValidator($name, $field)
+    {
+        $method = "run".ucfirst($name)."Validator";
+        if (method_exists($this, $method)) {
+            $this->$method($field);
+        }
+    }
+
+    protected function runRequiredValidator($field) {
+
+        if (in_array($field,array_keys($this->data)) &&  empty($this->data[$field])) {
+            $this->errors[$field] = "Заполните это поле";
+            unset($this->data[$field]);
+        }
 
     }
-    
 }
 
 

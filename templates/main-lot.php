@@ -38,14 +38,14 @@
                         </div>
                     </div>
                     <?php if (isset($user) && $can_make_bet): ?>
-                        <form class="lot-item__form <?php if ($error):?>form--invalid<?php endif; ?>" action="/lot.php" method="post">
-                            <p class="lot-item__form-item  <?php printInvalidItemClass($error, 'cost'); ?>">
+                        <form class="lot-item__form <?php if ($error):?>form--invalid<?php endif; ?>" action="/lot.php?id=<?=$lot_item->id?>" method="post">
+                            <p class="lot-item__form-item  <?php printInvalidItemClass($error, 'price'); ?>">
                                 <label for="cost">Ваша ставка</label>
-                                <input id="cost" type="number" name="cost" placeholder="<?php echo $lot_item->getMinNextBet()?>">
-                                <input type="hidden" name="id" value="<?=$lot_item->id ?>">
-                                <span class="form__error"><?php if (isset($error["cost"])) {print($error["cost"]); } ?></span>
+                                <input id="cost" type="number" name="price" placeholder="<?php echo $lot_item->getMinNextBet()?>">
+                                <input type="hidden" name="lot_id" value="<?=$lot_item->id ?>">
+                                <span class="form__error"><?php if (isset($error["price"])) {print($error["price"]); } ?></span>
                             </p>
-                            <button type="submit" class="button"  name="send">Сделать ставку</button>
+                            <button type="submit" class="button"  name="AddBindForm">Сделать ставку</button>
                         </form>
                     <?php endif; ?>
                 </div>

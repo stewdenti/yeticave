@@ -12,6 +12,11 @@ $map = [
     "BindFinder" => "classes/finders/BindFinder.php",
     "LotFinder" => "classes/finders/LotFinder.php",
     "UserFinder" => "classes/finders/UserFinder.php",
+    "BaseForm" => "classes/forms/BaseForm.php",
+    "AuthForm" => "classes/forms/AuthForm.php",
+    "RegForm" => "classes/forms/RegForm.php",
+    "AddForm" => "classes/forms/AddForm.php",
+    "AddBindForm" => "classes/forms/AddBindForm.php",
 
     'Authorization' => 'classes/Authorization.php',
     'DB' => 'classes/DB.php',

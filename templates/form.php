@@ -29,7 +29,7 @@
         <textarea id="message" name="description" placeholder="Напишите описание лота" ><?php printInputItemValue($lot_item, 'description');?></textarea>
         <span class="form__error"><?php if (isset($error["description"])) {print($error["description"]); } ?></span>
     </div>
-    <div class="form__item form__item--file"> <!-- form__item--uploaded -->
+    <div class="form__item form__item--file <?php printInvalidItemClass($error, 'img_path'); ?>"> <!-- form__item--uploaded -->
         <label>Изображение</label>
         <div class="preview">
             <button class="preview__remove" type="button">x</button>
@@ -38,11 +38,12 @@
             </div>
         </div>
         <div class="form__input-file">
-            <input class="visually-hidden"  type="file" id="photo2" name="img_path" value=" ">
+            <input class="visually-hidden"  type="file" id="photo2" name="img_path" value="<?php printInputItemValue($lot_item, 'img_path');?>">
             <label for="photo2">
                 <span>+ Добавить</span>
             </label>
         </div>
+        <span class="form__error"><?php if (isset($error["img_path"])) {print($error["img_path"]); } ?></span>
     </div>
     <div class="form__container-three">
         <div class="form__item form__item--small <?php printInvalidItemClass($error, 'start_price'); ?>">
@@ -62,5 +63,5 @@
         </div>
     </div>
     <span class="form__error form__error--bottom">Пожалуйста, исправьте ошибки в форме.</span>
-    <button type="submit" class="button" name="send">Добавить лот</button>
+    <button type="submit" class="button" name="AddForm">Добавить лот</button>
 </form>

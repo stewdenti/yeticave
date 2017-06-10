@@ -64,12 +64,10 @@ class Authorization {
                 $_SESSION["user"] = $user;
                 return true;
             } else {
-                $errors["wrong_password"] = "Вы ввели не верный пароль";
-                $errors["password"] = True;
+                $errors["wrong_message"] = "Вы ввели не верный email или пароль";
             }
         } else {
-            $errors["wrong_username"] = "Пользователья с такием email не существует";
-            $errors["email"] = True;
+            $errors["wrong_message"] = "Вы ввели не верный email или пароль";
         }
         return $errors;
     }
