@@ -18,8 +18,6 @@ class BaseForm
 
     }
 
-
-
     public function validate() 
     {
         if (!$this->isSent()) {
@@ -28,7 +26,11 @@ class BaseForm
 
 
         foreach ($this->fields as $field) {
-            
+            if (empty($_REQUEST[$field])) {
+                $this->errors[$field] = "Заполните это поле";
+            } else {
+                $this->runValidatorField($field, $_REQUEST[$field]);
+            }
         }
 
     }
@@ -55,6 +57,16 @@ class BaseForm
         } else {
             return $this->data[$field];
         }
+    }
+
+    protected function runValidatorField($field, $value) 
+    {
+        $method = "run".ucfirst($field)."Validator";
+        if (method_exists($this, $method)) {
+            $result = $this->$method($value);
+        }
+
+        
     }
     
 }
