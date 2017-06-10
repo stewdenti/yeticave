@@ -6,14 +6,14 @@ class AddForm extends BaseForm
         "int" => ["start_price", "step"],
         "image" => ["img_path"],
         "date" => ["end_date"],
-        "required" => ['user_id','category_id', 'name', 'description', 'img_path',
+        "required" => ['category_id', 'name', 'description', 'img_path',
             'start_price', 'step', 'end_date']
     ];
 
     protected static function fields()
     {
         return [
-            'user_id', 'category_id', 'name', 'description', 'img_path',
+            'category_id', 'name', 'description', 'img_path',
             'start_price', 'step', 'end_date'
         ];
     }
@@ -50,13 +50,15 @@ class AddForm extends BaseForm
                     move_uploaded_file($file['tmp_name'], $name);//добавляем файл в папку
                     $this->data[$field] = $name;//путь до папки
                 } else {
+                    $this->data[$field] = $_FILES[$field]["name"];
                     $this->errors[$field] = "Попытка добавить файл недопустимого формата";
                 }
             } else {
                 $this->errors[$field] = "файл не может быть загружен";
+                $this->data[$field] = $_FILES[$field]["name"];
             }
         } else {
-            $this->errors[$field] = "что-то пошло не так";
+            $this->errors[$field] = "Файл не был отправлен";
         }
     }
 }
