@@ -1,51 +1,31 @@
 <?php
-include ('functions.php');
-$link = create_connect();
-if (!$link) {
-    echo mysqli_connect_errno();
-    exit ();
-}
 
-if (isset($_POST["send"])) {
-    $loginFormFilds = ['email', 'password'];
-    $form_item = array();
-    $error = array();
-    //проверка на правильность заполнения полей
-    foreach ($loginFormFilds as $key) {
-        if (!empty($_POST[$key])) {
-            $form_item[$key] = htmlspecialchars($_POST[$key]);
+include ('autoload.php');
+
+if (isset($_POST["AuthForm"])) {
+    $form = AuthForm::getFormData();
+    if ($form->isValid()) {
+        $user = Authorization::authorize($form->email, $form->password);
+        if ($user === true) {
+            //если пароль верен, отправляем пользователя на главную стр
+            header("Location: /index.php");
+            exit();
         } else {
-            $error[$key] = "Не заполнено";
+            $data["error"] = $user;
         }
+    } else {
+        $data["error"]= $form->getErrors();
     }
-    if (!$error) {
-        $user = getUserByKey($link,"email",$form_item["email"] );
-        if ($user) { //поиск пользователя по email
-            if (password_verify($form_item["password"], $user["password"])) {//сравнение пароля с хешом пароля в массиве
-                session_start();
-                $_SESSION["user"] = $user;
-                header("Location: /index.php");//если пароль верен, отправляем пользователя на главную стр
-                exit();
-            } else {
-                $error["wrong_password"] = "Вы ввели не верный пароль";
-                $error["password"] = True;
-            }
-        } else {
-            $error["wrong_username"] = "Пользователья с такием email не существует";
-            $error["email"] = True;
-        }
-    }
-    $data["error"] = $error;
 } else {
     $data = array ("error" => array());
 }
 
 //получение всех категорий
-$categories = getAllCategories($link);
-$data_footer["categories_equipment"] = $categories;
+if (isset($_REQUEST["welcome"])){
+    $data["w"] = true;
+}
+$data_footer["categories_equipment"] = CategoryFinder::getAll();
 
-echo connectTemplates("templates/header.php", array());
-echo connectTemplates("templates/main-login.php", $data);
-echo connectTemplates("templates/footer.php", $data_footer);
-
-?>
+echo Templates::render("templates/header.php", array());
+echo Templates::render("templates/main-login.php", $data);
+echo Templates::render("templates/footer.php", $data_footer);

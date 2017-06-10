@@ -1,24 +1,21 @@
 <?php
-include ('functions.php');
-// проверяем авторизацию пользователя
+
+include ('autoload.php');
+
 session_start();
-$user_data = requireAuthentication(true);
+// проверяем авторизацию пользователя
+// $user_data = requireAuthentication(true);
+Authorization::blockAccess();
 
-$link = create_connect();
-if (!$link) {
-    echo mysqli_connect_errno();
-    exit ();
-}
-
-$categories = getAllCategories($link);
-$header_data = $user_data;
+$categories = CategoryFinder::getAll();
+$header_data["user"] = Authorization::getAuthData();
 
 $data_footer["categories_equipment"] = $categories;
 
-$data["rates"] = getAllBindedLotsByUser($link, $user_data["user_id"]);
+$data["rates"] = BindFinder::getByUserId($header_data["user"]->id);
 
-echo connectTemplates("templates/header.php", $header_data);
-echo connectTemplates("templates/mylot-main.php", $data);
-echo connectTemplates("templates/footer.php", $data_footer);
+echo Templates::render("templates/header.php", $header_data);
+echo Templates::render("templates/mylot-main.php", $data);
+echo Templates::render("templates/footer.php", $data_footer);
 
 ?>

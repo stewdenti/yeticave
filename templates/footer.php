@@ -1,9 +1,13 @@
+<?php
+/** @var Category[] $categories_equipment */
+/** @var Lot[] $announcement_list */
+?>
 <footer class="main-footer">
     <nav class="nav">
         <ul class="nav__list container">
             <?php foreach ($categories_equipment as $value):?>
                 <li class="nav__item">
-                    <a href="/index.php?id=<?=$value['id']?>"><?=$value['name']?></a>
+                    <a href="/index.php?id=<?=$value->id?>"><?=$value->name?></a>
                 </li>
             <?php endforeach;?>
         </ul>

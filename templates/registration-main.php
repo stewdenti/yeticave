@@ -15,12 +15,12 @@
         <input id="name" type="text" name="name" placeholder="Введите имя" value="<?php printInputItemValue($form_item, 'name');?>">
         <span class="form__error"><?php if (isset($error["name"])) {print($error["name"]); } ?></span>
     </div>
-    <div class="form__item <?php printInvalidItemClass($error, 'message'); ?>">
-        <label for="message">Контактные данные*</label>
-        <textarea id="message" name="message" placeholder="Напишите как с вами связаться"><?php printInputItemValue($form_item, 'message');?></textarea>
-        <span class="form__error"><?php if (isset($error["message"])) {print($error["message"]); } ?></span>
+    <div class="form__item <?php printInvalidItemClass($error, 'contacts'); ?>">
+        <label for="contacts">Контактные данные*</label>
+        <textarea id="contacts" name="contacts" placeholder="Напишите как с вами связаться"><?php printInputItemValue($form_item, 'contacts');?></textarea>
+        <span class="form__error"><?php if (isset($error["contacts"])) {print($error["contacts"]); } ?></span>
     </div>
-    <div class="form__item form__item--file form__item--last">
+    <div class="form__item form__item--file form__item--last <?php printInvalidItemClass($error, 'avatar_img'); ?>">
         <label>Изображение</label>
         <div class="preview">
             <button class="preview__remove" type="button">x</button>
@@ -29,13 +29,14 @@
             </div>
         </div>
         <div class="form__input-file">
-            <input class="visually-hidden" type="file" id="photo2" name="avatar" value=" ">
+            <input class="visually-hidden" type="file" id="photo2" name="avatar_img" value="<?php printInputItemValue($form_item, 'avatar_img');?>">
             <label for="photo2">
                 <span>+ Добавить</span>
             </label>
         </div>
+        <span class="form__error"><?php if (isset($error["avatar_img"])) {print($error["avatar_img"]); } ?></span>
     </div>
     <span class="form__error form__error--bottom">Пожалуйста, исправьте ошибки в форме.</span>
-    <button type="submit" class="button" name="send">Зарегистрироваться</button>
+    <button type="submit" class="button" name="RegForm">Зарегистрироваться</button>
     <a class="text-link" href="/login.php">Уже есть аккаунт</a>
 </form>
