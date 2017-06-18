@@ -2,6 +2,7 @@
 require_once 'functions.php';
 
 $map = [
+    "ConfigManager" => "classes/ConfigManager.php",
     'BaseRecord' => 'classes/records/BaseRecord.php',
     'Bind' => 'classes/records/Bind.php',
     'Category' => 'classes/records/Category.php',

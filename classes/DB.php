@@ -28,11 +28,13 @@ class DB {
      */
     private function __construct()
     {
-        $this->link = mysqli_connect("localhost", "root", "", "yeticave_db");
+        $config = ConfigManager::get();
+
+        $this->link = mysqli_connect($config["db_host"], $config["db_user"], $config["db_password"], $config["db_name"]);
         if (!$this->link) {
             $this->error = mysqli_connect_error();
         }
-        if (!mysqli_set_charset($this->link, "utf8")) {
+        if (!mysqli_set_charset($this->link, $config["db_encoding"])) {
             $this->error = mysqli_errno($this->link).mysqli_error($this->link);
         }
     }

@@ -12,6 +12,8 @@ $config = [
 
     "db_name" => "yeticave_db",
 
+    "db_encoding" => "utf8",
+
 
 ];
 
