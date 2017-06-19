@@ -3,14 +3,26 @@
 class BaseController 
 {
     protected $template;
+    protected $header_data;
+    protected $main_data;
+    protected $footer_data;
 
-    protected static function getTemplate ()
+
+    protected function getTemplate ()
     {
-        return static::template
+        return $this->template;
+    }
+
+
+    public function __construct($params = null)
+    {
+        
     }
 
     public function default()
     {
-        Templates::render(self::getTemplate());
+        Templates::render($this->getTemplate());
     }
+
+
 }

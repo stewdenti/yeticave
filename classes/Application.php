@@ -5,9 +5,12 @@ class Application
 
     public static function run()
     {
+        session_start();
+        
         self::findWinner();
         
-        
+        Router::execute();
+
 
     }
 

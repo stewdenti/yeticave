@@ -2,6 +2,10 @@
 require_once 'functions.php';
 
 $map = [
+    "Application" => "classes/Application.php",
+    "Router" => "classes/Router.php",
+    "BaseController" => "classes/controllers/BaseController.php",
+    "Main" => "classes/controllers/Main.php",
     "ConfigManager" => "classes/ConfigManager.php",
     'BaseRecord' => 'classes/records/BaseRecord.php',
     'Bind' => 'classes/records/Bind.php',
