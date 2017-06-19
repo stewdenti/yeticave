@@ -240,9 +240,9 @@ class DB {
     protected function db_get_prepare_stmt($sql, $data = [])
     {
         $stmt = mysqli_prepare($this->link, $sql);
-        if (!$stmt) {
-            throw new Exception('stmt error');
-        }
+        // if (!$stmt) {
+        //     throw new Exception('stmt error');
+        // }
 
         if ($data) {
             $types = '';

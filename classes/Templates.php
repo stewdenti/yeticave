@@ -10,7 +10,7 @@ class Templates {
      * @param  array $data массив с данным для заполнения шаблона
      * @return string готовая страница
      */
-    public static function render($filename, $data)
+    public static function render($filename, $data = [])
     {
         if (file_exists($filename)) {
             extract($data);                 //импортирует переменные из массива
