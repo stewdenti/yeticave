@@ -2,26 +2,21 @@
 
 class BaseController 
 {
-    protected $template;
-    protected $header_data;
-    protected $main_data;
-    protected $footer_data;
+    protected $params = null;
 
-
-    protected function getTemplate ()
-    {
-        return $this->template;
-    }
+    protected $header_data = null;
+    protected $body_data = null;
+    protected $footer_data = null;
 
 
     public function __construct($params = null)
     {
-        
+        $this->params = $params;
     }
 
     public function default()
     {
-        Templates::render($this->getTemplate());
+       
     }
 
 
