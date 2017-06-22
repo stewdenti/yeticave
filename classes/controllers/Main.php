@@ -6,80 +6,120 @@ class Main extends BaseController
         
     public function show() 
     {
+        $this->body_data["category_id"] = null;
+        $this->body_data["category_name"] = null;
+        $this->body_data["search_string"] = null;
+
+
         if (!$this->params) {
             $this->default();
-        } 
-
-        if (!empty($this->params["page"])) {
-            $this->page = (int)$this->params["page"];
-        } 
-
-
-        if (!empty($this->params["category"])) {
-            $page = Paginator::buildPages($this->page, $this->params["category"]);
-            $lots_list = LotFinder::getByCategoryId(protectXSS($this->params["category"], $page->getOffset());
-            $current_category = CategoryFinder::getById($this->params["category"]);
-            $data["category_id"] = $current_category->id;
-            $data["category_name"] = $current_category->name;
-        } elseif (!empty($this->params["search"])) {
-            $search = protectXSS(trim($this->params["search"]));
-            $page = Paginator::buildPages($p, null, $search);
-            $lots_list = LotFinder::searchByString($search, $page->getOffset());
-            $data["search_string"] = $search;
         } else {
-            $page = Paginator::buildPages($p);
-            $lots_list = LotFinder::getAllOpened($page->getOffset());
+            if (!empty($this->params["page"])) {
+                $this->page = (int)$this->params["page"];
+            }
+
+            if (!empty($this->params["category"])) {
+
+                $pagination = Paginator::buildPages($this->page, $this->params["category"]);
+                $lots_list = LotFinder::getByCategoryId(protectXSS($this->params["category"], $pagination->getOffset()));
+                $current_category = CategoryFinder::getById($this->params["category"]);
+                $this->body_data["category_id"] = $current_category->id;
+                $this->body_data["category_name"] = $current_category->name;
+                $this->body_data["categories_equipment"] = CategoryFinder::getAll();
+                $this->body_data["announcement_list"] = $lots_list;
+                if ($pagination->total > 1) {
+                    $this->body_data["pages"] = $pagination;
+                }
+                $this->display();
+
+            } else {
+                // $pagination = Paginator::buildPages($this->page);
+                // $lots_list = LotFinder::getAllOpened($pagination->getOffset());
+                $this->default();
+            }
         }
 
 
-        $data["categories_equipment"] = $categories_list;
-        $data["announcement_list"] = $lots_list;
-        if ($page->total > 1) {
-            $data["pages"] = $page;
+
+        
+    }
+
+    public function find()
+    {
+        $this->body_data["category_id"] = null;
+        $this->body_data["category_name"] = null;
+        $this->body_data["search_string"] = null;
+
+        if (!$this->params) {
+            $this->default();
+        } else {
+            if (!empty($this->params["page"])) {
+                $this->page = (int)$this->params["page"];
+            } 
+            if (!empty($this->params["search"])) {
+                $search = protectXSS(trim($this->params["search"]));
+                $pagination = Paginator::buildPages($this->page, null, $search);
+                $lots_list = LotFinder::searchByString($search, $pagination->getOffset());
+                $this->body_data["search_string"] = $search;
+
+
+
+                $this->body_data["categories_equipment"] = CategoryFinder::getAll();
+                $this->body_data["announcement_list"] = $lots_list;
+                if ($page->total > 1) {
+                    $this->body_data["pages"] = $pagination;
+                }
+
+                $this->display();
+            } else {
+                // $pagination = Paginator::buildPages($this->page);
+                // $lots_list = LotFinder::getAllOpened($page->getOffset());
+                $this->default();
+            }
         }
 
-        $this->body_data = $data;
-
-        $this->display();
 
     }
 
     public function default() 
     {
 
-        $header_data["user"] = Authorization::getAuthData();
-        $data["search_string"] = null;
-        $data["category_id"] = null;
-        $data["category_name"] = null;
+        $this->body_data["category_id"] = null;
+        $this->body_data["category_name"] = null;
+        $this->body_data["search_string"] = null;       
 
-        $categories_list = CategoryFinder::getAll();
-        if (!empty($_REQUEST["page"])){
-            $p = protectXSS($_REQUEST["page"]);
-        } else {
-            $p = 1;
+        if (!empty($this->params["page"])) {
+           $this->page = (int)$this->params["page"];
+        } 
+
+        $pagination = Paginator::buildPages($this->page);
+        $lots_list = LotFinder::getAllOpened($pagination->getOffset());    
+
+        if ($pagination->total > 1) {
+             $this->body_data["pages"] = $pagination;
         }
 
         
-        $page = Paginator::buildPages($this->page);
-        $lots_list = LotFinder::getAllOpened($page->getOffset());
+
+
+        $this->body_data["categories_equipment"] = CategoryFinder::getAll();
+        $this->body_data["announcement_list"] = $lots_list;
+
+        $this->display();
+    }
+
+
+    public function display()
+    {
+        $this->header_data["user"] = Authorization::getAuthData();
+        $this->footer_data["categories_equipment"] = CategoryFinder::getAll();
         
 
-        $data["categories_equipment"] = $categories_list;
-        $data["announcement_list"] = $lots_list;
-        if ($page->total > 1) {
-            $data["pages"] = $page;
-        }
-
-        $footer_data = array (
-            "categories_equipment" => $categories_list,
-        );
 
 
 
-
-        echo Templates::render("templates/header.php", $header_data);
-        echo Templates::render($this->template, $data);
-        echo Templates::render("templates/footer.php", $footer_data);
-
+        echo Templates::render("templates/header.php", $this->header_data);
+        echo Templates::render($this->template, $this->body_data);
+        echo Templates::render("templates/footer.php", $this->footer_data);
     }
 }
