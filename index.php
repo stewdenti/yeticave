@@ -35,6 +35,7 @@ if (!empty($_REQUEST["id"])) {
 
 $data["categories_equipment"] = $categories_list;
 $data["announcement_list"] = $lots_list;
+
 if ($page->total > 1) {
     $data["pages"] = $page;
 }

@@ -11,7 +11,7 @@
         <ul class="promo__list">
             <?php foreach ($categories_equipment as $value):?>
                 <li class="promo__item promo__item--boards">
-                    <a class="promo__link" href="/index.php?id=<?=$value->id?>"><?=$value->name?></a>
+                    <a class="promo__link" href="/main/show/category/<?=$value->id?>"><?=$value->name?></a>
                 </li>
             <?php endforeach;?>
         </ul>
@@ -26,7 +26,7 @@
                 <?php else: ?>
                     <li class="nav__item">
                 <?php endif; ?>
-                        <a href="/index.php?id=<?=$value->id?>"><?=$value->name?></a>
+                        <a href="/main/show/category/<?=$value->id?>"><?=$value->name?></a>
                     </li>
             <?php endforeach;?>
         </ul>
@@ -83,16 +83,16 @@
     </section>
     <?php if (isset($pages)): ?>
     <ul class="pagination-list">
-        <li class="pagination-item pagination-item-prev"><a href="<?=$pages->prepareUrl("/index.php", $pages->back, $search_string, $category_id);?>">Назад</a></li>
+        <li class="pagination-item pagination-item-prev"><a href="<?=$pages->prepareUrl($pages->back, $search_string, $category_id);?>">Назад</a></li>
         <?php for ($i=1; $i<=$pages->total; $i++) {
             if ($i == $pages->current){
-                echo "<li class=\"pagination-item pagination-item-active\"><a href=\"".$pages->prepareUrl("/index.php", $i, $search_string, $category_id)."\">$i</a></li>";
+                echo "<li class=\"pagination-item pagination-item-active\"><a href=\"".$pages->prepareUrl($i, $search_string, $category_id)."\">$i</a></li>";
             } else {
-                echo "<li class=\"pagination-item\"><a href=\"".$pages->prepareUrl("/index.php", $i, $search_string, $category_id)."\">$i</a></li>";
+                echo "<li class=\"pagination-item\"><a href=\"".$pages->prepareUrl($i, $search_string, $category_id)."\">$i</a></li>";
             }
         }
         ?>
-        <li class="pagination-item pagination-item-next"><a href="<?=$pages->prepareUrl("/index.php", $pages->forward, $search_string, $category_id); ?>">Вперед</a></li>
+        <li class="pagination-item pagination-item-next"><a href="<?=$pages->prepareUrl($pages->forward, $search_string, $category_id); ?>">Вперед</a></li>
     </ul>
     <?php endif; ?>
     </div>

@@ -32,6 +32,8 @@ class Paginator
      */
     public $forward = null;
 
+    public $url = null;
+
     /**
      * Создание объекта для построения пагинации
      *
@@ -39,7 +41,7 @@ class Paginator
      * @param int $total общее количество страниц
      * @param int $current текущая старница
      */
-    public function __construct($total, $current)
+    public function __construct($url, $total, $current)
     {
         $this->total = $total;
         $this->current = $current;
@@ -53,6 +55,7 @@ class Paginator
         } else {
             $this->forward = $total;
         }
+        $this->url = $url;
     }
 
     /**
@@ -65,14 +68,15 @@ class Paginator
      *
      * @return string готовый URL для вывода в шаблоне
      */
-    public function prepareURL($url, $num, $search = null, $categoryId = null)
+    public function prepareURL($num, $search = null, $categoryId = null)
     {
-        $url .= "?page=$num";
+        $url = $this->url;
+        $url .= "/page/$num";
         if ($search !== null) {
-            $url .= "&search=$search";
+            $url .= "?search=$search";
         }
         if ($categoryId !== null) {
-            $url .= "&id=$categoryId";
+            $url .= "/category/$categoryId";
         }
         return $url;
     }
@@ -95,7 +99,7 @@ class Paginator
      * @param string|null $search строка запроса
      * @return Paginator
      */
-    public static function buildPages($page = null, $categoryId = null, $search = null)
+    public static function buildPages($page = null, $categoryId = null, $search = null, $url = null)
     {
         if ($categoryId !== null) {
             $total = LotFinder::getCountLots($categoryId);
@@ -111,7 +115,7 @@ class Paginator
         if ($page > $cnt_pages) {
             $page = $cnt_pages;
         }
-        return new Paginator($cnt_pages, $page);
+        return new Paginator($url, $cnt_pages, $page);
     }
 
     public static function getItemsPerPage ()

@@ -19,9 +19,11 @@ class BaseController
        
     }
 
-    public function display()
+   public function display()
     {
-        
+        echo Templates::render("templates/header.php", $this->header_data);
+        echo Templates::render("templates/main.php", $this->body_data);
+        echo Templates::render("templates/footer.php", $this->footer_data);
     }
 
 }

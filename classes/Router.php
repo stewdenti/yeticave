@@ -7,8 +7,8 @@ class Router
     {
         $application_data = [];
         $params = null;
-
-        $data = explode("/", substr($_SERVER["REQUEST_URI"],1), 3);
+        $url = explode("?", $_SERVER["REQUEST_URI"], 2);
+        $data = explode("/", substr($url[0], 1), 3);
         
         if (count($data) == 2) {
             $controller = $data[0];
@@ -45,6 +45,7 @@ class Router
         return $params;
     }
 
+
     public static function execute()
     {
         $ex = self::parse();
@@ -53,6 +54,9 @@ class Router
             $control = new $ex["controller"]($ex["params"]);
             $method = $ex["action"];
             $control->$method();
+        } else {
+            $control = new Main();
+            $control->default();
         }
     }
 
