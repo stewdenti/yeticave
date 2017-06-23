@@ -48,7 +48,7 @@ class AddForm extends BaseForm
                 if (preg_match('{image/(.*)}is', $info["mime"], $p)) {
                     $name = "img/" . time() . "." . $p[1];//делаем имя равным текущему времени в секундах
                     move_uploaded_file($file['tmp_name'], $name);//добавляем файл в папку
-                    $this->data[$field] = $name;//путь до папки
+                    $this->data[$field] = "/".$name;//путь до папки
                 } else {
                     $this->data[$field] = $_FILES[$field]["name"];
                     $this->errors[$field] = "Попытка добавить файл недопустимого формата";

@@ -111,6 +111,7 @@ class DB {
     protected function dataRetrievalAssoc($sql, $unitDataSql, $oneRow = false )
     {
         $resultArray = [];
+      
         $sqlReady = $this->db_get_prepare_stmt($sql, $unitDataSql);
         if (!$sqlReady) {
             $this->error = mysqli_error($this->link);
@@ -149,7 +150,7 @@ class DB {
     {
         $sqlReady = $this->db_get_prepare_stmt($sql, $unitDataSql);
         if (!$sqlReady) {
-
+            $this->error = mysqli_errno($this->link).mysqli_error($this->link);
             return false;
         }
 

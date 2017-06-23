@@ -23,9 +23,16 @@ if (isset($_POST["AddForm"])) {
         $lot_item["user_id"] = $user_data->id;
         $lot_item["add_date"] = date("Y:m:d H:i:s");
         $lot_item["end_date"] = date("Y:m:d H:i", strtotime($lot_item["end_date"]));
+
         $l = new Lot($lot_item);
         $l->insert();
-        header("Location: /lot.php?id=".$l->id);
+        
+        if ($l->id) {
+            header("Location: /lot.php?id=".$l->id);
+        } else {
+            echo DB::getInstance()->getLastError();
+            // header("Location: /main");
+        }
         exit();
     } else {
         $data["error"] = $form->getErrors();

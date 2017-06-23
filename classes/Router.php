@@ -35,13 +35,13 @@ class Router
         $params = [];
         $data = explode("/", $qs);
 
-        for ($i = 0; $i < count($data); $i=+2) {
+        for ($i = 0; $i < count($data); $i+=2) {
             if (isset($data[$i]) && isset($data[$i+1])) {
-                $params[$data[$i]] = $data[$i+1];    
+                $params[$data[$i]] = $data[$i+1];
             }
             
         }
-
+      
         return $params;
     }
 
@@ -49,7 +49,6 @@ class Router
     public static function execute()
     {
         $ex = self::parse();
-
         if (class_exists($ex["controller"]) && method_exists($ex["controller"], $ex["action"])) {
             $control = new $ex["controller"]($ex["params"]);
             $method = $ex["action"];

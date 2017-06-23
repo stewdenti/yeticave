@@ -91,6 +91,7 @@ abstract class BaseFinder
         $sql = "SELECT * FROM ".static::tableName();
         $sql = self::appendWhereCondition($sql,$where);
         $sql = self::appendOrderByLimitOffset($sql, $orderBy, $limit, $offset);
+  
         return array_map(
             function($c) {
                 $entityName =  static::entityName();

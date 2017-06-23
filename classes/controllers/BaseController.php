@@ -10,17 +10,20 @@ class BaseController
 
 
     public function __construct($params = null)
-    {
+    {   
+
         $this->params = $params;
+        $this->authenticate();
     }
 
-    public function default()
+    public function authenticate()
     {
-       
+        $this->header_data["user"] = Authorization::getAuthData();
     }
 
    public function display()
     {
+  
         echo Templates::render("templates/header.php", $this->header_data);
         echo Templates::render("templates/main.php", $this->body_data);
         echo Templates::render("templates/footer.php", $this->footer_data);

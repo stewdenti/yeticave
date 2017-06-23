@@ -2,7 +2,7 @@
 
 $config = [
     
-    "db_host" => "localhost",
+    "db_host" => "172.17.0.3",
 
     "db_port" => 3306,
 
@@ -13,7 +13,6 @@ $config = [
     "db_name" => "yeticave_db",
 
     "db_encoding" => "utf8",
-
 
 ];
 

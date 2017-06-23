@@ -99,7 +99,7 @@ class Paginator
      * @param string|null $search строка запроса
      * @return Paginator
      */
-    public static function buildPages($page = null, $categoryId = null, $search = null, $url = null)
+    public static function buildPages($page = null, $url = null, $categoryId = null, $search = null)
     {
         if ($categoryId !== null) {
             $total = LotFinder::getCountLots($categoryId);
