@@ -3,6 +3,7 @@
 class BaseController 
 {
     protected $params = null;
+    protected $user = null;
   
     protected $header_data = null;
     protected $body_data = null;
@@ -18,14 +19,16 @@ class BaseController
 
     public function authenticate()
     {
-        $this->header_data["user"] = Authorization::getAuthData();
+        $this->user = Authorization::getAuthData();
+
     }
 
-   public function display()
-    {
-  
+   public function display($body_template)
+    {   
+        $this->header_data["user"] = $this->user;
+
         echo Templates::render("templates/header.php", $this->header_data);
-        echo Templates::render("templates/main.php", $this->body_data);
+        echo Templates::render($body_template, $this->body_data);
         echo Templates::render("templates/footer.php", $this->footer_data);
     }
 

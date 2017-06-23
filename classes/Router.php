@@ -11,15 +11,15 @@ class Router
         $data = explode("/", substr($url[0], 1), 3);
         
         if (count($data) == 2) {
-            $controller = $data[0];
+            $controller = $data[0]."Controller";
             $action = $data[1];
 
         } elseif (count($data) == 3) {
-            $controller = $data[0];
+            $controller = $data[0]."Controller";
             $action = $data[1];
             $params = self::parseQuery($data[2]);
         } else {
-            $controller = "main";
+            $controller = $data[0]."Controller";
             $action = "default";
         }
 
@@ -49,12 +49,13 @@ class Router
     public static function execute()
     {
         $ex = self::parse();
+        var_dump($ex);
         if (class_exists($ex["controller"]) && method_exists($ex["controller"], $ex["action"])) {
             $control = new $ex["controller"]($ex["params"]);
             $method = $ex["action"];
             $control->$method();
         } else {
-            $control = new Main();
+            $control = new MainController();
             $control->default();
         }
     }
