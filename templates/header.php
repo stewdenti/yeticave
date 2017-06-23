@@ -18,7 +18,7 @@
             <input type="search" name="search" placeholder="Поиск лота">
             <input class="main-header__search-btn" type="submit" name="find" value="Найти">
         </form>
-        <a class="main-header__add-lot button" href="/add.php">Добавить лот</a>
+        <a class="main-header__add-lot button" href="/lot/new">Добавить лот</a>
 
         <nav class="user-menu">
             <?php if (!empty($user)): ?>
@@ -26,16 +26,16 @@
                 <img src="<?=$user->avatar_img?>" width="40" height="40" alt="Пользователь">
             </div>
             <div class="user-menu__logged">
-                <p><a href="/mylots.php"><?=$user->name?></a></p>
-                <a href="/logout.php">Выйти</a>
+                <p><a href="/user/mylots"><?=$user->name?></a></p>
+                <a href="/user/signout">Выйти</a>
             </div>
         <?php else: ?>
             <ul class="user-menu__list">
                 <li class="user-menu__item">
-                    <a href="/registration.php">Регистрация</a>
+                    <a href="/user/signup">Регистрация</a>
                 </li>
                 <li class="user-menu__item">
-                    <a href="/login.php">Вход</a>
+                    <a href="/user/signin">Вход</a>
                 </li>
             </ul>
         </nav>

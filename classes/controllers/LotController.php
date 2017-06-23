@@ -10,6 +10,48 @@ class LotController extends BaseController
         }
     }
 
+
+    public function new()
+    {
+        Authorization::blockAccess();
+
+        $this->body_data["categories_equipment"] = CategoryFinder::getAll();
+        $this->body_data["error"] = array();
+        $this->body_data["lot_item"] = array();
+
+        if (isset($_POST["AddForm"])) {
+            $form = AddForm::getFormData();
+            $this->body_data["categories_equipment"] = CategoryFinder::getAll();
+           
+            if ($form->isValid()) {
+                $lot_item = $form->getData();
+
+                $lot_item["user_id"] = $this->user->id;
+                $lot_item["add_date"] = date("Y:m:d H:i:s");
+                $lot_item["end_date"] = date("Y:m:d H:i", strtotime($lot_item["end_date"]));
+
+                $l = new Lot($lot_item);
+                $l->insert();
+                
+                if ($l->id) {
+                    header("Location: /lot/show/id/".$l->id);
+                } else {
+                    echo DB::getInstance()->getLastError();
+                    // header("Location: /main");
+                }
+                exit();
+            } else {
+                $this->body_data["error"] = $form->getErrors();
+                $this->body_data["lot_item"] = $form->getData();
+
+            }
+
+        } 
+
+        $this->display("templates/form.php");
+        
+    }
+
     public function bind()
     {
         
@@ -59,16 +101,16 @@ class LotController extends BaseController
     {
                     // $user_data = Authorization::getAuthData();
 
-            $categories = CategoryFinder::getAll();
+        
             //заполняем данные для шаблона header
             // $header_data["user"] = $user_data;
-            $this->header_data["categories_equipment"] = $categories;
+           
             //заполняем данные для шаблона main
             $this->body_data["user"] = $this->user;
-            $this->body_data["categories_equipment"] = $categories;
+            $this->body_data["categories_equipment"] = CategoryFinder::getAll();
             
-            //заполняем данные для шаблона footer
-            $data_footer["categories_equipment"] = $categories;
+           
+           
 
 
             // проверка пришел ли id лота и получение данных о лоте  из базы
@@ -80,7 +122,7 @@ class LotController extends BaseController
             $this->body_data["can_make_bet"] = false;
 
             if ($this->user) {
-                $this->body_data["can_make_bet"] = BindFinder::canMakeBet($lot_id, $user_data->id);
+                $this->body_data["can_make_bet"] = BindFinder::canMakeBet($lot_id, $this->user->id);
 
             }
 

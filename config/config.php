@@ -2,7 +2,7 @@
 
 $config = [
     
-    "db_host" => "172.17.0.3",
+    "db_host" => "localhost",
 
     "db_port" => 3306,
 

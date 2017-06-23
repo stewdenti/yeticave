@@ -7,6 +7,7 @@ $map = [
     "BaseController" => "classes/controllers/BaseController.php",
     "MainController" => "classes/controllers/MainController.php",
     "LotController" => "classes/controllers/LotController.php",
+    "UserController" => "classes/controllers/UserController.php",
     "ConfigManager" => "classes/ConfigManager.php",
     'BaseRecord' => 'classes/records/BaseRecord.php',
     'Bind' => 'classes/records/Bind.php',

@@ -24,6 +24,7 @@ class MainController extends BaseController
                 $pagination = Paginator::buildPages($this->page, "/main/show", $this->params["category"]);
                 $lots_list = LotFinder::getByCategoryId($this->params["category"], $pagination->getOffset());
                 $current_category = CategoryFinder::getById($this->params["category"]);
+                             
                 $this->body_data["category_id"] = $current_category->id;
                 $this->body_data["category_name"] = $current_category->name;
                 $this->body_data["announcement_list"] = $lots_list;

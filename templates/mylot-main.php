@@ -13,7 +13,7 @@
                 <div class="rates__img">
                     <img src="<?=$lot->img_path?>" width="54" height="40" alt="Сноуборд">
                 </div>
-                <h3 class="rates__title"><a href="/lot.php?id=<?=$lot->id?>"><?=$lot->name?></a></h3>
+                <h3 class="rates__title"><a href="/lot/show/id/<?=$lot->id?>"><?=$lot->name?></a></h3>
             </td>
             <td class="rates__category">
                 <?=$lot->getCategory()->name?>
