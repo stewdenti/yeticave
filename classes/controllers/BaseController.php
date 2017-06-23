@@ -26,6 +26,7 @@ class BaseController
    public function display($body_template)
     {   
         $this->header_data["user"] = $this->user;
+        $this->footer_data["categories_equipment"] = CategoryFinder::getAll();
 
         echo Templates::render("templates/header.php", $this->header_data);
         echo Templates::render($body_template, $this->body_data);
