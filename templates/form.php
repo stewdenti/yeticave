@@ -1,6 +1,7 @@
 <?php
 /** @var Category[] $categories_equipment */
 ?>
+<script type="text/javascript" src="/js/pickmeup.js"></script>
 <form class="form form--add-lot container <?php if ($error):?>form--invalid<?php endif; ?>" action="/lot/new" method="post" enctype="multipart/form-data"> <!-- form--invalid -->
     <h2>Добавление лота</h2>
     <div class="form__container-two">
@@ -65,3 +66,10 @@
     <span class="form__error form__error--bottom">Пожалуйста, исправьте ошибки в форме.</span>
     <button type="submit" class="button" name="AddForm">Добавить лот</button>
 </form>
+<script type="text/javascript">
+
+pickmeup('.form__input-date', {
+        position       : 'right',
+        hide_on_select : true
+    });
+</script>
