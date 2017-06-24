@@ -49,7 +49,7 @@ class Router
     public static function execute()
     {
         $ex = self::parse();
-        var_dump($ex);
+ 
         if (class_exists($ex["controller"]) && method_exists($ex["controller"], $ex["action"])) {
             $control = new $ex["controller"]($ex["params"]);
             $method = $ex["action"];
