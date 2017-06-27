@@ -72,4 +72,5 @@ pickmeup('.form__input-date', {
         position       : 'right',
         hide_on_select : true
     });
+
 </script>

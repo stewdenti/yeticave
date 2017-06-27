@@ -44,7 +44,7 @@ class RegForm extends BaseForm
             if (file_exists($file['tmp_name'])) {
                 $info = @getimagesize($file['tmp_name']);
                 if (preg_match('{image/(.*)}is', $info["mime"], $p)) {
-                    $name = "img/" . time() . "." . $p[1];//делаем имя равным текущему времени в секундах
+                    $name = "/img/" . time() . "." . $p[1];//делаем имя равным текущему времени в секундах
                     move_uploaded_file($file['tmp_name'], $name);//добавляем файл в папку
                     $this->data[$field] = $name;//путь до папки
                 } else {
