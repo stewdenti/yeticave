@@ -1,7 +1,6 @@
 <form class="form container <?php if (!empty($error)):?>form--invalid<?php endif; ?>" action="" method="post">
     <h2>Вход: <?php if (isset($w)):?>Теперь вы можете войти, используя свой email и пароль<?php elseif (isset($error["wrong_message"])): ?> <?=$error["wrong_message"]?> <? endif; ?></h2>
-    <div class="form__item <?php printInvalidItemClass($error, 'email'); ?>"> <!-- form__item--invalid -->
-        <label for="email">E-mail*</label>
+    <div class="form__item <?php printInvalidItemClass($error, 'email'); ?>">    <label for="email">E-mail*</label>
         <input id="email" type="text" name="email" placeholder="Введите e-mail">
         <?php if (isset($error["email"])): ?>
         <span class="form__error"><?=$error["email"]?></span>
