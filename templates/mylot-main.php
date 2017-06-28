@@ -19,7 +19,11 @@
                 <?=$lot->getCategory()->name?>
             </td>
             <td class="rates__timer">
+            <?php if ($lot->winner == $userid):?>
                 <div class="timer timer--finishing"><?=$lot->end_date?></div>
+            <?php else: ?>
+                <div class="timer"><?=$lot->end_date?></div>
+            <?php endif; ?>
             </td>
             <td class="rates__price">
                 <?=$lot->getCurrentBet()?> р

@@ -3,6 +3,7 @@ require_once 'functions.php';
 
 $map = [
     "Application" => "classes/Application.php",
+    "Protection" => "classes/Protection.php",
     "Router" => "classes/Router.php",
     "BaseController" => "classes/controllers/BaseController.php",
     "MainController" => "classes/controllers/MainController.php",

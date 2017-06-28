@@ -1,8 +1,13 @@
 <?php
-
+/**
+ * Класс котроллера для работы и отображения с сущностью Лота.
+ */
 class LotController extends BaseController
 {
-    public function show()    
+    /**
+     * действие для отображение выбранного лота по его id
+     */
+    public function show()
     {
         if (!empty($this->params["id"])) {
             $this->getInfo();
@@ -10,7 +15,10 @@ class LotController extends BaseController
         }
     }
 
-
+    /**
+     * вывод формы для нового лота и обработка формы добавления нового лота.
+     * Если все данные в форме верны, создается новый лот
+     */
     public function new()
     {
         Authorization::blockAccess();
@@ -22,7 +30,7 @@ class LotController extends BaseController
         if (isset($_POST["AddForm"])) {
             $form = AddForm::getFormData();
             $this->body_data["categories_equipment"] = CategoryFinder::getAll();
-           
+
             if ($form->isValid()) {
                 $lot_item = $form->getData();
 
@@ -32,7 +40,7 @@ class LotController extends BaseController
 
                 $l = new Lot($lot_item);
                 $l->insert();
-                
+
                 if ($l->id) {
                     header("Location: /lot/show/id/".$l->id);
                 } else {
@@ -46,15 +54,18 @@ class LotController extends BaseController
 
             }
 
-        } 
+        }
 
         $this->display("templates/form.php");
-        
+
     }
 
+    /**
+     * обработка новой ставки для лота
+     */
     public function bind()
     {
-        
+
         $this->getInfo();
 
         $time  = time();
@@ -84,57 +95,38 @@ class LotController extends BaseController
 
         if ($error) {
             $this->body_data['error'] = $error;
-            // echo Templates::render("templates/header.php", $header_data);
-            // echo Templates::render("templates/main-lot.php", $data);
-            // echo Templates::render("templates/footer.php", $data_footer);
             $this->display("templates/main-lot.php");
         }
     }
-
-    public function default()
-    {
-        header("Location: /main");
-    }
-
-
+    /**
+     * получение данных о лоте и заполенение соответствующих полей шаблона
+     */
     protected function getInfo()
     {
-                    // $user_data = Authorization::getAuthData();
+        $this->body_data["user"] = $this->user;
+        $this->body_data["categories_equipment"] = CategoryFinder::getAll();
+        // проверка пришел ли id лота и получение данных о лоте  из базы
+        $lot_item = null;
+        $lot_bets = [];
+        $bets = null;
+        $lot_id = $this->params["id"];
 
-        
-            //заполняем данные для шаблона header
-            // $header_data["user"] = $user_data;
-           
-            //заполняем данные для шаблона main
-            $this->body_data["user"] = $this->user;
-            $this->body_data["categories_equipment"] = CategoryFinder::getAll();
-            
-           
-           
+        $this->body_data["can_make_bet"] = false;
 
+        if ($this->user) {
+            $this->body_data["can_make_bet"] = BindFinder::canMakeBet($lot_id, $this->user->id);
 
-            // проверка пришел ли id лота и получение данных о лоте  из базы
-            $lot_item = null;
-            $lot_bets = [];
-            $bets = null;
-            $lot_id = $this->params["id"];
+        }
 
-            $this->body_data["can_make_bet"] = false;
+        if (!empty($lot_id) && is_numeric($lot_id)) {
+            $lot_item = LotFinder::getById($lot_id);
+            $lot_bets = BindFinder::getByLotID($lot_id);
+        }
 
-            if ($this->user) {
-                $this->body_data["can_make_bet"] = BindFinder::canMakeBet($lot_id, $this->user->id);
-
-            }
-
-            if (!empty($lot_id) && is_numeric($lot_id)) {
-                $lot_item = LotFinder::getById($lot_id);
-                $lot_bets = BindFinder::getByLotID($lot_id);
-            }
-
-                //подготовка данных их базы для шаблона.
-            $this->body_data["lot_item"] = $lot_item;
-                //Получение данных о ставках для лота из базы
-            $this->body_data["bets"] = $lot_bets;
+            //подготовка данных их базы для шаблона.
+        $this->body_data["lot_item"] = $lot_item;
+            //Получение данных о ставках для лота из базы
+        $this->body_data["bets"] = $lot_bets;
     }
 
 }

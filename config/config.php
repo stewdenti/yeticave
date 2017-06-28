@@ -14,6 +14,8 @@ $config = [
 
     "db_encoding" => "utf8",
 
+    "img_path" => "/img",
+
 ];
 
 ?>

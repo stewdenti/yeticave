@@ -1,10 +1,13 @@
 <?php
-
+/*
+Класс котроллера для работы с пользователями: регистрация,авторизация
+ */
 class UserController extends BaseController
 {
-
-
-    public function signin() 
+    /**
+     * Авторизация существующих пользователей
+     */
+    public function signin()
     {
         if (isset($_POST["AuthForm"])) {
             $form = AuthForm::getFormData();
@@ -31,6 +34,9 @@ class UserController extends BaseController
         $this->display("templates/main-login.php");
     }
 
+    /**
+     * Регистрация новых пользователей
+     */
     public function signup()
     {
         if (isset($_POST["RegForm"])) {
@@ -55,24 +61,24 @@ class UserController extends BaseController
 
     }
 
+    /**
+     * выход из сессии пользователя
+     */
     public function signout()
     {
         Authorization::blockAccess();
-
         Authorization::logout();
         header("Location: /main");
     }
 
+    /**
+     * Отображение всех лотов для которых пользователь сделал ставку
+     */
     public function mylots()
     {
         Authorization::blockAccess();
-
-        $categories = CategoryFinder::getAll();
-        
         $this->body_data["rates"] = BindFinder::getByUserId($this->user->id);
-
+        $this->body_data["userid"] = $this->user->id;
         $this->display("templates/mylot-main.php");
-
     }
-
 }
