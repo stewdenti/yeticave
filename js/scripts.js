@@ -8,8 +8,8 @@ $(document).ready(function() {
         $("#photo2").change(
             function onFileSelect(e) {
                 var f = e.target.files[0]; // Первый выбранный файл
-                if ( !file.type.match(/image\/(jpeg|jpg|png|gif)/) ) {
-                    alert 'Фотография должна быть в формате jpg, png или gif';
+                if ( !f.type.match(/image\/(jpeg|jpg|png|gif)/) ) {
+                    alert ('Фотография должна быть в формате jpg, png или gif');
                 } else {
 
                 var reader = new FileReader();
