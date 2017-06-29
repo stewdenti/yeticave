@@ -1,4 +1,4 @@
-<form class="form container <?php if ($error):?>form--invalid<?php endif; ?>" action="/registration.php" method="post" enctype="multipart/form-data">
+<form class="form container <?php if ($error):?>form--invalid<?php endif; ?>" action="/user/signup" method="post" enctype="multipart/form-data">
     <h2>Регистрация нового аккаунта</h2>
     <div class="form__item <?php printInvalidItemClass($error, 'email'); ?>">    <label for="email">E-mail*</label>
         <input id="email" type="text" name="email" placeholder="Введите e-mail" value="<?php printInputItemValue($form_item, 'email');?>">
