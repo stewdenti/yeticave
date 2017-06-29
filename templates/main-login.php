@@ -8,7 +8,7 @@
     </div>
     <div class="form__item form__item--last <?php printInvalidItemClass($error, 'password'); ?>">
         <label for="password">Пароль*</label>
-        <input id="password" type="text" name="password" placeholder="Введите пароль">
+        <input id="password" type="password" name="password" placeholder="Введите пароль">
         <?php if (isset($error["password"])): ?>
         <span class="form__error"><?=$error["password"]?></span>
         <?php endif; ?>

@@ -27,7 +27,7 @@ class UserController extends BaseController
             $this->body_data["error"] = array();
         }
 
-        if (isset($this->param["welcome"])) {
+        if (isset($this->params["welcome"])) {
             $this->body_data["w"] = true;
         }
 
