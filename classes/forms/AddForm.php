@@ -74,10 +74,10 @@ class AddForm extends BaseForm
             if (file_exists($file['tmp_name'])) {
                 $info = @getimagesize($file['tmp_name']);
                 if (preg_match('{image/(.*)}is', $info["mime"], $p)) {
-                    $store_image = ConfigManager::getSettings("img_path");
+                    $store_image = ConfigManager::getConfig()->img_path;
                     $name = $store_image."/" . time() . "." . $p[1];//делаем имя равным текущему времени в секундах
-                    move_uploaded_file($file['tmp_name'], $name);//добавляем файл в папку
-                    $this->data[$field] = "/".$name;//путь до папки
+                    move_uploaded_file($file['tmp_name'], ConfigManager::getConfig()->doc_root.$name);//добавляем файл в папку
+                    $this->data[$field] = $name;//путь до папки
                 } else {
                     $this->data[$field] = $_FILES[$field]["name"];
                     $this->errors[$field] = "Попытка добавить файл недопустимого формата";

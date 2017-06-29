@@ -8,13 +8,15 @@ $config = [
 
     "db_user" => "root",
 
-    "db_password" => "",
+    "db_password" => "mysql",
 
     "db_name" => "yeticave_db",
 
     "db_encoding" => "utf8",
 
     "img_path" => "/img",
+
+    "doc_root" => $_SERVER["DOCUMENT_ROOT"],
 
 ];
 

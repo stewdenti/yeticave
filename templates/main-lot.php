@@ -38,7 +38,7 @@
                         </div>
                     </div>
                     <?php if (isset($user) && $can_make_bet): ?>
-                        <form class="lot-item__form <?php if ($error):?>form--invalid<?php endif; ?>" action="/lot/bind/id/<?=$lot_item->id?>" method="post">
+                        <form class="lot-item__form <?php if (isset($error)):?>form--invalid<?php endif; ?>" action="/lot/bind/id/<?=$lot_item->id?>" method="post">
                             <p class="lot-item__form-item  <?php printInvalidItemClass($error, 'price'); ?>">
                                 <label for="cost">Ваша ставка</label>
                                 <input id="cost" type="number" name="price" placeholder="<?php echo $lot_item->getMinNextBet()?>">

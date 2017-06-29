@@ -8,23 +8,38 @@ class ConfigManager
     /**
      * Получение настроек из файла и возвращение их ввиде ассоциативного массива
      *
-     * @return array   ассоциативный массив с настройками
+     * @return array   ассоциативный массив с настройками     * 
      */
-    public static function get()
+    protected static $configInstance = null;
+
+    protected $config = null;
+
+    protected function __construct($data = null)
     {
-        require_once ("config/config.php");
-        return $config;
+        $this->config = $data;
     }
 
-    public static function getSettings($name = null)
+    public function __destruct()
     {
-        if ($name) {
-            require_once ("config/config.php");
-            return $config[$name];
+        $this->config = null;
+    }
+
+    public static function getConfig()
+    {
+        if (self::$configInstance == null) {
+            include_once ($_SERVER["DOCUMENT_ROOT"]."/config/config.php");
+            self::$configInstance = new self($config);
+        }
+        return self::$configInstance;
+    }
+
+    public function __get($name = null)
+    {
+        if ($name && isset($this->config[$name])) {
+            return $this->config[$name];
         } else {
             return null;
         }
-
     }
 
 }

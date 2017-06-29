@@ -28,13 +28,15 @@ class DB {
      */
     private function __construct()
     {
-        $config = ConfigManager::get();
-
-        $this->link = mysqli_connect($config["db_host"], $config["db_user"], $config["db_password"], $config["db_name"]);
+        $this->link = mysqli_connect(
+                                    ConfigManager::getConfig()->db_host, 
+                                    ConfigManager::getConfig()->db_user, 
+                                    ConfigManager::getConfig()->db_password,
+                                    ConfigManager::getConfig()->db_name);
         if (!$this->link) {
             $this->error = mysqli_connect_error();
         }
-        if (!mysqli_set_charset($this->link, $config["db_encoding"])) {
+        if (!mysqli_set_charset($this->link, ConfigManager::getConfig()->db_encoding)) {
             $this->error = mysqli_errno($this->link).mysqli_error($this->link);
         }
     }
@@ -43,7 +45,7 @@ class DB {
      *  Десктруктор для закрытия соедиения при уничтожении объекта
      *
      */
-    public function __destructor()
+    public function __destruct()
     {
         mysqli_close($this->link);
     }

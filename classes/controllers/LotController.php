@@ -105,6 +105,7 @@ class LotController extends BaseController
     {
         $this->body_data["user"] = $this->user;
         $this->body_data["categories_equipment"] = CategoryFinder::getAll();
+        $this->body_data["error"] = array();
         // проверка пришел ли id лота и получение данных о лоте  из базы
         $lot_item = null;
         $lot_bets = [];
